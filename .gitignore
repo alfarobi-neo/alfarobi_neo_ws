@@ -1,0 +1,8 @@
+# Ignore all .log and .vscode setup files
+*.log
+.vscode/
+
+# Ignore build, devel, and program directory
+build/
+devel/
+program/
