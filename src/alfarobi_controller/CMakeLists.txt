@@ -11,6 +11,8 @@ find_package(catkin REQUIRED COMPONENTS
   alfarobi_msgs_srvs_actions
   roscpp
   rospy
+  yaml-cpp
+  alfarobi_dxlsdk
 )
 
 ## System dependencies are found with CMake's conventions
@@ -146,9 +148,10 @@ include_directories(
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(${PROJECT_NAME}_node
+ ${PROJECT_NAME} yaml-cpp
+ ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##
