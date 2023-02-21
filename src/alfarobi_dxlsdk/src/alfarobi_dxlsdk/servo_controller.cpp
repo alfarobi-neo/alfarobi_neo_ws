@@ -1,19 +1,18 @@
 #include "alfarobi_dxlsdk/servo_controller.h"
 // #include "../src/dynamixel_sdk/packet_handler.cpp"
 // #include "../src/dynamixel_sdk/port_handler.cpp"
-#include "../src/dynamixel_sdk/packet_handler.cpp"
-#include "../src/dynamixel_sdk/port_handler.cpp"
-#include "../src/dynamixel_sdk/port_handler_linux.cpp"
-#include "../src/dynamixel_sdk/group_sync_read.cpp"
-#include "../src/dynamixel_sdk/group_sync_write.cpp"
-#include "../src/dynamixel_sdk/group_bulk_read.cpp"
-#include "../src/dynamixel_sdk/group_bulk_write.cpp"
-#include "../src/dynamixel_sdk/protocol1_packet_handler.cpp"
-#include "../src/dynamixel_sdk/protocol2_packet_handler.cpp"
+// #include "../src/dynamixel_sdk/packet_handler.cpp"
+// #include "../src/dynamixel_sdk/port_handler.cpp"
+// #include "../src/dynamixel_sdk/port_handler_linux.cpp"
+// #include "../src/dynamixel_sdk/group_sync_read.cpp"
+// #include "../src/dynamixel_sdk/group_sync_write.cpp"
+// #include "../src/dynamixel_sdk/group_bulk_read.cpp"
+// #include "../src/dynamixel_sdk/group_bulk_write.cpp"
+// #include "../src/dynamixel_sdk/protocol1_packet_handler.cpp"
+// #include "../src/dynamixel_sdk/protocol2_packet_handler.cpp"
 //
-#include <ros/ros.h>
 
-alfarobi::ReadWrite::ReadWrite()
+alfarobi::ServoController::ServoController()
 {
     dxl_id[0] = 1;
     dxl_id[1] = 2;
@@ -65,7 +64,7 @@ alfarobi::ReadWrite::ReadWrite()
     }
 }
 
-alfarobi::ReadWrite::~ReadWrite()
+alfarobi::ServoController::~ServoController()
 {
     // Disable Dynamixels Torque
     for(int i=0;i<20;i++)
@@ -75,10 +74,10 @@ alfarobi::ReadWrite::~ReadWrite()
             printf("Servo doesn't exist!\n");
             continue;
         }
-        if((i == 4) || (i == 5)){
-            printf("Servo doesn't exist!\n");
-            continue;
-        }
+        // if((i == 4) || (i == 5)){
+        //     printf("Servo doesn't exist!\n");
+        //     continue;
+        // }
 
         dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, dxl_id[i], ADDR_TORQUE_ENABLE, TORQUE_DISABLE, &dxl_error);
         if (dxl_comm_result != COMM_SUCCESS)
@@ -126,7 +125,7 @@ alfarobi::ReadWrite::~ReadWrite()
     portHandler->closePort();
 }
 
-void alfarobi::ReadWrite::torqueEnable()
+void alfarobi::ServoController::torqueEnable()
 {
     dynamixel::GroupSyncRead groupSyncRead(portHandler, packetHandler, ADDR_PRESENT_POSITION, LEN_PRESENT_POSITION);
     for(int i=0; i<19; i++)
@@ -136,11 +135,11 @@ void alfarobi::ReadWrite::torqueEnable()
             printf("Servo doesn't exist!\n");
             continue;
         }
-        if((i == 4) || (i == 5) )
-        {
-            printf("Servo doesn't exist!\n");
-            continue;
-        }
+        // if((i == 4) || (i == 5) )
+        // {
+        //     printf("Servo doesn't exist!\n");
+        //     continue;
+        // }
 
         dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, dxl_id[i], ADDR_TORQUE_ENABLE, TORQUE_ENABLE, &dxl_error);
         if (dxl_comm_result != COMM_SUCCESS)
@@ -206,7 +205,7 @@ void alfarobi::ReadWrite::torqueEnable()
     // }
 }
 
-void alfarobi::ReadWrite::write(uint8_t dxl_id, int goal_pos, int goal_vel)
+void alfarobi::ServoController::write(uint8_t dxl_id, int goal_pos, int goal_vel)
 {
     dynamixel::GroupSyncWrite groupSyncWritePos(portHandler, packetHandler, ADDR_GOAL_POSITION, LEN_GOAL_POSITION);
     dynamixel::GroupSyncWrite groupSyncWriteVel(portHandler, packetHandler, ADDR_PROFILE_VELOCITY, LEN_GOAL_VELOCITY);
@@ -262,7 +261,7 @@ void alfarobi::ReadWrite::write(uint8_t dxl_id, int goal_pos, int goal_vel)
 
 }
 
-// void ReadWrite::writeVel(uint8_t dxl_id, int goal_vel)
+// void ServoController::writeVel(uint8_t dxl_id, int goal_vel)
 // {
 //     dynamixel::GroupSyncWrite groupSyncWrite(portHandler, packetHandler, ADDR_GOAL_VELOCITY, LEN_GOAL_VELOCITY);
 //     // Allocate goal position value into byte array
@@ -287,7 +286,7 @@ void alfarobi::ReadWrite::write(uint8_t dxl_id, int goal_pos, int goal_vel)
 //     groupSyncWrite.clearParam();
 // }
 
-void alfarobi::ReadWrite::read(uint8_t dxl_id)
+void alfarobi::ServoController::read(uint8_t dxl_id)
 {
     dynamixel::GroupSyncRead groupSyncRead(portHandler, packetHandler, ADDR_PRESENT_POSITION, LEN_PRESENT_POSITION);
     dxl_addparam_result = groupSyncRead.addParam(dxl_id);
@@ -323,7 +322,7 @@ void alfarobi::ReadWrite::read(uint8_t dxl_id)
     printf("[ID:%03d] PresPos:%03f\n", dxl_id, dxl_pres_pos);
 }
 
-void alfarobi::ReadWrite::readVel(uint8_t dxl_id)
+void alfarobi::ServoController::readVel(uint8_t dxl_id)
 {
     dynamixel::GroupSyncRead groupSyncRead(portHandler, packetHandler, ADDR_PRESENT_VELOCITY, LEN_GOAL_POSITION);
     dxl_addparam_result = groupSyncRead.addParam(dxl_id);
@@ -357,12 +356,12 @@ void alfarobi::ReadWrite::readVel(uint8_t dxl_id)
     printf("[ID:%03d] PresentVel:%03d\n", dxl_id, dxl_pres_vel);
 }
 
-int alfarobi::ReadWrite::deg2Bit(float goal_pos_degree)
+int alfarobi::ServoController::deg2Bit(float goal_pos_degree)
 {
     return (goal_pos_degree/360) * 4095;
 }
 
-int alfarobi::ReadWrite::vel2Bit(float goal_vel)
+int alfarobi::ServoController::vel2Bit(float goal_vel)
 {
     return (goal_vel/360) * 4095;
 }

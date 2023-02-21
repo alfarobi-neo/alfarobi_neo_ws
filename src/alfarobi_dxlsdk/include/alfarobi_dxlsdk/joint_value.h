@@ -1,3 +1,6 @@
+#ifndef JOINT_VALUE_H
+#define JOINT_VALUE_H
+
 #include <unordered_map>
 #include <iostream>
 #include <bits/stdc++.h>
@@ -63,3 +66,4 @@ struct joint_value {
 
 
 }
+#endif

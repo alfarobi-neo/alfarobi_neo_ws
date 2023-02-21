@@ -1,0 +1,187 @@
+JATUH_DEPAN:
+  - R_SHO_P  : 10.00
+    L_SHO_P  : 10.000
+    R_SHO_R  : 10.000
+    L_SHO_R  : 10.0000
+    R_ELB    : 10.0000
+    L_ELB    : 10.0000
+    R_HIP_Y  : 10.0000
+    L_HIP_Y  : 10.0000
+    R_HIP_P  : 10.0000
+    L_HIP_P  : 10.0000
+    R_HIP_R  : 10.0000
+    L_HIP_R  : 10.0000
+    R_KNEE   : 10.0000
+    L_KNEE   : 10.0000
+    R_ANK_R  : 10.0000
+    L_ANK_R  : 10.0000
+    R_ANK_P  : 10.0000
+    L_ANK_P  : 10.0000
+    HEAD_PAN : 10.0000
+    HEAD_TILT: 10.0000
+  - R_SHO_P  : 10.00
+    L_SHO_P  : 10.000
+    R_SHO_R  : 10.000
+    L_SHO_R  : 10.0000
+    R_ELB    : 10.0000
+    L_ELB    : 10.0000
+    R_HIP_Y  : 10.0000
+    L_HIP_Y  : 10.0000
+    R_HIP_P  : 10.0000
+    L_HIP_P  : 10.0000
+    R_HIP_R  : 10.0000
+    L_HIP_R  : 10.0000
+    R_KNEE   : 10.0000
+    L_KNEE   : 10.0000
+    R_ANK_R  : 10.0000
+    L_ANK_R  : 10.0000
+    R_ANK_P  : 10.0000
+    L_ANK_P  : 10.0000
+    HEAD_PAN : 10.0000
+    HEAD_TILT: 10.0000
+  - R_SHO_P  : 10.00
+    L_SHO_P  : 10.000
+    R_SHO_R  : 10.000
+    L_SHO_R  : 10.0000
+    R_ELB    : 10.0000
+    L_ELB    : 10.0000
+    R_HIP_Y  : 10.0000
+    L_HIP_Y  : 10.0000
+    R_HIP_P  : 10.0000
+    L_HIP_P  : 10.0000
+    R_HIP_R  : 10.0000
+    L_HIP_R  : 10.0000
+    R_KNEE   : 10.0000
+    L_KNEE   : 10.0000
+    R_ANK_R  : 10.0000
+    L_ANK_R  : 10.0000
+    R_ANK_P  : 10.0000
+    L_ANK_P  : 10.0000
+    HEAD_PAN : 10.0000
+    HEAD_TILT: 10.0000
+
+JATUH_BELAKANG:
+  - R_SHO_P  : 10.00
+    L_SHO_P  : 10.000
+    R_SHO_R  : 10.000
+    L_SHO_R  : 10.0000
+    R_ELB    : 10.0000
+    L_ELB    : 10.0000
+    R_HIP_Y  : 10.0000
+    L_HIP_Y  : 10.0000
+    R_HIP_P  : 10.0000
+    L_HIP_P  : 10.0000
+    R_HIP_R  : 10.0000
+    L_HIP_R  : 10.0000
+    R_KNEE   : 10.0000
+    L_KNEE   : 10.0000
+    R_ANK_R  : 10.0000
+    L_ANK_R  : 10.0000
+    R_ANK_P  : 10.0000
+    L_ANK_P  : 10.0000
+    HEAD_PAN : 10.0000
+    HEAD_TILT: 10.0000
+  - R_SHO_P  : 10.00
+    L_SHO_P  : 10.000
+    R_SHO_R  : 10.000
+    L_SHO_R  : 10.0000
+    R_ELB    : 10.0000
+    L_ELB    : 10.0000
+    R_HIP_Y  : 10.0000
+    L_HIP_Y  : 10.0000
+    R_HIP_P  : 10.0000
+    L_HIP_P  : 10.0000
+    R_HIP_R  : 10.0000
+    L_HIP_R  : 10.0000
+    R_KNEE   : 10.0000
+    L_KNEE   : 10.0000
+    R_ANK_R  : 10.0000
+    L_ANK_R  : 10.0000
+    R_ANK_P  : 10.0000
+    L_ANK_P  : 10.0000
+    HEAD_PAN : 10.0000
+    HEAD_TILT: 10.0000
+
+JATUH_KIRI:
+  - R_SHO_P  : 10.00
+    L_SHO_P  : 10.000
+    R_SHO_R  : 10.000
+    L_SHO_R  : 10.0000
+    R_ELB    : 10.0000
+    L_ELB    : 10.0000
+    R_HIP_Y  : 10.0000
+    L_HIP_Y  : 10.0000
+    R_HIP_P  : 10.0000
+    L_HIP_P  : 10.0000
+    R_HIP_R  : 10.0000
+    L_HIP_R  : 10.0000
+    R_KNEE   : 10.0000
+    L_KNEE   : 10.0000
+    R_ANK_R  : 10.0000
+    L_ANK_R  : 10.0000
+    R_ANK_P  : 10.0000
+    L_ANK_P  : 10.0000
+    HEAD_PAN : 10.0000
+    HEAD_TILT: 10.0000
+  - R_SHO_P  : 10.00
+    L_SHO_P  : 10.000
+    R_SHO_R  : 10.000
+    L_SHO_R  : 10.0000
+    R_ELB    : 10.0000
+    L_ELB    : 10.0000
+    R_HIP_Y  : 10.0000
+    L_HIP_Y  : 10.0000
+    R_HIP_P  : 10.0000
+    L_HIP_P  : 10.0000
+    R_HIP_R  : 10.0000
+    L_HIP_R  : 10.0000
+    R_KNEE   : 10.0000
+    L_KNEE   : 10.0000
+    R_ANK_R  : 10.0000
+    L_ANK_R  : 10.0000
+    R_ANK_P  : 10.0000
+    L_ANK_P  : 10.0000
+    HEAD_PAN : 10.0000
+    HEAD_TILT: 10.0000
+
+JATUH_KANAN:
+  - R_SHO_P  : 10.00
+    L_SHO_P  : 10.000
+    R_SHO_R  : 10.000
+    L_SHO_R  : 10.0000
+    R_ELB    : 10.0000
+    L_ELB    : 10.0000
+    R_HIP_Y  : 10.0000
+    L_HIP_Y  : 10.0000
+    R_HIP_P  : 10.0000
+    L_HIP_P  : 10.0000
+    R_HIP_R  : 10.0000
+    L_HIP_R  : 10.0000
+    R_KNEE   : 10.0000
+    L_KNEE   : 10.0000
+    R_ANK_R  : 10.0000
+    L_ANK_R  : 10.0000
+    R_ANK_P  : 10.0000
+    L_ANK_P  : 10.0000
+    HEAD_PAN : 10.0000
+    HEAD_TILT: 10.0000
+  - R_SHO_P  : 10.00
+    L_SHO_P  : 10.000
+    R_SHO_R  : 10.000
+    L_SHO_R  : 10.0000
+    R_ELB    : 10.0000
+    L_ELB    : 10.0000
+    R_HIP_Y  : 10.0000
+    L_HIP_Y  : 10.0000
+    R_HIP_P  : 10.0000
+    L_HIP_P  : 10.0000
+    R_HIP_R  : 10.0000
+    L_HIP_R  : 10.0000
+    R_KNEE   : 10.0000
+    L_KNEE   : 10.0000
+    R_ANK_R  : 10.0000
+    L_ANK_R  : 10.0000
+    R_ANK_P  : 10.0000
+    L_ANK_P  : 10.0000
+    HEAD_PAN : 10.0000
+    HEAD_TILT: 10.0000

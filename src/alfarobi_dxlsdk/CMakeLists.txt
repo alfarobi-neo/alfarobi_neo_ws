@@ -11,6 +11,7 @@ add_compile_options(-std=c++11)
 # Find catkin packages and libraries for catkin and system dependencies
 ################################################################################
 find_package(catkin REQUIRED COMPONENTS roscpp rospy)
+find_package(yaml-cpp REQUIRED)
 
 ################################################################################
 # Setup for python modules and scripts
@@ -31,10 +32,10 @@ catkin_python_setup()
 catkin_package(
   INCLUDE_DIRS include
   CATKIN_DEPENDS roscpp rospy
-  LIBRARIES dynamixel_sdk
+  LIBRARIES alfarobi_dxlsdk #dynamixel_sdk
 )
-add_executable(alfarobi_dxlsdk src/main.cpp)
-target_link_libraries(alfarobi_dxlsdk ${catkin_LIBRARIES})
+
+
 ################################################################################
 # Build
 ################################################################################
@@ -43,6 +44,19 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
+# add_executable(alfarobi_dxlsdk 
+#   #src/main.cpp
+#   src/alfarobi_dxlsdk/servo_controller.cpp
+#   src/dynamixel_sdk/packet_handler.cpp
+#   src/dynamixel_sdk/protocol1_packet_handler.cpp
+#   src/dynamixel_sdk/protocol2_packet_handler.cpp
+#   src/dynamixel_sdk/group_sync_read.cpp
+#   src/dynamixel_sdk/group_sync_write.cpp
+#   src/dynamixel_sdk/group_bulk_read.cpp
+#   src/dynamixel_sdk/group_bulk_write.cpp
+#   src/dynamixel_sdk/port_handler.cpp
+#   src/dynamixel_sdk/port_handler_linux.cpp
+# )
 if(APPLE)
   add_library(dynamixel_sdk
     src/dynamixel_sdk/packet_handler.cpp
@@ -69,34 +83,50 @@ else()
   )
 endif()
 
-add_dependencies(dynamixel_sdk ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(dynamixel_sdk ${catkin_LIBRARIES})
+# add_dependencies(dynamixel_sdk ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# target_link_libraries(dynamixel_sdk ${catkin_LIBRARIES})
 
+# ## Declare a C++ library
+# add_library(servo_controller #${PROJECT_NAME}
+#   src/alfarobi_dxlsdk/servo_controller.cpp
+# )
+# target_link_libraries(alfarobi_dxlsdk ${catkin_LIBRARIES})
+# target_link_libraries(${PROJECT_NAME} yaml-cpp)
+add_library(${PROJECT_NAME}
+  src/alfarobi_dxlsdk/servo_controller.cpp
+
+)
+
+add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+target_link_libraries(${PROJECT_NAME}
+    ${YAML_CPP_LIBRARIES}
+    )
 ################################################################################
 # Install
 ################################################################################
-install(TARGETS dynamixel_sdk
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
+# install(TARGETS dynamixel_sdk
+#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+# )
 
-install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-)
+# install(DIRECTORY include/${PROJECT_NAME}/
+#   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+# )
 
-catkin_install_python(PROGRAMS
-  src/dynamixel_sdk/group_bulk_read.py
-  src/dynamixel_sdk/group_bulk_write.py
-  src/dynamixel_sdk/group_sync_read.py
-  src/dynamixel_sdk/group_sync_write.py
-  src/dynamixel_sdk/packet_handler.py
-  src/dynamixel_sdk/port_handler.py
-  src/dynamixel_sdk/protocol1_packet_handler.py
-  src/dynamixel_sdk/protocol2_packet_handler.py
-  src/dynamixel_sdk/robotis_def.py
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
+# catkin_install_python(PROGRAMS
+#   src/dynamixel_sdk/group_bulk_read.py
+#   src/dynamixel_sdk/group_bulk_write.py
+#   src/dynamixel_sdk/group_sync_read.py
+#   src/dynamixel_sdk/group_sync_write.py
+#   src/dynamixel_sdk/packet_handler.py
+#   src/dynamixel_sdk/port_handler.py
+#   src/dynamixel_sdk/protocol1_packet_handler.py
+#   src/dynamixel_sdk/protocol2_packet_handler.py
+#   src/dynamixel_sdk/robotis_def.py
+#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+# )
 
 ################################################################################
 # Test

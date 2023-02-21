@@ -1,5 +1,5 @@
-#ifndef READ_WRITE_H
-#define READ_WRITE_H
+#ifndef SERVO_CONTROLLER_H
+#define SERVO_CONTROLLER_H
 
 #if defined(__linux__) || defined(__APPLE__)
 #include <fcntl.h>
@@ -49,9 +49,9 @@
 
 namespace alfarobi{
 
-class ReadWrite
+class ServoController
 {
-    public:
+private:
     uint8_t dxl_id[20];
     joint_value servo;
 
@@ -81,9 +81,9 @@ class ReadWrite
     float dxl_pres_pos;
     int32_t dxl_pres_vel;
 
-    public:
-    ReadWrite();
-    ~ReadWrite();
+public:
+    ServoController();
+    ~ServoController();
 
     void torqueEnable();
     void read(uint8_t dxl_id);
