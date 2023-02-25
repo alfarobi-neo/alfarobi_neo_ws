@@ -38,8 +38,30 @@ namespace alfarobi {
 struct joint_value {    
     /* members */
     double  val[20],
-            target_time;
+            target_time, pause_time;
     bool    torque_enabled[20];
+    std::string name[20] = {
+        "R_SHO_P",
+        "L_SHO_P",
+        "R_SHO_R",
+        "L_SHO_R",
+        "R_ELB",
+        "L_ELB",
+        "R_HIP_Y",
+        "L_HIP_Y",
+        "R_HIP_P",
+        "L_HIP_P",
+        "R_HIP_R",
+        "L_HIP_R",
+        "R_KNEE",
+        "L_KNEE",
+        "R_ANK_R",
+        "L_ANK_R",
+        "R_ANK_P",
+        "L_ANK_P",
+        "HEAD_PAN",
+        "HEAD_TILT",
+    };
 
     /* constructor */
     joint_value() {

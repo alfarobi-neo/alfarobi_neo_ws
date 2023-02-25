@@ -13,8 +13,11 @@ int main(int argc, char** argv)
     // while(ros::ok()) {
         
     // }
-    std::cout <<"\nEnter : ";
-    std::cin>>input;
+    // std::cout <<"\nEnter : ";
+    // std::cin>>input;
 
-    test->loadParams(test->getName(input-1));
+    // test->loadParams();
+    test->saveParams();
+
+    return 0;
 }
