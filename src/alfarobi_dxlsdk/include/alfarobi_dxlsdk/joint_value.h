@@ -38,8 +38,11 @@ namespace alfarobi {
 struct joint_value {    
     /* members */
     double  val[20],
-            target_time, pause_time;
-    bool    torque_enabled[20];
+            target_time[20], 
+            pause_time[20];
+    bool    torque_enabled[20], 
+            write[20],
+            read[20];
     std::string name[20] = {
         "R_SHO_P",
         "L_SHO_P",
@@ -68,8 +71,12 @@ struct joint_value {
         for (uint8_t i = 0; i < 20; ++i) {
             val[i]  = 0.0;
             torque_enabled[i] = false;
+            write[i] = false;
+            read[i] = false;
+            target_time[i] = 0.0;
+            pause_time[i] = 0.0;
         }
-        target_time = 0.0;
+        
     }
 
     /* methods */

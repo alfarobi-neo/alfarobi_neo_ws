@@ -88,7 +88,7 @@ public:
     void torqueEnable();
     void read(uint8_t dxl_id);
     void readVel(uint8_t dxl_id);
-    void write(uint8_t dxl_id, int goal_pos, int goal_vel);
+    void write(uint8_t dxl_id, double goal_pos, double goal_vel);
     void writeVel(uint8_t dxl_id, int goal_vel);
     int deg2Bit(float goal_pos_degree);
     int vel2Bit(float goal_vel);

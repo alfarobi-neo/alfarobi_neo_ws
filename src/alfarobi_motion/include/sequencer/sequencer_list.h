@@ -2,7 +2,7 @@
 #define SEQUENCER_LIST_H
 
 #include "alfarobi_dxlsdk/joint_value.h"
-// #include "sequencer/SequencerParamsConfig.h"
+#include "alfarobi_motion/alfarobi_motion.h"
 #include <yaml-cpp/yaml.h>
 #include <vector>
 #include <fstream>
@@ -34,9 +34,10 @@ public:
         joint_ = new alfarobi::joint_value();
         for(int i=0; i<20; i++) {
             this->joint_->setVal(i, data->getVal(i));
+            this->joint_->target_time[i] = data->target_time[i];
+            this->joint_->pause_time[i] = data->pause_time[i];
         }
-        this->joint_->target_time = data->target_time;
-        this->joint_->pause_time = data->pause_time;
+        
         this->next = NULL;
     }
 
@@ -44,9 +45,9 @@ public:
 
     void insertName(std::string name);
 
-    void insertTargetTime(double tt);
+    void insertTargetTime(double tt, int index);
 
-    void insertPauseTime(double pt);
+    void insertPauseTime(double pt, int index);
 
     alfarobi::joint_value * getJoint() {
         return joint_;

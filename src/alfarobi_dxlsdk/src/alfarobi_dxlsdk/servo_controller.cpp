@@ -205,7 +205,7 @@ void alfarobi::ServoController::torqueEnable()
     // }
 }
 
-void alfarobi::ServoController::write(uint8_t dxl_id, int goal_pos, int goal_vel)
+void alfarobi::ServoController::write(uint8_t dxl_id, double goal_pos, double goal_vel)
 {
     dynamixel::GroupSyncWrite groupSyncWritePos(portHandler, packetHandler, ADDR_GOAL_POSITION, LEN_GOAL_POSITION);
     dynamixel::GroupSyncWrite groupSyncWriteVel(portHandler, packetHandler, ADDR_PROFILE_VELOCITY, LEN_GOAL_VELOCITY);

@@ -102,9 +102,9 @@ void Sequence::insertVal(double nval, int index) {
 void Sequence::insertName(std::string n) {
     name_ = n;
 }
-void Sequence::insertTargetTime(double tt) {
-    joint_->target_time = tt;
+void Sequence::insertTargetTime(double tt, int index) {
+    joint_->target_time[index] = tt;
 }
-void Sequence::insertPauseTime(double pt) {
-    joint_->pause_time = pt;
+void Sequence::insertPauseTime(double pt, int index) {
+    joint_->pause_time[index] = pt;
 }

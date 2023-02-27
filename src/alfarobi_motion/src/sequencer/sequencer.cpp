@@ -54,8 +54,11 @@ void Sequencer::loadSequences() {
         seq_depan.insertVal(jatuh_depan[j]["L_ANK_P"].as<double>(), 17);
         seq_depan.insertVal(jatuh_depan[j]["HEAD_PAN"].as<double>(), 18);
         seq_depan.insertVal(jatuh_depan[j]["HEAD_TILT"].as<double>(), 19);
-        seq_depan.insertPauseTime(jatuh_depan[j]["PAUSE_TIME"].as<double>());
-        seq_depan.insertTargetTime(jatuh_depan[j]["TARGET_TIME"].as<double>());
+        for(int idx = 0; idx<20; idx++) {
+            seq_depan.insertPauseTime(jatuh_depan[j]["PAUSE_TIME"].as<double>(), idx);
+            seq_depan.insertTargetTime(jatuh_depan[j]["TARGET_TIME"].as<double>(), idx);
+        }
+        
         seq_depan.insertName("JATUH_DEPAN");
         
 
@@ -90,8 +93,11 @@ void Sequencer::loadSequences() {
         seq_belakang.insertVal(jatuh_belakang[j]["L_ANK_P"].as<double>(), 17);
         seq_belakang.insertVal(jatuh_belakang[j]["HEAD_PAN"].as<double>(), 18);
         seq_belakang.insertVal(jatuh_belakang[j]["HEAD_TILT"].as<double>(), 19);
-        seq_belakang.insertPauseTime(jatuh_belakang[j]["PAUSE_TIME"].as<double>());
-        seq_belakang.insertTargetTime(jatuh_belakang[j]["TARGET_TIME"].as<double>());
+        for(int idx = 0; idx<20; idx++) {
+            seq_belakang.insertPauseTime(jatuh_belakang[j]["PAUSE_TIME"].as<double>(), idx);
+            seq_belakang.insertTargetTime(jatuh_belakang[j]["TARGET_TIME"].as<double>(), idx);
+        }
+        
         seq_belakang.insertName("JATUH_BELAKANG");
         
 
@@ -126,8 +132,11 @@ void Sequencer::loadSequences() {
         seq_kiri.insertVal(jatuh_kiri[j]["L_ANK_P"].as<double>(), 17);
         seq_kiri.insertVal(jatuh_kiri[j]["HEAD_PAN"].as<double>(), 18);
         seq_kiri.insertVal(jatuh_kiri[j]["HEAD_TILT"].as<double>(), 19);
-        seq_kiri.insertPauseTime(jatuh_kiri[j]["PAUSE_TIME"].as<double>());
-        seq_kiri.insertTargetTime(jatuh_kiri[j]["TARGET_TIME"].as<double>());
+        for(int idx = 0; idx<20; idx++) {
+            seq_kiri.insertPauseTime(jatuh_kiri[j]["PAUSE_TIME"].as<double>(), idx);
+            seq_kiri.insertTargetTime(jatuh_kiri[j]["TARGET_TIME"].as<double>(), idx);
+        }
+        
         seq_kiri.insertName("JATUH_KIRI");
         
 
@@ -162,8 +171,11 @@ void Sequencer::loadSequences() {
         seq_kanan.insertVal(jatuh_kanan[j]["L_ANK_P"].as<double>(), 17);
         seq_kanan.insertVal(jatuh_kanan[j]["HEAD_PAN"].as<double>(), 18);
         seq_kanan.insertVal(jatuh_kanan[j]["HEAD_TILT"].as<double>(), 19);
-        seq_kanan.insertPauseTime(jatuh_kanan[j]["PAUSE_TIME"].as<double>());
-        seq_kanan.insertTargetTime(jatuh_kanan[j]["TARGET_TIME"].as<double>());
+        for(int idx = 0; idx<20; idx++) {
+            seq_kanan.insertPauseTime(jatuh_kanan[j]["PAUSE_TIME"].as<double>(), idx);
+            seq_kanan.insertTargetTime(jatuh_kanan[j]["TARGET_TIME"].as<double>(), idx);
+        }
+        
         seq_kanan.insertName("JATUH_KANAN");
         
 
@@ -222,13 +234,13 @@ void Sequencer::saveParams() {
             emitter << YAML::Key << "TARGET_TIME";
             {
                 std::ostringstream oss;
-                oss << std::setprecision(4) << std::fixed << temp->joint_->target_time;
+                oss << std::setprecision(4) << std::fixed << temp->joint_->target_time[0];
                 emitter << YAML::Value << oss.str();
             }
             emitter << YAML::Key << "PAUSE_TIME";
             {
                 std::ostringstream oss;
-                oss << std::setprecision(4) << std::fixed << temp->joint_->pause_time;
+                oss << std::setprecision(4) << std::fixed << temp->joint_->pause_time[0];
                 emitter << YAML::Value << oss.str();
             }
             temp = temp->next;
