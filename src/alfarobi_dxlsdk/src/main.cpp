@@ -1,10 +1,11 @@
-#include "../src/alfarobi_dxlsdk/servo_controller.cpp"
+// #include "../src/alfarobi_dxlsdk/servo_controller.cpp"
+#include "alfarobi_dxlsdk/servo_controller.h"
 
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "main");
     ros::NodeHandle nh;
-    alfarobi::ReadWrite *robot = new alfarobi::ReadWrite();
+    alfarobi::ServoController *robot = new alfarobi::ServoController();
     robot->torqueEnable();
 
     float goal_pos1;

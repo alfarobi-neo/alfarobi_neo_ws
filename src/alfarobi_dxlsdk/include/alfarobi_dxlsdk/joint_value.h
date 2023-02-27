@@ -1,3 +1,6 @@
+#ifndef JOINT_VALUE_H
+#define JOINT_VALUE_H
+
 #include <unordered_map>
 #include <iostream>
 #include <bits/stdc++.h>
@@ -35,16 +38,45 @@ namespace alfarobi {
 struct joint_value {    
     /* members */
     double  val[20],
-            target_time;
-    bool    torque_enabled[20];
+            target_time[20], 
+            pause_time[20];
+    bool    torque_enabled[20], 
+            write[20],
+            read[20];
+    std::string name[20] = {
+        "R_SHO_P",
+        "L_SHO_P",
+        "R_SHO_R",
+        "L_SHO_R",
+        "R_ELB",
+        "L_ELB",
+        "R_HIP_Y",
+        "L_HIP_Y",
+        "R_HIP_P",
+        "L_HIP_P",
+        "R_HIP_R",
+        "L_HIP_R",
+        "R_KNEE",
+        "L_KNEE",
+        "R_ANK_R",
+        "L_ANK_R",
+        "R_ANK_P",
+        "L_ANK_P",
+        "HEAD_PAN",
+        "HEAD_TILT",
+    };
 
     /* constructor */
     joint_value() {
         for (uint8_t i = 0; i < 20; ++i) {
             val[i]  = 0.0;
             torque_enabled[i] = false;
+            write[i] = false;
+            read[i] = false;
+            target_time[i] = 0.0;
+            pause_time[i] = 0.0;
         }
-        target_time = 0.0;
+        
     }
 
     /* methods */
@@ -63,3 +95,4 @@ struct joint_value {
 
 
 }
+#endif
