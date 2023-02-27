@@ -38,6 +38,7 @@ alfarobi::ServoController::ServoController()
     dxl_comm_result = COMM_TX_FAIL;
     dxl_addparam_result = false;
     dxl_getdata_result = false;
+    dxl_is_moving = false;
 
     dxl_error = 0;
 
@@ -286,6 +287,38 @@ void alfarobi::ServoController::write(uint8_t dxl_id, double goal_pos, double go
 //     groupSyncWrite.clearParam();
 // }
 
+bool alfarobi::ServoController::isMoving(uint8_t dxl_id) {
+    dynamixel::GroupSyncRead groupSyncRead(portHandler, packetHandler, ADDR_MOVING, LEN_MOVING);
+    dxl_addparam_result = groupSyncRead.addParam(dxl_id);
+    if (dxl_addparam_result != true)
+    {
+        fprintf(stderr, "[ID:%03d] groupSyncRead addparam failed (isMoving function)", dxl_id);
+        return false;
+    }
+    // Syncread present position
+    dxl_comm_result = groupSyncRead.txRxPacket();
+    if (dxl_comm_result != COMM_SUCCESS)
+    {
+    printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
+    }
+    else if (groupSyncRead.getError(dxl_id, &dxl_error))
+    {
+    printf("[ID:%03d] %s\n", dxl_id, packetHandler->getRxPacketError(dxl_error));
+    }
+
+    // Check if groupsyncread data of Dynamixel# is available
+    dxl_getdata_result = groupSyncRead.isAvailable(dxl_id, ADDR_MOVING, LEN_MOVING);
+    if (dxl_getdata_result != true)
+    {
+    fprintf(stderr, "[ID:%03d] groupSyncRead getdata failed", dxl_id);
+    return false;
+    }
+
+    // Get Dynamixel# present position value
+    dxl_is_moving = groupSyncRead.getData(dxl_id, ADDR_MOVING, LEN_MOVING);
+
+    return dxl_is_moving;
+}
 void alfarobi::ServoController::read(uint8_t dxl_id)
 {
     dynamixel::GroupSyncRead groupSyncRead(portHandler, packetHandler, ADDR_PRESENT_POSITION, LEN_PRESENT_POSITION);

@@ -11,6 +11,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <ros/ros.h>
 
 #include "dynamixel_sdk/dynamixel_sdk.h"
 #include "joint_value.h"                  // Uses Dynamixel SDK library
@@ -23,11 +24,13 @@
 #define ADDR_PROFILE_VELOCITY       112
 #define ADDR_PROFILE_ACCELERATION   108
 #define ADDR_PRESENT_VELOCITY       128
+#define ADDR_MOVING                 122
 
 // Data Byte Length
 #define LEN_GOAL_POSITION           4
 #define LEN_PRESENT_POSITION        4
 #define LEN_GOAL_VELOCITY           4
+#define LEN_MOVING                  1
 
 // Protocol version
 #define PROTOCOL_VERSION                2.0                 // See which protocol version is used in the Dynamixel
@@ -79,6 +82,7 @@ private:
     int32_t dxl_present_position[20];  // Present position, tambah/kurang jika nambah/ngurang servo
     int32_t dxl_present_velocity[20];
     float dxl_pres_pos;
+    bool dxl_is_moving;
     int32_t dxl_pres_vel;
 
 public:
@@ -88,6 +92,7 @@ public:
     void torqueEnable();
     void read(uint8_t dxl_id);
     void readVel(uint8_t dxl_id);
+    bool isMoving(uint8_t dxl_id);
     void write(uint8_t dxl_id, double goal_pos, double goal_vel);
     void writeVel(uint8_t dxl_id, int goal_vel);
     int deg2Bit(float goal_pos_degree);
