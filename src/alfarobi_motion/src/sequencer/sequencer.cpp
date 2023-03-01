@@ -194,7 +194,7 @@ void Sequencer::loadParams() {
     
 }
 
-void Sequencer::apply() {
+void Sequencer::apply(Sequence newSeq) {
 
 }
 

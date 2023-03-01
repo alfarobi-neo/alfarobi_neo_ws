@@ -19,7 +19,7 @@ public:
 
     void loadSequences();
 
-    void apply();
+    void apply(Sequence newSeq);
     // void torqueDisable();
     void loadParams();
     void saveParams();
