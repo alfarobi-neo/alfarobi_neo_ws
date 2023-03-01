@@ -1,4 +1,5 @@
 import React from "react";
+import AppBar from "../components/AppBar";
 import ROSLIB from "roslib";
 import { useState, useEffect } from "react";
 
@@ -26,6 +27,11 @@ function SequencerTest() {
     R_EL: 0.0,
     TARGET_TIME: 0.0,
     STOP_TIME: 0.0,
+  });
+
+  const [sequenceArr, setSequenceArr] = useState({
+    SEQUENCE_NAME: "",
+    SEQUENCE: [],
   });
 
   const joints = [
@@ -73,10 +79,16 @@ function SequencerTest() {
     console.log("Connection to websocket server closed.");
   });
 
-  var cmdVel = new ROSLIB.Topic({
+  var seq = new ROSLIB.Topic({
     ros: ros,
     name: "/Sequencer",
     messageType: "alfarobi_web_gui/Sequencer",
+  });
+
+  var seqArr = new ROSLIB.Topic({
+    ros: ros,
+    name: "/SequencerArr",
+    messageType: "alfarobi_web_gui/SequencerArr",
   });
 
   var sequencer = new ROSLIB.Message({
@@ -103,48 +115,82 @@ function SequencerTest() {
     TARGET_TIME: parseFloat(sequence["TARGET_TIME"]),
     STOP_TIME: parseFloat(sequence["STOP_TIME"]),
   });
-  //sequencer = parseFloat(edited);
 
-  var listener = new ROSLIB.Topic({
+  var sequencerArr = new ROSLIB.Message({
+    SEQUENCE_NAME: "NGACENG",
+    SEQUENCE: [],
+  });
+
+  var seqListener = new ROSLIB.Topic({
     ros: ros,
     name: "/Sequencer",
     messageType: "alfarobi_web_gui/Sequencer",
   });
 
-  listener.subscribe(function (message) {
-    console.log("Received message " + listener.name + ": " + message);
+  seqListener.subscribe(function (message) {
+    // console.log("Received message " + seqListener.name + ": " + message);
+  });
+
+  var seqArrListener = new ROSLIB.Topic({
+    ros: ros,
+    name: "/SequencerArr",
+    messageType: "alfarobi_web_gui/SequencerArr",
+  });
+
+  seqArrListener.subscribe(function (message) {
+    // console.log("Received message " + seqArrListener.name + ": " + message);
   });
 
   return (
-    <div>
-      <form>
-        {joints.map((data) => (
-          <div>
-            <p>{data}</p>
-            <input
-              type="number"
-              step="0.01"
-              className="w-[6vw] h-[2vh] ml-[1.8vw]"
-              value={sequence[`${data}`]}
-              onChange={(event) => {
-                setSequence({
-                  ...sequence,
-                  [`${data}`]: parseFloat(event.target.value),
-                });
-              }}
-            />
-          </div>
-        ))}
-      </form>
-      <button
-        onClick={() => {
-          console.log(sequencer);
-          cmdVel.publish(sequencer);
-        }}
-        type="submit"
-      >
-        Send
-      </button>
+    <div className="flex flex-col h-screen bg-secondary_bg">
+      <AppBar />
+      <div className="flex flex-row">
+        <form className="bg-primary_bg mt-5 mb-1 p-2 rounded-lg">
+          {joints.map((data) => (
+            <div className="flex flex-row bg-secondary_bg mx-1 py-0.5  mt-1 rounded">
+              <div className="flex flex-row items-center text-center">
+                <p className="w-[7vw] text-[12px]">{data}</p>
+                <input
+                  type="number"
+                  step="0.01"
+                  className="w-[6vw] h-[2vh] ml-[1.8vw]"
+                  value={sequence[`${data}`]}
+                  onChange={(event) => {
+                    setSequence({
+                      ...sequence,
+                      [`${data}`]: parseFloat(event.target.value),
+                    });
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+        </form>
+      </div>
+      <div className="flex flex-row">
+        <button
+          className="mt-4 mb-12 mx-4 p-2 px-10 bg-[#04C3FF] hover:bg-black text-black hover:text-[#B0ECFF] rounded-xl hover:cursor-pointer"
+          onClick={() => {
+            var myArr = sequenceArr.SEQUENCE;
+            myArr.push(sequence);
+            setSequenceArr({ SEQUENCE_NAME: "Test", SEQUENCE: myArr });
+          }}
+        >
+          Save Sequence
+        </button>
+        <button
+          className="mt-4 mb-12 mx-4 p-2 px-10 bg-[#59E867] hover:bg-black text-black hover:text-[#B0ECFF] rounded-xl hover:cursor-pointer"
+          onClick={() => {
+            sequencerArr.SEQUENCE_NAME = sequenceArr.SEQUENCE_NAME;
+            sequencerArr.SEQUENCE = sequenceArr.SEQUENCE;
+            seq.publish(sequencer);
+            seqArr.publish(sequencerArr);
+          }}
+          type="submit"
+        >
+          Send
+        </button>
+      </div>
     </div>
   );
 }
