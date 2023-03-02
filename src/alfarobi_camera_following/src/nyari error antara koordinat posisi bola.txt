@@ -1,0 +1,51 @@
+nyari error antara koordinat posisi bola dan posisi yg  diinginkan :
+
+error_x = ball_x - center_x
+
+error_y = ball_y - center_y
+
+*ball_x and ball_y are the coordinates of the center of the ball in the camera frame
+*center_x and center_y are the coordinates of the center of the camera frame.
+
+
+1. Proportional (P) Control :
+=> adjust servo angle in proportion to the current error.
+larger error -> larger servo angle adjustment
+
+servo_angle_x = Kp_x * error_x
+
+servo_angle_y = Kp_y * error_y
+
+Kp_x and Kp_y are the proportional gain constants for the head-pan and head-tilt servos
+
+
+2. Integral (I) Control :
+=> adjust servo angle to reduce steady-state error.
+It compensates for any biar or drift in the system
+
+integral_x = integral_x + Ki_x * error_x
+
+integral_y = integral_y + Ki_y * error_y
+
+servo_angle_x = servo_angle_x + integral_x
+
+servo_angle_y = servo_angle_y + integral_y
+
+3. Ki_x and Ki_y are the integral gain constants for the head-pan and head-tilt servos
+integral_x and integral_y are the cumulative error values.
+
+Derivative (D) Control :
+adjust servo angle based on the rate of change of the error.
+it reduces overshoot and oscillation in the system
+
+derivative_x = Kd_x * (error_x - prev_error_x)
+
+derivative_y = Kd_y * (error_y - prev_error_y)
+
+servo_angle_x = servo_angle_x + derivative_x
+
+servo_angle_y = servo_angle_y + derivative_y
+
+Kd_x and Kd_y are the derivative gain constants for the head-pan and head-tilt servos
+prev_error_x and prev_error_y are the previous error values
+
