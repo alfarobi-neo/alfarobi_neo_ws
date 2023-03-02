@@ -2,6 +2,8 @@
 #define SEQUENCER_H
 
 #include "sequencer/sequencer_list.h"
+#include "alfarobi_web_gui/SequencerArr.h"
+#include "std_msgs/String.h"
 
 class Sequencer{
 private:
@@ -12,6 +14,9 @@ private:
     // std::map<std::string, sequence*> sequences_map_;
     std::vector<std::string> sequence_names;
 
+    ros::Publisher sequence_pub;
+    ros::Subscriber sequence_sub;
+
 
 public:
     Sequencer();
@@ -20,12 +25,16 @@ public:
     void loadSequences();
 
     void apply(Sequence newSeq);
+    void process();
     // void torqueDisable();
-    void loadParams();
+    void loadParams(std::string name);
     void saveParams();
 
     void insert(double val, int index);
 
     std::string getName(int input);
+
+    void sequenceCallBack(const alfarobi_web_gui::SequencerArr::ConstPtr &arr);
+    // void testCB(const std_msgs::String::ConstPtr& msg);
 };
 #endif

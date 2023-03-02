@@ -5,11 +5,13 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "alfarobi_motion_node");
 
     Sequencer *test = new Sequencer();
-    test->loadSequences();
 
-    ros::Rate rate(2);
+    // alfarobi_web_gui::SequencerArr arr;
+    // test->loadSequences();
 
-    int input;
+    // ros::Rate rate(2);
+
+    // int input;
     // while(ros::ok()) {
         
     // }
@@ -17,7 +19,9 @@ int main(int argc, char** argv)
     // std::cin>>input;
 
     // test->loadParams();
-    test->saveParams();
+    // test->saveParams();
+    // test->loadParams("JATUH_DEPAN");
+    test->process();
 
     return 0;
 }

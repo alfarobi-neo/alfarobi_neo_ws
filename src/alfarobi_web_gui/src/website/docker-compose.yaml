@@ -1,0 +1,41 @@
+version: "3.3"
+services:
+  frontend:
+    image: alfarobi:1.0
+    working_dir: /app/frontend
+    volumes:
+      - ./frontend:/app/frontend
+    ports:
+      - 3000:3000
+    command: npm start
+    depends_on:
+      - mongo
+
+  backend:
+    image: alfarobi:1.0
+    working_dir: /app/backend
+    volumes:
+      - ./backend:/app/backend
+    ports:
+      - 5000:5000
+    command: nodemon index
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8080:8081
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+      - ME_CONFIG_MONGODB_SERVER=mongo

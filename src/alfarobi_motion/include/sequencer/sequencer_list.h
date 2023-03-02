@@ -60,7 +60,7 @@ public:
 // Linked list class to
 // implement a linked list.
 class SequenceList {
-    Sequence* head;
+    Sequence* head = new Sequence();
   
 public:
     // Default constructor

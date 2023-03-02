@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   roslib
   alfarobi_dxlsdk
+  alfarobi_web_gui
   # dynamic_reconfigure
 )
 find_package(yaml-cpp REQUIRED)
@@ -117,7 +118,7 @@ find_package(yaml-cpp REQUIRED)
 catkin_package(
  INCLUDE_DIRS include
  LIBRARIES alfarobi_motion
- CATKIN_DEPENDS roscpp rospy roslib alfarobi_dxlsdk 
+ CATKIN_DEPENDS roscpp rospy roslib alfarobi_dxlsdk alfarobi_web_gui
 #  DEPENDS system_lib
 )
 
@@ -130,6 +131,7 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  
 )
 
 ## Declare a C++ library
@@ -156,6 +158,7 @@ add_executable(${PROJECT_NAME}_node
 target_link_libraries(${PROJECT_NAME}_node  
   ${catkin_LIBRARIES}
   ${YAML_CPP_LIBRARIES}
+  
   )
 # target_link_libraries(${PROJECT_NAME}
 #     ${YAML_CPP_LIBRARIES}
