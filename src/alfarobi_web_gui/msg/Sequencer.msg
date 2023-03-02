@@ -1,7 +1,7 @@
 float32 head_pan
 float32 head_tilt
 float32 l_ank_p
-float32 l_ank_l
+float32 l_ank_r
 float32 l_hip_p
 float32 l_hip_r
 float32 l_hip_y

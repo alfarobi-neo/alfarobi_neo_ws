@@ -13,21 +13,21 @@ void Sequencer::process() {
     sequence_pub = nh_.advertise<alfarobi_web_gui::SequencerArr>("/SequenceArr", 1000);
 
     ros::Rate loop_rate(1);
-    sequence_sub = nh_.subscribe("/SequenceArr", 1000, &Sequencer::sequenceCallBack, this);
+    sequence_sub = nh_.subscribe("/SequenceList", 1000, &Sequencer::sequenceCallBack, this);
     // sequence_sub = nh_.subscribe("/SequncerArr", 1000, &Sequencer::testCB, this);
 
     while(ros::ok()) {
         loadSequences();
 
         int input = 0;
-        std::cin>>input;
-        if(input == 999) {
-            return;
-        }
-        loadParams("JATUH_DEPAN");
+        // std::cin>>input;
+        // if(input == 999) {
+        //     return;
+        // }
+        // loadParams("JATUH_DEPAN");
 
         loop_rate.sleep();
-        ros::spinOnce();
+        ros::spin();
     }
 }
 void Sequencer::loadSequences() {
@@ -209,8 +209,12 @@ void Sequencer::loadSequences() {
     sequences_list_.push_back(kanan_temp);
 }
 
-void Sequencer::sequenceCallBack(const alfarobi_web_gui::SequencerArr::ConstPtr& arr) {
-    loadParams(arr->SEQUENCE_NAME);
+void Sequencer::sequenceCallBack(const std_msgs::String::ConstPtr& arr/*const alfarobi_web_gui::SequencerArr::ConstPtr& arr*/) {
+    if(arr->data == "JATUH_DEPAN") {
+        loadParams(arr->data);
+    }else {
+        std::cout<<"KOOOO\n";
+    }
 }
 // void Sequencer::testCB(const std_msgs::String::ConstPtr& msg) {
 //     std::cout<<msg->data;
@@ -239,32 +243,31 @@ void Sequencer::loadParams(std::string name) {
     std::cout<<"==="<<arr.SEQUENCE_NAME<<"======\n";
 
     while(tempSeq != NULL) {
-        std::cout << "AAAAAA\n";
+        // std::cout << "AAAAAA\n";
+        
+        // std::cout<<"BBBB\n";
         arr.SEQUENCE[i].r_sho_p = tempSeq->getJoint()->getVal(0);
-        // std::cout << tempSeq->getJoint()->getVal(0)
-        // arr.SEQUENCE[i]("r_sho_p") = sequences_list_[name_index].getSeq()->getJoint()->getVal(0);
-        std::cout<<"BBBB\n";
-        // arr.SEQUENCE[i].r_sho_p = sequences_list_[name_index].getSeq()->getJoint()->getVal(1);
-        // arr.SEQUENCE[i].r_sho_p = sequences_list_[name_index].getSeq()->getJoint()->getVal(2);
-        // arr.SEQUENCE[i].r_sho_p = sequences_list_[name_index].getSeq()->getJoint()->getVal(3);
-        // arr.SEQUENCE[i].r_sho_p = sequences_list_[name_index].getSeq()->getJoint()->getVal(4);
-        // arr.SEQUENCE[i].r_sho_p = sequences_list_[name_index].getSeq()->getJoint()->getVal(5);
-        // arr.SEQUENCE[i].r_sho_p = sequences_list_[name_index].getSeq()->getJoint()->getVal(6);
-        // arr.SEQUENCE[i].r_sho_p = sequences_list_[name_index].getSeq()->getJoint()->getVal(7);
-        // arr.SEQUENCE[i].r_sho_p = sequences_list_[name_index].getSeq()->getJoint()->getVal(8);
-        // arr.SEQUENCE[i].r_sho_p = sequences_list_[name_index].getSeq()->getJoint()->getVal(9);
-        // arr.SEQUENCE[i].r_sho_p = sequences_list_[name_index].getSeq()->getJoint()->getVal(10);
-        // arr.SEQUENCE[i].r_sho_p = sequences_list_[name_index].getSeq()->getJoint()->getVal(11);
-        // arr.SEQUENCE[i].r_sho_p = sequences_list_[name_index].getSeq()->getJoint()->getVal(12);
-        // arr.SEQUENCE[i].r_sho_p = sequences_list_[name_index].getSeq()->getJoint()->getVal(13);
-        // arr.SEQUENCE[i].r_sho_p = sequences_list_[name_index].getSeq()->getJoint()->getVal(14);
-        // arr.SEQUENCE[i].r_sho_p = sequences_list_[name_index].getSeq()->getJoint()->getVal(15);
-        // arr.SEQUENCE[i].r_sho_p = sequences_list_[name_index].getSeq()->getJoint()->getVal(16);
-        // arr.SEQUENCE[i].r_sho_p = sequences_list_[name_index].getSeq()->getJoint()->getVal(17);
-        // arr.SEQUENCE[i].r_sho_p = sequences_list_[name_index].getSeq()->getJoint()->getVal(18);
-        // arr.SEQUENCE[i].r_sho_p = sequences_list_[name_index].getSeq()->getJoint()->getVal(19);
-        // arr.SEQUENCE[i].target_time = sequences_list_[name_index].getSeq()->getJoint()->target_time[0];
-        // arr.SEQUENCE[i].pause_time = sequences_list_[name_index].getSeq()->getJoint()->pause_time[0];
+        arr.SEQUENCE[i].l_sho_p = tempSeq->getJoint()->getVal(1);
+        arr.SEQUENCE[i].r_sho_r = tempSeq->getJoint()->getVal(2);
+        arr.SEQUENCE[i].l_sho_r = tempSeq->getJoint()->getVal(3);
+        arr.SEQUENCE[i].r_el    = tempSeq->getJoint()->getVal(4);
+        arr.SEQUENCE[i].l_el    = tempSeq->getJoint()->getVal(5);
+        arr.SEQUENCE[i].r_hip_y = tempSeq->getJoint()->getVal(6);
+        arr.SEQUENCE[i].l_hip_y = tempSeq->getJoint()->getVal(7);
+        arr.SEQUENCE[i].r_hip_p = tempSeq->getJoint()->getVal(8);
+        arr.SEQUENCE[i].l_hip_p = tempSeq->getJoint()->getVal(9);
+        arr.SEQUENCE[i].r_hip_r = tempSeq->getJoint()->getVal(10);
+        arr.SEQUENCE[i].l_hip_r = tempSeq->getJoint()->getVal(11);
+        arr.SEQUENCE[i].r_knee  = tempSeq->getJoint()->getVal(12);
+        arr.SEQUENCE[i].l_knee  = tempSeq->getJoint()->getVal(13);
+        arr.SEQUENCE[i].r_ank_r = tempSeq->getJoint()->getVal(14);
+        arr.SEQUENCE[i].l_ank_r = tempSeq->getJoint()->getVal(15);
+        arr.SEQUENCE[i].r_ank_p = tempSeq->getJoint()->getVal(16);
+        arr.SEQUENCE[i].l_ank_p = tempSeq->getJoint()->getVal(17);
+        arr.SEQUENCE[i].head_pan = tempSeq->getJoint()->getVal(18);
+        arr.SEQUENCE[i].head_tilt = tempSeq->getJoint()->getVal(19);
+        arr.SEQUENCE[i].target_time = tempSeq->getJoint()->target_time[0];
+        arr.SEQUENCE[i].pause_time = tempSeq->getJoint()->pause_time[0];
         i++;
         tempSeq = tempSeq->next;
     }

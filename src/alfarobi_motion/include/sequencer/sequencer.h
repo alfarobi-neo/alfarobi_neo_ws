@@ -34,7 +34,7 @@ public:
 
     std::string getName(int input);
 
-    void sequenceCallBack(const alfarobi_web_gui::SequencerArr::ConstPtr &arr);
+    void sequenceCallBack(const std_msgs::String::ConstPtr& arr);
     // void testCB(const std_msgs::String::ConstPtr& msg);
 };
 #endif
