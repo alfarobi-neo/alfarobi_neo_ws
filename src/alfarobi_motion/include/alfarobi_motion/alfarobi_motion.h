@@ -10,6 +10,7 @@ private:
     alfarobi::ServoController *serv;
 public:
     Motion();
+    ~Motion();
     enum status{
         INITIAL_POSE = 0,
         SEQUENCER = 1,

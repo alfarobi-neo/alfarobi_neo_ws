@@ -381,7 +381,8 @@ void Sequencer::play() {
             temp_motion->write(tempSeq->getJoint());
         }
         time_now = ros::Time::now().toSec() - time_start;
-        if(time_now >= tempSeq->getJoint()->target_time[0] + tempSeq->getJoint()->pause_time[0]) {
+        std::cout<<"Time Now: "<<time_now<<'\n';
+        if(time_now >= (tempSeq->getJoint()->target_time[0] + tempSeq->getJoint()->pause_time[0])) {
             is_moving = false;
             tempSeq = tempSeq->next;
             for(int i=0; i<19; i++) {
