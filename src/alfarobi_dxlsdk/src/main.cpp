@@ -19,6 +19,8 @@ int main(int argc, char **argv)
 
     // test->queue();
 
+    robot->writeMovingThreeshold(1);
+    robot->writeMovingThreeshold(2);
     while(ros::ok())
     {
         //input goal position

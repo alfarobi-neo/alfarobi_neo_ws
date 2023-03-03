@@ -1,4 +1,5 @@
 #include "sequencer/sequencer.h"
+#include "alfarobi_web_gui/SequencerArr.h"
 
 int main(int argc, char** argv)
 {

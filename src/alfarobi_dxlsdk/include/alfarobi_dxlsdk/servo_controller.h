@@ -25,11 +25,13 @@
 #define ADDR_PROFILE_ACCELERATION   108
 #define ADDR_PRESENT_VELOCITY       128
 #define ADDR_MOVING                 122
+#define ADDR_MOVINNG_THRESHOLD      24
 
 // Data Byte Length
 #define LEN_GOAL_POSITION           4
 #define LEN_PRESENT_POSITION        4
 #define LEN_GOAL_VELOCITY           4
+#define LEN_MOVING_THRESHOLD        4
 #define LEN_MOVING                  1
 
 // Protocol version
@@ -79,6 +81,7 @@ private:
     uint8_t dxl_error;                 // Dynamixel error
     uint8_t param_goal_position[4];
     uint8_t param_goal_velocity[4];
+    uint8_t param_goal_movth[4];
     int32_t dxl_present_position[20];  // Present position, tambah/kurang jika nambah/ngurang servo
     int32_t dxl_present_velocity[20];
     float dxl_pres_pos;
@@ -91,10 +94,11 @@ public:
 
     void torqueEnable();
     void read(uint8_t dxl_id);
-    void readVel(uint8_t dxl_id);
+    
+    uint32_t bulkRead(uint8_t dxl_id);
     bool isMoving(uint8_t dxl_id);
     void write(uint8_t dxl_id, double goal_pos, double goal_vel);
-    void writeVel(uint8_t dxl_id, int goal_vel);
+    void writeMovingThreeshold(uint8_t dxl_id);
     int deg2Bit(float goal_pos_degree);
     int vel2Bit(float goal_vel);
 };
