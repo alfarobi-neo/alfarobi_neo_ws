@@ -24,8 +24,8 @@ public:
         walking = false;
 
    
-    void write(alfarobi::joint_value joints_);
-    void read(alfarobi::joint_value joints_);
+    void write(alfarobi::joint_value* joints_);
+    void read(alfarobi::joint_value* joints_);
 
 };
 

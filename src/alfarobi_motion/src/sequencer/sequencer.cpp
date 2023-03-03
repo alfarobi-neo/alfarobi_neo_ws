@@ -2,19 +2,20 @@
 
 
 Sequencer::Sequencer(){
-    
+    temp_motion = new Motion();
 }
 
 Sequencer::~Sequencer() {
-
+    delete temp_motion;
 }
 
 void Sequencer::process() {
     sequence_pub = nh_.advertise<alfarobi_web_gui::SequencerArr>("/SequenceArr", 1000);
 
     ros::Rate loop_rate(1);
-    sequence_sub = nh_.subscribe("/SequenceList", 1000, &Sequencer::sequenceCallBack, this);
-    // sequence_sub = nh_.subscribe("/SequncerArr", 1000, &Sequencer::testCB, this);
+    sequence_list_sub = nh_.subscribe("/SequenceList", 1000, &Sequencer::sequenceListCallback, this);
+    apply_sub = nh_.subscribe("/SequenceArr", 1000, &Sequencer::applyCallback, this);
+    web_button_sub = nh_.subscribe("/playButton", 1000, &Sequencer::webButtonCallback, this);
 
     while(ros::ok()) {
         loadSequences();
@@ -33,7 +34,7 @@ void Sequencer::process() {
 void Sequencer::loadSequences() {
     YAML::Node sequence_params;
     try{
-        sequence_params = YAML::LoadFile(ros::package::getPath("alfarobi_motion") + "/config/testing2.yaml");
+        sequence_params = YAML::LoadFile(ros::package::getPath("alfarobi_motion") + "/config/sequencer.yaml");
     }catch(const std::exception &e){
         ROS_ERROR("[alfarobi_motion] Unable to load params file: %s", e.what());
     }
@@ -209,16 +210,73 @@ void Sequencer::loadSequences() {
     sequences_list_.push_back(kanan_temp);
 }
 
-void Sequencer::sequenceCallBack(const std_msgs::String::ConstPtr& arr/*const alfarobi_web_gui::SequencerArr::ConstPtr& arr*/) {
-    if(arr->data == "JATUH_DEPAN") {
-        loadParams(arr->data);
-    }else {
-        std::cout<<"KOOOO\n";
+void Sequencer::sequenceListCallback(const std_msgs::String::ConstPtr& msg) {
+    setCurrentName(msg->data);
+    try {
+        loadParams(getCurrentName());
+    }catch(const std::exception &e) {
+        ROS_ERROR("[alfarobi_motion] Sequence name doesn't exist: %s", e.what());
     }
 }
-// void Sequencer::testCB(const std_msgs::String::ConstPtr& msg) {
-//     std::cout<<msg->data;
-// }
+
+// callback saat 'apply' di web
+void Sequencer::applyCallback(const alfarobi_web_gui::SequencerArr::ConstPtr& arr) {
+    int name_index = 0;
+
+    
+    for(int i=0; i<sequences_list_.size(); i++) {
+        if(sequences_list_[i].getSeq()->getName() == getCurrentName()){
+            break;
+        }
+        else if(sequences_list_[i].getSeq()->getName() != getCurrentName() && sequences_list_.size() - i <= 1){
+            ROS_ERROR("[alfarobi_motion] Sequence name doesn't exist");
+            return;
+        }
+        name_index++;
+    }
+
+    Sequence *tempSeq = new Sequence();
+    tempSeq = sequences_list_[name_index].getSeq();
+
+    int i=0;
+
+    std::cout<<"===APPLYING: "<<arr->SEQUENCE_NAME<<"======\n";
+
+    while(arr->SEQUENCE[i].target_time != 0) {
+        // std::cout << "AAAAAA\n";
+        
+        // std::cout<<"BBBB\n";
+        tempSeq->getJoint()->setVal(0, arr->SEQUENCE[i].r_sho_p);
+        tempSeq->getJoint()->setVal(1, arr->SEQUENCE[i].l_sho_p);
+        tempSeq->getJoint()->setVal(2, arr->SEQUENCE[i].r_sho_r);
+        tempSeq->getJoint()->setVal(3, arr->SEQUENCE[i].l_sho_r);
+        tempSeq->getJoint()->setVal(4, arr->SEQUENCE[i].r_el);
+        tempSeq->getJoint()->setVal(5, arr->SEQUENCE[i].l_el);
+        tempSeq->getJoint()->setVal(6, arr->SEQUENCE[i].r_hip_y);
+        tempSeq->getJoint()->setVal(7, arr->SEQUENCE[i].l_hip_y);
+        tempSeq->getJoint()->setVal(8, arr->SEQUENCE[i].r_hip_p);
+        tempSeq->getJoint()->setVal(9, arr->SEQUENCE[i].l_hip_p);
+        tempSeq->getJoint()->setVal(10, arr->SEQUENCE[i].r_hip_r);
+        tempSeq->getJoint()->setVal(11, arr->SEQUENCE[i].l_hip_r);
+        tempSeq->getJoint()->setVal(12, arr->SEQUENCE[i].r_knee);
+        tempSeq->getJoint()->setVal(13, arr->SEQUENCE[i].l_knee);
+        tempSeq->getJoint()->setVal(14, arr->SEQUENCE[i].r_ank_r);
+        tempSeq->getJoint()->setVal(15, arr->SEQUENCE[i].l_ank_r);
+        tempSeq->getJoint()->setVal(16, arr->SEQUENCE[i].r_ank_p);
+        tempSeq->getJoint()->setVal(17, arr->SEQUENCE[i].l_ank_p);
+        tempSeq->getJoint()->setVal(18, arr->SEQUENCE[i].head_pan);
+        tempSeq->getJoint()->setVal(19, arr->SEQUENCE[i].head_tilt);
+        for(int j=0; j < 20; j++) {
+            tempSeq->getJoint()->target_time[j] = arr->SEQUENCE[i].target_time;
+            tempSeq->getJoint()->pause_time[j] = arr->SEQUENCE[i].pause_time;
+        }
+        i++;
+        tempSeq = tempSeq->next;
+    }
+    std::cout<<"===APPLIED: "<<arr->SEQUENCE_NAME<<"======\n";
+    delete tempSeq;
+}
+
 void Sequencer::loadParams(std::string name) {
 
     int name_index = 0;
@@ -227,6 +285,10 @@ void Sequencer::loadParams(std::string name) {
     for(int i=0; i<sequences_list_.size(); i++) {
         if(sequences_list_[i].getSeq()->getName() == name){
             break;
+        }
+        else if(sequences_list_[i].getSeq()->getName() != name && sequences_list_.size() - i <= 1){
+            ROS_ERROR("[alfarobi_motion] Sequence name doesn't exist");
+            return;
         }
         name_index++;
     }
@@ -278,8 +340,56 @@ void Sequencer::loadParams(std::string name) {
    
 }
 
-void Sequencer::apply(Sequence newSeq) {
+void Sequencer::webButtonCallback(const std_msgs::String::ConstPtr& msg) {
+    if(msg->data == "play"){
+        play();
+    }
+    // else if(msg->data == "torque_off"){
+    //     torqueDisable(static_cast<int>(msg->data));
+    // }
+    // else if(msg->data == "torque_on") {
+    //     torqueEnable(static_cast<int>(msg->data));
+    // }
+}
 
+void Sequencer::play() {
+    int name_index = 0;
+
+    
+    for(int i=0; i<sequences_list_.size(); i++) {
+        if(sequences_list_[i].getSeq()->getName() == getCurrentName()){
+            break;
+        }
+        else if(sequences_list_[i].getSeq()->getName() != getCurrentName() && sequences_list_.size() - i <= 1){
+            ROS_ERROR("[alfarobi_motion] Sequence name doesn't exist");
+            return;
+        }
+        name_index++;
+    }
+
+    Sequence *tempSeq = new Sequence();
+    tempSeq = sequences_list_[name_index].getSeq();
+
+
+    while(tempSeq != NULL) {
+        if(!is_moving) {
+            time_start = ros::Time::now().toSec();
+            is_moving = true;
+            for(int i=0; i<19; i++) {
+                tempSeq->getJoint()->write[i] = true;
+            }
+            temp_motion->write(tempSeq->getJoint());
+        }
+        time_now = ros::Time::now().toSec() - time_start;
+        if(time_now >= tempSeq->getJoint()->target_time[0] + tempSeq->getJoint()->pause_time[0]) {
+            is_moving = false;
+            tempSeq = tempSeq->next;
+            for(int i=0; i<19; i++) {
+                tempSeq->getJoint()->write[i] = false;
+            }
+        }
+        
+    }
 }
 
 void Sequencer::saveParams() {
