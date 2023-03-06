@@ -2,35 +2,46 @@
 
 
 Sequencer::Sequencer(){
-    temp_motion = new Motion();
+    // temp_motion = new Motion();
+    temp_servo = new alfarobi::ServoController();
 }
 
 Sequencer::~Sequencer() {
-    delete temp_motion;
+    // delete temp_motion;
+    delete temp_servo;
 }
 
 void Sequencer::process() {
-    sequence_pub = nh_.advertise<alfarobi_web_gui::SequencerArr>("/SequenceArr", 1000);
+    if(!in_action) {
+        sequence_pub = nh_.advertise<alfarobi_web_gui::SequencerArr>("/SequenceArr", 1000);
 
-    ros::Rate loop_rate(1);
-    sequence_list_sub = nh_.subscribe("/SequenceList", 1000, &Sequencer::sequenceListCallback, this);
-    apply_sub = nh_.subscribe("/SequenceArr", 1000, &Sequencer::applyCallback, this);
-    web_button_sub = nh_.subscribe("/playButton", 1000, &Sequencer::webButtonCallback, this);
-    torque_sub = nh_.subscribe("/torqueState", 1000, &Sequencer::webButtonCallback, this);
+        ros::Rate loop_rate(1);
+        sequence_list_sub = nh_.subscribe("/SequenceList", 1000, &Sequencer::sequenceListCallback, this);
+        apply_sub = nh_.subscribe("/SequenceArr", 1000, &Sequencer::applyCallback, this);
+        web_button_sub = nh_.subscribe("/playButton", 1000, &Sequencer::webButtonCallback, this);
+        torque_sub = nh_.subscribe("/torqueState", 1000, &Sequencer::webButtonCallback, this);
+        motion_state_sub = nh_.subscribe("/motion_state", 1000, &Sequencer::motionStateCallback, this);
 
-    while(ros::ok()) {
         loadSequences();
+    }
+    
+    if(state_now == "sequencer") {
 
-        int input = 0;
+        in_action = true;
+        // int input = 0;
         // std::cin>>input;
         // if(input == 999) {
         //     return;
         // }
         // loadParams("JATUH_DEPAN");
 
-        loop_rate.sleep();
-        ros::spin();
+        // loop_rate.sleep();
+        // ros::spin();
     }
+}
+
+void Sequencer::motionStateCallback(const std_msgs::String::ConstPtr& msg) {
+    state_now = msg->data;
 }
 void Sequencer::loadSequences() {
     YAML::Node sequence_params;
@@ -211,6 +222,34 @@ void Sequencer::loadSequences() {
     sequences_list_.push_back(kanan_temp);
 }
 
+void Sequencer::write(alfarobi::joint_value *joints_) {
+    for(int i=0; i<20; i++) {
+        if(joints_->write[i]) {
+            temp_servo->write(i+1, joints_->val[i] , joints_->target_time[i]);
+            std::cout<<"Writing\n";
+        }
+    }
+}
+
+void Sequencer::readAll() {
+    for(int i=0; i<20; i++) {
+        present_position[i] = temp_servo->read(i+1);
+    }
+}
+
+void Sequencer::read(int id) {
+    present_position[id - 1] = temp_servo->read(id);
+}
+
+void Sequencer::enable(int id) {
+    temp_servo->torqueEnableID(id);
+    read(id);
+}
+
+void Sequencer::disable(int id) {
+    temp_servo->torqueDisableID(id);
+}
+
 void Sequencer::torqueCallback(const alfarobi_web_gui::Torque::ConstPtr& torque){
     std::string torq_name = torque->joint_name;
     bool torq_state = torque->joint_state;
@@ -233,10 +272,10 @@ void Sequencer::torqueCallback(const alfarobi_web_gui::Torque::ConstPtr& torque)
     tempSeq = sequences_list_[name_index].getSeq();
 
     if(torq_state) {
-        temp_motion->enable(tempSeq->getJoint()->getIdByString(torq_name));
+        temp_servo->torqueEnableID(tempSeq->getJoint()->getIdByString(torq_name));
     }
     else if(!torq_state) {
-        temp_motion->disable(tempSeq->getJoint()->getIdByString(torq_name));
+        temp_servo->torqueDisableID(tempSeq->getJoint()->getIdByString(torq_name));
     }
 
     delete tempSeq;
@@ -414,7 +453,8 @@ void Sequencer::play() {
                 for(int i=0; i<19; i++) {
                     tempSeq->getJoint()->write[i] = true;
                 }
-                temp_motion->write(tempSeq->getJoint());
+                write(tempSeq->getJoint());
+                readAll();
             }
             time_now = ros::Time::now().toSec() - time_start;
             std::cout<<"Time Now: "<<time_now<<'\n';

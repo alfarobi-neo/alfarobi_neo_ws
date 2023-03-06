@@ -137,8 +137,10 @@ include_directories(
 ## Declare a C++ library
 add_library(${PROJECT_NAME}
   src/alfarobi_motion/alfarobi_motion.cpp
+  src/sequencer/sequencer_list.cpp
   src/sequencer/sequencer.cpp
   src/sequencer/sequencer_node.cpp
+  src/initial_position/initial_position.cpp
 )
 
 ## Add cmake target dependencies of the library
@@ -154,6 +156,7 @@ add_executable(${PROJECT_NAME}_node
   src/sequencer/sequencer_node.cpp
   src/sequencer/sequencer.cpp
   src/sequencer/sequencer_list.cpp
+  src/initial_position/initial_position.cpp
 )
 target_link_libraries(${PROJECT_NAME}_node  
   ${catkin_LIBRARIES}

@@ -1,15 +1,19 @@
 #ifndef SEQUENCER_H
 #define SEQUENCER_H
 
-#include "sequencer/sequencer_list.h"
-#include "alfarobi_motion/alfarobi_motion.h"
+
+// #include "alfarobi_motion/alfarobi_motion.h"
 #include "alfarobi_web_gui/SequencerArr.h"
 #include "alfarobi_web_gui/Torque.h"
+#include "alfarobi_dxlsdk/servo_controller.h"
 #include "std_msgs/String.h"
+#include "sequencer/sequencer_list.h"
 
 class Sequencer{
 private:
-    Motion *temp_motion;
+    // Motion *temp_motion;
+    double present_position[20];
+    alfarobi::ServoController *temp_servo;
     std::string current_seq_name;
     // sequence sequences;
     ros::NodeHandle nh_;
@@ -23,11 +27,14 @@ private:
     ros::Subscriber web_button_sub;
     ros::Subscriber sequence_list_sub;
     ros::Subscriber torque_sub;
+    ros::Subscriber motion_state_sub;
 
     double time_start;
     double time_now;
     bool is_playing = false;
     bool is_moving = false;
+    bool in_action = false;
+    std::string state_now;
 
 
 public:
@@ -55,12 +62,19 @@ public:
     void applyCallback(const alfarobi_web_gui::SequencerArr::ConstPtr& arr);
     void webButtonCallback(const std_msgs::String::ConstPtr& msg);
     void torqueCallback(const alfarobi_web_gui::Torque::ConstPtr& torque);
+    void motionStateCallback(const std_msgs::String::ConstPtr& msg);
 
 
     void play();
     
     void refresh();
-    void torqueDisable(int index);
-    void torqueEnable(int index);
+    // void torqueDisable(int index);
+    // void torqueEnable(int index);
+
+    void write(alfarobi::joint_value *joints_);
+    void readAll();
+    void read(int id);
+    void enable(int id);
+    void disable(int id);
 };
 #endif

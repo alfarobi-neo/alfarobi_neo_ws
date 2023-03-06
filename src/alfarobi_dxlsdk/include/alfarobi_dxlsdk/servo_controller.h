@@ -84,7 +84,7 @@ private:
     uint8_t param_goal_movth[4];
     int32_t dxl_present_position[20];  // Present position, tambah/kurang jika nambah/ngurang servo
     int32_t dxl_present_velocity[20];
-    float dxl_pres_pos;
+    double dxl_pres_pos;
     bool dxl_is_moving;
     int32_t dxl_pres_vel;
 
@@ -93,9 +93,10 @@ public:
     ~ServoController();
 
     void torqueEnable();
+    void torqueDisable();
     void torqueDisableID(uint8_t id);
     void torqueEnableID(uint8_t id);
-    void read(uint8_t dxl_id);
+    double read(uint8_t dxl_id);
     
     uint32_t bulkRead(uint8_t dxl_id);
     bool isMoving(uint8_t dxl_id);
