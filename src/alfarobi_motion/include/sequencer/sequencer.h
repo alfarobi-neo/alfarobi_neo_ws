@@ -4,6 +4,7 @@
 #include "sequencer/sequencer_list.h"
 #include "alfarobi_motion/alfarobi_motion.h"
 #include "alfarobi_web_gui/SequencerArr.h"
+#include "alfarobi_web_gui/Torque.h"
 #include "std_msgs/String.h"
 
 class Sequencer{
@@ -21,9 +22,11 @@ private:
     ros::Subscriber apply_sub;
     ros::Subscriber web_button_sub;
     ros::Subscriber sequence_list_sub;
+    ros::Subscriber torque_sub;
 
     double time_start;
     double time_now;
+    bool is_playing = false;
     bool is_moving = false;
 
 
@@ -51,9 +54,12 @@ public:
     void sequenceListCallback(const std_msgs::String::ConstPtr& msg);
     void applyCallback(const alfarobi_web_gui::SequencerArr::ConstPtr& arr);
     void webButtonCallback(const std_msgs::String::ConstPtr& msg);
+    void torqueCallback(const alfarobi_web_gui::Torque::ConstPtr& torque);
 
 
     void play();
+    
+    void refresh();
     void torqueDisable(int index);
     void torqueEnable(int index);
 };

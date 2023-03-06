@@ -25,3 +25,11 @@ void Motion::read(alfarobi::joint_value* joints_) {
         }
     }
 }
+
+void Motion::disable(int id) {
+    serv->torqueDisableID(id);
+}
+
+void Motion::enable(int id) {
+    serv->torqueEnableID(id);
+}

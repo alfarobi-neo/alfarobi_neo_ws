@@ -16,6 +16,7 @@ void Sequencer::process() {
     sequence_list_sub = nh_.subscribe("/SequenceList", 1000, &Sequencer::sequenceListCallback, this);
     apply_sub = nh_.subscribe("/SequenceArr", 1000, &Sequencer::applyCallback, this);
     web_button_sub = nh_.subscribe("/playButton", 1000, &Sequencer::webButtonCallback, this);
+    torque_sub = nh_.subscribe("/torqueState", 1000, &Sequencer::webButtonCallback, this);
 
     while(ros::ok()) {
         loadSequences();
@@ -210,6 +211,39 @@ void Sequencer::loadSequences() {
     sequences_list_.push_back(kanan_temp);
 }
 
+void Sequencer::torqueCallback(const alfarobi_web_gui::Torque::ConstPtr& torque){
+    std::string torq_name = torque->joint_name;
+    bool torq_state = torque->joint_state;
+
+    int name_index = 0;
+
+    
+    for(int i=0; i<sequences_list_.size(); i++) {
+        if(sequences_list_[i].getSeq()->getName() == getCurrentName()){
+            break;
+        }
+        else if(sequences_list_[i].getSeq()->getName() != getCurrentName() && sequences_list_.size() - i <= 1){
+            ROS_ERROR("[alfarobi_motion] Sequence name doesn't exist");
+            return;
+        }
+        name_index++;
+    }
+
+    Sequence *tempSeq = new Sequence();
+    tempSeq = sequences_list_[name_index].getSeq();
+
+    if(torq_state) {
+        temp_motion->enable(tempSeq->getJoint()->getIdByString(torq_name));
+    }
+    else if(!torq_state) {
+        temp_motion->disable(tempSeq->getJoint()->getIdByString(torq_name));
+    }
+
+    delete tempSeq;
+
+    
+}
+
 void Sequencer::sequenceListCallback(const std_msgs::String::ConstPtr& msg) {
     setCurrentName(msg->data);
     try {
@@ -342,14 +376,15 @@ void Sequencer::loadParams(std::string name) {
 
 void Sequencer::webButtonCallback(const std_msgs::String::ConstPtr& msg) {
     if(msg->data == "play"){
+        is_playing = true;
         play();
     }
-    // else if(msg->data == "torque_off"){
-    //     torqueDisable(static_cast<int>(msg->data));
-    // }
-    // else if(msg->data == "torque_on") {
-    //     torqueEnable(static_cast<int>(msg->data));
-    // }
+    else if(msg->data == "stop") {
+        is_playing = false;
+    }
+    else if(msg->data == "refresh") {
+        refresh();
+    }
 }
 
 void Sequencer::play() {
@@ -372,25 +407,35 @@ void Sequencer::play() {
 
 
     while(tempSeq != NULL) {
-        if(!is_moving) {
-            time_start = ros::Time::now().toSec();
-            is_moving = true;
-            for(int i=0; i<19; i++) {
-                tempSeq->getJoint()->write[i] = true;
+        if(is_playing){
+            if(!is_moving) {
+                time_start = ros::Time::now().toSec();
+                is_moving = true;
+                for(int i=0; i<19; i++) {
+                    tempSeq->getJoint()->write[i] = true;
+                }
+                temp_motion->write(tempSeq->getJoint());
             }
-            temp_motion->write(tempSeq->getJoint());
-        }
-        time_now = ros::Time::now().toSec() - time_start;
-        std::cout<<"Time Now: "<<time_now<<'\n';
-        if(time_now >= (tempSeq->getJoint()->target_time[0] + tempSeq->getJoint()->pause_time[0])) {
-            is_moving = false;
-            tempSeq = tempSeq->next;
-            for(int i=0; i<19; i++) {
-                tempSeq->getJoint()->write[i] = false;
+            time_now = ros::Time::now().toSec() - time_start;
+            std::cout<<"Time Now: "<<time_now<<'\n';
+            if(time_now >= (tempSeq->getJoint()->target_time[0] + tempSeq->getJoint()->pause_time[0])) {
+                is_moving = false;
+                tempSeq = tempSeq->next;
+                for(int i=0; i<19; i++) {
+                    tempSeq->getJoint()->write[i] = false;
+                }
             }
         }
-        
+        else if(!is_playing){
+            break;
+        }
     }
+
+    delete tempSeq;
+}
+
+void Sequencer::refresh() {
+    ROS_INFO("REFRESH");
 }
 
 void Sequencer::saveParams() {

@@ -133,6 +133,54 @@ void alfarobi::ServoController::torqueEnable()
 
 }
 
+void alfarobi::ServoController::torqueDisableID(uint8_t id) {
+    if((id == 5) || (id == 6))
+    {
+        printf("Servo doesn't exist!\n");
+        return;;
+    }
+
+    dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, id, ADDR_TORQUE_ENABLE, TORQUE_DISABLE, &dxl_error);
+    if (dxl_comm_result != COMM_SUCCESS)
+    {
+        printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
+    }
+    else if (dxl_error != 0)
+    {
+        printf("%s\n", packetHandler->getRxPacketError(dxl_error));
+    }
+    else
+    {
+        printf("Dynamixel#%d has been successfully disconnected \n", id + 1);
+    }
+    
+    portHandler->closePort();
+}
+
+void alfarobi::ServoController::torqueEnableID(uint8_t id) {
+    if((id == 5) || (id == 6))
+    {
+        printf("Servo doesn't exist!\n");
+        return;;
+    }
+
+    dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, id, ADDR_TORQUE_ENABLE, TORQUE_ENABLE, &dxl_error);
+    if (dxl_comm_result != COMM_SUCCESS)
+    {
+        printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
+    }
+    else if (dxl_error != 0)
+    {
+        printf("%s\n", packetHandler->getRxPacketError(dxl_error));
+    }
+    else
+    {
+        printf("Dynamixel#%d has been successfully connected \n", id + 1);
+    }
+    
+    portHandler->closePort();
+}
+
 void alfarobi::ServoController::writeMovingThreeshold(uint8_t dxl_id) {
     dynamixel::GroupSyncWrite groupSyncWriteMovTH(portHandler, packetHandler, ADDR_MOVINNG_THRESHOLD, LEN_MOVING_THRESHOLD);
 

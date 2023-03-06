@@ -93,6 +93,8 @@ public:
     ~ServoController();
 
     void torqueEnable();
+    void torqueDisableID(uint8_t id);
+    void torqueEnableID(uint8_t id);
     void read(uint8_t dxl_id);
     
     uint32_t bulkRead(uint8_t dxl_id);

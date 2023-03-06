@@ -27,7 +27,8 @@ public:
    
     void write(alfarobi::joint_value* joints_);
     void read(alfarobi::joint_value* joints_);
-
+    void disable(int id);
+    void enable(int id);
 };
 
 #endif

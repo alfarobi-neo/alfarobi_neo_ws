@@ -53,6 +53,7 @@ add_message_files(
   FILES
   Sequencer.msg
   SequencerArr.msg
+  Torque.msg
 )
 
 ## Generate services in the 'srv' folder

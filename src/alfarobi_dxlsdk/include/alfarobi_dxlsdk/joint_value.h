@@ -84,6 +84,20 @@ struct joint_value {
         return joint_name;
     }
 
+    uint8_t getIdByString(std::string joint_name) {
+        uint8_t i = 0;
+        while(i < 20){
+            if(name[i] == joint_name){
+                break;
+            }
+            i++;
+        } 
+        // if(i >= 20) {
+        //     std::cout<<"WRONG JOINT NAME !!!\n";
+        // }
+        return i;
+    }
+
     double getVal(int index) {
         return val[index];
     }
