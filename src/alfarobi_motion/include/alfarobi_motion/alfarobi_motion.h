@@ -10,6 +10,7 @@ private:
     alfarobi::ServoController *serv;
 public:
     Motion();
+    ~Motion();
     enum status{
         INITIAL_POSE = 0,
         SEQUENCER = 1,
@@ -24,8 +25,8 @@ public:
         walking = false;
 
    
-    void write(alfarobi::joint_value joints_);
-    void read(alfarobi::joint_value joints_);
+    void write(alfarobi::joint_value* joints_);
+    void read(alfarobi::joint_value* joints_);
 
 };
 

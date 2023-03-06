@@ -2,20 +2,25 @@
 
 Motion::Motion() {
     serv = new alfarobi::ServoController();
+    serv->torqueEnable();
 }
 
-void Motion::write(alfarobi::joint_value joints_) {
+Motion::~Motion() {
+    delete serv;
+}
+void Motion::write(alfarobi::joint_value* joints_) {
     for(int i=0; i<20; i++) {
-        if(joints_.write[i]) {
-            serv->write(i+1, joints_.val[i] , joints_.target_time[i]);
+        if(joints_->write[i]) {
+            serv->write(i+1, joints_->val[i] , joints_->target_time[i]);
+            std::cout<<"Writing\n";
         }
     }
     
 }
 
-void Motion::read(alfarobi::joint_value joints_) {
+void Motion::read(alfarobi::joint_value* joints_) {
     for(int i=0; i<20; i++) {
-        if(joints_.read[i]) {
+        if(joints_->read[i]) {
             serv->read(i+1);
         }
     }
