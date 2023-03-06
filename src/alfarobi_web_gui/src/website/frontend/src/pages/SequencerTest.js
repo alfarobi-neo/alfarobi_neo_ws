@@ -4,6 +4,8 @@ import ROSLIB from "roslib";
 import { useState, useEffect } from "react";
 
 function SequencerTest() {
+  const [robotState, setRobotState] = useState({ data: "Stop" });
+
   const [sequence, setSequence] = useState({
     head_pan: 0.0,
     head_tilt: 0.0,
@@ -27,6 +29,7 @@ function SequencerTest() {
     r_el: 0.0,
     target_time: 0.0,
     pause_time: 0.0,
+    stop_time: 0.0,
   });
 
   const [sequenceArr, setSequenceArr] = useState({
@@ -91,6 +94,12 @@ function SequencerTest() {
     messageType: "alfarobi_web_gui/SequencerArr",
   });
 
+  var instruction = new ROSLIB.Topic({
+    ros: ros,
+    name: "/RobotState",
+    messageType: "std_msgs/String",
+  });
+
   var sequencer = new ROSLIB.Message({
     HEAD_PAN: parseFloat(sequence["head_pan"]),
     HEAD_TILT: parseFloat(sequence["head_tilt"]),
@@ -121,6 +130,10 @@ function SequencerTest() {
     SEQUENCE: [],
   });
 
+  var instructionData = new ROSLIB.Message({
+    data: String(robotState.data),
+  });
+
   var seqListener = new ROSLIB.Topic({
     ros: ros,
     name: "/Sequencer",
@@ -133,12 +146,14 @@ function SequencerTest() {
 
   var seqArrListener = new ROSLIB.Topic({
     ros: ros,
-    name: "/SequencerArr",
+    name: "/SequenceArr",
     messageType: "alfarobi_web_gui/SequencerArr",
   });
 
   seqArrListener.subscribe(function (message) {
-    console.log("DAPET BOS " + seqArrListener.name + ": " + message);
+    console.log(
+      "DAPET BOS " + seqArrListener.name + ": " + message.SEQUENCE_NAME
+    );
   });
 
   return (
@@ -189,6 +204,17 @@ function SequencerTest() {
           type="submit"
         >
           Send
+        </button>
+        <button
+          className="mt-4 mb-12 mx-4 p-2 px-10 bg-[#04C3FF] hover:bg-black text-black hover:text-[#B0ECFF] rounded-xl hover:cursor-pointer"
+          onClick={() => {
+            robotState.data == "Stop"
+              ? setRobotState({ data: "Play" })
+              : setRobotState({ data: "Stop" });
+            instruction.publish(instructionData);
+          }}
+        >
+          {robotState.data == "Stop" ? "Play" : "Stop"}
         </button>
       </div>
     </div>
