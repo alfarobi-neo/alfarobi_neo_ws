@@ -141,6 +141,7 @@ add_library(${PROJECT_NAME}
   src/sequencer/sequencer.cpp
   src/sequencer/sequencer_node.cpp
   src/initial_position/initial_position.cpp
+  src/initial_position/initial_position_node.cpp
 )
 
 ## Add cmake target dependencies of the library
@@ -157,6 +158,7 @@ add_executable(${PROJECT_NAME}_node
   src/sequencer/sequencer.cpp
   src/sequencer/sequencer_list.cpp
   src/initial_position/initial_position.cpp
+  src/initial_position/initial_position_node.cpp
 )
 target_link_libraries(${PROJECT_NAME}_node  
   ${catkin_LIBRARIES}

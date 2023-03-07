@@ -272,10 +272,10 @@ void Sequencer::torqueCallback(const alfarobi_web_gui::Torque::ConstPtr& torque)
     tempSeq = sequences_list_[name_index].getSeq();
 
     if(torq_state) {
-        temp_servo->torqueEnableID(tempSeq->getJoint()->getIdByString(torq_name));
+        enable(tempSeq->getJoint()->getIdByString(torq_name));
     }
     else if(!torq_state) {
-        temp_servo->torqueDisableID(tempSeq->getJoint()->getIdByString(torq_name));
+        disable(tempSeq->getJoint()->getIdByString(torq_name));
     }
 
     delete tempSeq;
@@ -450,7 +450,7 @@ void Sequencer::play() {
             if(!is_moving) {
                 time_start = ros::Time::now().toSec();
                 is_moving = true;
-                for(int i=0; i<19; i++) {
+                for(int i=0; i<20; i++) {
                     tempSeq->getJoint()->write[i] = true;
                 }
                 write(tempSeq->getJoint());
@@ -461,7 +461,7 @@ void Sequencer::play() {
             if(time_now >= (tempSeq->getJoint()->target_time[0] + tempSeq->getJoint()->pause_time[0])) {
                 is_moving = false;
                 tempSeq = tempSeq->next;
-                for(int i=0; i<19; i++) {
+                for(int i=0; i<20; i++) {
                     tempSeq->getJoint()->write[i] = false;
                 }
             }
