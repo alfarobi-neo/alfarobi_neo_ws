@@ -2,7 +2,7 @@ import React from "react";
 import Popper from "popper.js";
 import CheckBox from "./CheckBox";
 
-function DropdownT({ color }) {
+function DropdownT({ color, ros }) {
   const props = [
     "r_sho_roll",
     "r_sho_pitch",
@@ -65,7 +65,7 @@ function DropdownT({ color }) {
         >
           {props.map((data, index) => (
             <div>
-              <CheckBox>{data}</CheckBox>
+              <CheckBox ros={ros} joint={data} />
               {/* <a
                 className={
                   "text-sm py-2 px-4 font-normal block whitespace-no-wrap bg-white text-black hover:bg-secondary_bg hover:cursor-pointer"

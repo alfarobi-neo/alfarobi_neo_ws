@@ -2,6 +2,7 @@ import React from "react";
 import AppBar from "../components/AppBar";
 import ROSLIB from "roslib";
 import { useState, useEffect } from "react";
+import DropdownT from "../components/DropdownT";
 
 function SequencerTest() {
   const [robotState, setRobotState] = useState({ data: "Stop" });
@@ -11,6 +12,7 @@ function SequencerTest() {
     head_tilt: 0.0,
     l_ank_p: 0.0,
     l_ank_l: 0.0,
+    l_ank_r: 0.0,
     l_hip_p: 0.0,
     l_hip_r: 0.0,
     l_hip_y: 0.0,
@@ -159,6 +161,7 @@ function SequencerTest() {
   return (
     <div className="flex flex-col h-screen bg-secondary_bg">
       <AppBar />
+      <DropdownT color={"white"} ros={ros} />
       <div className="flex flex-row">
         <form className="bg-primary_bg mt-5 mb-1 p-2 rounded-lg">
           {joints.map((data) => (
