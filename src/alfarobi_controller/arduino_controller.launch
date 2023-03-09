@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<launch>
+    <param name="arduino_controller/baudrate" value="1000000" type="int"/>
+    <param name="arduino_controller/waitTimeout" value="500" type="int"/>
+    <param name="arduino_controller/portname" value="ttyACM0" type="str"/>
+    <param name="arduino_controller/broadcast" value="true" type="bool"/>
+
+    <node name="arduino_controller_node" pkg="arduino_controller" type="arduino_controller_node" output="screen" respawn="true"/>
+</launch>

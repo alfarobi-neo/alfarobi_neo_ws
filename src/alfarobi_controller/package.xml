@@ -52,12 +52,16 @@
   <build_depend>alfarobi_msgs_srvs_actions</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>rospy</build_depend>
+  <build_depend>eigen_conversions</build_depend>
+  <build_depend>robotis_math</build_depend>
   <build_export_depend>alfarobi_msgs_srvs_actions</build_export_depend>
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>rospy</build_export_depend>
+  <build_export_depend>robotis_math</build_export_depend>
   <exec_depend>alfarobi_msgs_srvs_actions</exec_depend>
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rospy</exec_depend>
+  <exec_depend>robotis_math</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

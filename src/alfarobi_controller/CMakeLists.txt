@@ -1,19 +1,71 @@
-cmake_minimum_required(VERSION 3.0.2)
+# cmake_minimum_required(VERSION 3.0.2) 
+cmake_minimum_required(VERSION 2.8.3)
 project(alfarobi_controller)
+add_compile_options(-std=c++11)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
+find_package(catkin REQUIRED COMPONENTS
+  # alfarobi_controller_node
+  eigen_conversions
+  robotis_math
+  tf
+  tf2
+  rospy
+  yaml-cpp REQUIRED
+  roscpp
+  roslib
+
+# set(CMAKE_AUTOMOC ON)
+# set(CMAKE_INCLUDE_CURRENT_DIR ON)
+# set(CMAKE_AUTOUIC ON)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS
-  alfarobi_msgs_srvs_actions
-  roscpp
-  rospy
-  yaml-cpp
-  alfarobi_dxlsdk
+  # sensor_msgs
+  # geometry_msgs
+  # eigen_conversions
+  # robotis_math
+  # eigen_conversions
+  # tf
+  # tf2
+
+  # alfarobi_dxlsdk
 )
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOUIC ON)
+
+set(Qt5_DIR "/qt59/lib/cmake/Qt5")
+set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/cmake/Qt5")
+set(Qt5_DIR "/usr/lib/x86_64-linux-gnu/cmake/Qt5")
+find_package(Qt5 COMPONENTS Gui Widgets SerialPort Core REQUIRED)
+# find_package(Qt5 COMPONENTS SerialPort REQUIRED)
+
+set(EIGEN3_INCLUDE_DIRS "/usr/include/eigen3/Eigen")
+find_package(Eigen3 REQUIRED)
+
+# set(CMAKE_PREFIX_PATH "/home/putubuddhi/ROBOTIS-Math/robotis_math/src")
+
+find_package(yaml-cpp REQUIRED)
+
+## Compile as C++11, supported in ROS Kinetic and newer
+
+## Find catkin macros and libraries
+## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
+## is used, also find other catkin packages
+
+# set(CMAKE_AUTOMOC ON)
+# set(CMAKE_INCLUDE_CURRENT_DIR ON)
+# set(CMAKE_AUTOUIC ON)
+#
+# find_package(Eigen3 REQUIRED)
+# set(yaml-cpp_DIR "/usr/local/lib/cmake/yaml-cpp")
+# find_package(yaml-cpp REQUIRED)
+
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -107,7 +159,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES alfarobi_controller
-#  CATKIN_DEPENDS alfarobi_msgs_srvs_actions roscpp rospy
+ CATKIN_DEPENDS alfarobi_msgs_srvs_actions roscpp rospy robotis_math
 #  DEPENDS system_lib
 )
 
@@ -118,14 +170,15 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
-  ${catkin_INCLUDE_DIRS}
+ ${catkin_INCLUDE_DIRS}
+ ${YAML_CPP_INCLUDE_DIR}
 )
 
 ## Declare a C++ library
-# add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/alfarobi_controller.cpp
-# )
+add_library(${PROJECT_NAME}
+  arduino_controller_node.cpp
+  controller.cpp
+)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -143,16 +196,26 @@ include_directories(
 ## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
 # set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
 
+add_executable(${PROJECT_NAME}_node
+    arduino_controller_node.cpp
+    controller.cpp
+    )
+
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME}_node
- ${PROJECT_NAME} yaml-cpp
- ${catkin_LIBRARIES}
-)
 
+add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+target_link_libraries(${PROJECT_NAME}_node
+  ${PROJECT_NAME} yaml-cpp
+  ${catkin_LIBRARIES}
+  ${Eigen3_LIBRARIES}
+  ${YAML_CPP_LIBRARIES}
+  Qt5::Gui Qt5::Core Qt5::SerialPort Qt5::Widgets
+)
 #############
 ## Install ##
 #############
