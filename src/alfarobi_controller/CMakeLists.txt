@@ -40,8 +40,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOUIC ON)
 
 set(Qt5_DIR "/qt59/lib/cmake/Qt5")
-set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/cmake/Qt5")
-set(Qt5_DIR "/usr/lib/x86_64-linux-gnu/cmake/Qt5")
+# set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/cmake/Qt5")
+# set(Qt5_DIR "/usr/lib/x86_64-linux-gnu/cmake/Qt5")
 find_package(Qt5 COMPONENTS Gui Widgets SerialPort Core REQUIRED)
 # find_package(Qt5 COMPONENTS SerialPort REQUIRED)
 
