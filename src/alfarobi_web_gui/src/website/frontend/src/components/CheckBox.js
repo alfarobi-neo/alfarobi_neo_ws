@@ -11,7 +11,7 @@ function CheckBox({ joint, ros }) {
 
   var setTorque = new ROSLIB.Topic({
     ros: ros,
-    name: "/Torque",
+    name: "/torque",
     messageType: "alfarobi_web_gui/Torque",
   });
 

@@ -54,6 +54,7 @@ add_message_files(
   Sequencer.msg
   SequencerArr.msg
   Torque.msg
+  ActionModule.msg
 )
 
 ## Generate services in the 'srv' folder
