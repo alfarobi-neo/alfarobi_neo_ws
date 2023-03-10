@@ -34,8 +34,8 @@ int main(int argc, char **argv)
 
         // When the Drive Mode(10) is Velocity-based Profile, Profile Velocity(112) sets the maximum velocity of the Profile.
         // When the Drive Mode(10) is Time-based Profile, Profile Velocity(112) sets the time span to reach the velocity (the total time) of the Profile.
-        robot->write(1, robot->deg2Bit(goal_pos1), goal_time1); //max 132 if using velocity-based, in milliseconds if using time-based
-        robot->write(2, robot->deg2Bit(goal_pos2), goal_time2);
+        robot->write(19, robot->deg2Bit(goal_pos1), goal_time1); //max 132 if using velocity-based, in milliseconds if using time-based
+        robot->write(20, robot->deg2Bit(goal_pos2), goal_time2);
 
         std::cout<<"read?\t: ";
         std::cin>>choose;

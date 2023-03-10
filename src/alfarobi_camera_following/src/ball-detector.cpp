@@ -39,8 +39,8 @@ int main()
     double error_y_sum = 0.0;
 
     // Define the desired position of the ball in the frame
-    int desired_x = FRAME_WIDTH / 2;
-    int desired_y = FRAME_HEIGHT / 2;
+    int desired_x = FRAME_WIDTH / 2; //320
+    int desired_y = FRAME_HEIGHT / 2; //240
 
     // Loop over frames from the camera
     while (true)
@@ -83,5 +83,6 @@ int main()
 
         // Calculate the PID control signal
         double control_x = Kp * error_x + Ki * error_x_sum + Kd * (error_x - error_x_prev);
+        double control_y = Kp * error_y + Ki * error_y_sum + Kd * (error_y - error_y_prev);
     }
 }
