@@ -41,7 +41,14 @@ alfarobi::ServoController::ServoController()
     dxl_is_moving = false;
 
     dxl_error = 0;
+}
 
+alfarobi::ServoController::~ServoController()
+{
+    
+}
+
+void alfarobi::ServoController::initialize(){
     // Open port
     if (portHandler->openPort())
     {
@@ -65,45 +72,16 @@ alfarobi::ServoController::ServoController()
     }
 }
 
-alfarobi::ServoController::~ServoController()
-{
-    // Disable Dynamixels Torque
-    for(int i=0;i<20;i++)
-    {
-        if((servo.getIdByName(R_ELB) == i-1) || (servo.getIdByName(L_ELB) == i-1))
-        {
-            printf("Servo doesn't exist!\n");
-            continue;
-        }
-        // if((i == 4) || (i == 5)){
-        //     printf("Servo doesn't exist!\n");
-        //     continue;
-        // }
-
-        dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, dxl_id[i], ADDR_TORQUE_ENABLE, TORQUE_DISABLE, &dxl_error);
-        if (dxl_comm_result != COMM_SUCCESS)
-        {
-            printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
-        }
-        else if (dxl_error != 0)
-        {
-            printf("%s\n", packetHandler->getRxPacketError(dxl_error));
-        }
-        else
-        {
-            printf("Dynamixel#%d has been successfully disconnected \n", dxl_id[i] + 1);
-        }
-    }
-    
+void alfarobi::ServoController::dispose(){
     portHandler->closePort();
 }
 
 void alfarobi::ServoController::torqueEnable()
 {
     dynamixel::GroupSyncRead groupSyncRead(portHandler, packetHandler, ADDR_PRESENT_POSITION, LEN_PRESENT_POSITION);
-    for(int i=0; i<19; i++)
+    for(int i=0; i<20; i++)
     {
-        if((servo.getIdByName(R_ELB) == i-1) || (servo.getIdByName(L_ELB) == i-1))
+        if((i == servo.getIdByName(R_ELB) - 1) || ( i == servo.getIdByName(L_ELB)))
         {
             printf("Servo doesn't exist!\n");
             continue;
@@ -131,6 +109,86 @@ void alfarobi::ServoController::torqueEnable()
         }
     }
 
+}
+
+void alfarobi::ServoController::torqueDisable() {
+    // Disable Dynamixels Torque
+    for(int i=0;i<20;i++)
+    {
+        if((i == servo.getIdByName(R_ELB) - 1) || (i == servo.getIdByName(L_ELB) - 1))
+        {
+            printf("Servo doesn't exist!\n");
+            continue;
+        }
+        // if((i == 4) || (i == 5)){
+        //     printf("Servo doesn't exist!\n");
+        //     continue;
+        // }
+
+        dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, dxl_id[i], ADDR_TORQUE_ENABLE, TORQUE_DISABLE, &dxl_error);
+        if (dxl_comm_result != COMM_SUCCESS)
+        {
+            printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
+        }
+        else if (dxl_error != 0)
+        {
+            printf("%s\n", packetHandler->getRxPacketError(dxl_error));
+        }
+        else
+        {
+            printf("Dynamixel#%d has been successfully disconnected \n", dxl_id[i]);
+        }
+    }
+    
+    // portHandler->closePort();
+}
+
+void alfarobi::ServoController::torqueDisableID(uint8_t id) {
+    if((id == 5) || (id == 6))
+    {
+        printf("Servo doesn't exist!\n");
+        return;;
+    }
+
+    dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, id, ADDR_TORQUE_ENABLE, TORQUE_DISABLE, &dxl_error);
+    if (dxl_comm_result != COMM_SUCCESS)
+    {
+        printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
+    }
+    else if (dxl_error != 0)
+    {
+        printf("%s\n", packetHandler->getRxPacketError(dxl_error));
+    }
+    else
+    {
+        printf("Dynamixel#%d has been successfully disconnected \n", id + 1);
+    }
+    
+    // portHandler->closePort();
+}
+
+void alfarobi::ServoController::torqueEnableID(uint8_t id) {
+    if((id == 5) || (id == 6))
+    {
+        printf("Servo doesn't exist!\n");
+        return;;
+    }
+
+    dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, id, ADDR_TORQUE_ENABLE, TORQUE_ENABLE, &dxl_error);
+    if (dxl_comm_result != COMM_SUCCESS)
+    {
+        printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
+    }
+    else if (dxl_error != 0)
+    {
+        printf("%s\n", packetHandler->getRxPacketError(dxl_error));
+    }
+    else
+    {
+        printf("Dynamixel#%d has been successfully connected \n", id + 1);
+    }
+    
+    // portHandler->closePort();
 }
 
 void alfarobi::ServoController::writeMovingThreeshold(uint8_t dxl_id) {
@@ -169,6 +227,9 @@ void alfarobi::ServoController::writeMovingThreeshold(uint8_t dxl_id) {
 }
 void alfarobi::ServoController::write(uint8_t dxl_id, double goal_pos, double goal_vel)
 {
+    if(dxl_id == 5 || dxl_id == 6) {
+        return;
+    }
     dynamixel::GroupSyncWrite groupSyncWritePos(portHandler, packetHandler, ADDR_GOAL_POSITION, LEN_GOAL_POSITION);
     dynamixel::GroupSyncWrite groupSyncWriteVel(portHandler, packetHandler, ADDR_PROFILE_VELOCITY, LEN_GOAL_VELOCITY);
 
@@ -185,7 +246,7 @@ void alfarobi::ServoController::write(uint8_t dxl_id, double goal_pos, double go
     param_goal_position[2] = DXL_LOBYTE(DXL_HIWORD(goal_pos));
     param_goal_position[3] = DXL_HIBYTE(DXL_HIWORD(goal_pos));
 
-    // Add Dynamixel# goal velocity value to the Syncwrite storage
+    // // Add Dynamixel# goal velocity value to the Syncwrite storage
     dxl_addparam_result = groupSyncWriteVel.addParam(dxl_id, param_goal_velocity);
     if (dxl_addparam_result != true)
     {
@@ -201,7 +262,7 @@ void alfarobi::ServoController::write(uint8_t dxl_id, double goal_pos, double go
       return;
     }
 
-    // Syncwrite goal velocity
+    // // Syncwrite goal velocity
     dxl_comm_result = groupSyncWriteVel.txPacket();
     if (dxl_comm_result != COMM_SUCCESS) printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
 
@@ -255,14 +316,17 @@ bool alfarobi::ServoController::isMoving(uint8_t dxl_id) {
 
     return dxl_is_moving;
 }
-void alfarobi::ServoController::read(uint8_t dxl_id)
+double alfarobi::ServoController::read(uint8_t dxl_id)
 {
+    if(dxl_id == 5 || dxl_id == 6) {
+        return 0;
+    }
     dynamixel::GroupSyncRead groupSyncRead(portHandler, packetHandler, ADDR_PRESENT_POSITION, LEN_PRESENT_POSITION);
     dxl_addparam_result = groupSyncRead.addParam(dxl_id);
     if (dxl_addparam_result != true)
     {
         fprintf(stderr, "[ID:%03d] groupSyncRead addparam failed", dxl_id);
-        return;
+        return 0;
     }
     // Syncread present position
     dxl_comm_result = groupSyncRead.txRxPacket();
@@ -280,7 +344,7 @@ void alfarobi::ServoController::read(uint8_t dxl_id)
     if (dxl_getdata_result != true)
     {
     fprintf(stderr, "[ID:%03d] groupSyncRead getdata failed", dxl_id);
-    return;
+    return 0;
     }
 
     // Get Dynamixel# present position value
@@ -289,6 +353,7 @@ void alfarobi::ServoController::read(uint8_t dxl_id)
     dxl_pres_pos = (dxl_pres_pos * 360)/4095;
 
     printf("[ID:%03d] PresPos:%03f\n", dxl_id, dxl_pres_pos);
+    return dxl_pres_pos;
 }
 
 uint32_t alfarobi::ServoController::bulkRead(uint8_t dxl_id)

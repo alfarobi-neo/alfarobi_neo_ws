@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   roslib
   alfarobi_dxlsdk
+  alfarobi_web_gui
   # dynamic_reconfigure
 )
 find_package(yaml-cpp REQUIRED)
@@ -117,7 +118,7 @@ find_package(yaml-cpp REQUIRED)
 catkin_package(
  INCLUDE_DIRS include
  LIBRARIES alfarobi_motion
- CATKIN_DEPENDS roscpp rospy roslib alfarobi_dxlsdk 
+ CATKIN_DEPENDS roscpp rospy roslib alfarobi_dxlsdk alfarobi_web_gui
 #  DEPENDS system_lib
 )
 
@@ -130,13 +131,17 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  
 )
 
 ## Declare a C++ library
 add_library(${PROJECT_NAME}
-
+  src/alfarobi_motion/alfarobi_motion.cpp
+  src/sequencer/sequencer_list.cpp
   src/sequencer/sequencer.cpp
   src/sequencer/sequencer_node.cpp
+  src/initial_position/initial_position.cpp
+  src/initial_position/initial_position_node.cpp
 )
 
 ## Add cmake target dependencies of the library
@@ -148,14 +153,17 @@ add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EX
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(${PROJECT_NAME}_node 
-
+  src/alfarobi_motion/alfarobi_motion.cpp
   src/sequencer/sequencer_node.cpp
   src/sequencer/sequencer.cpp
   src/sequencer/sequencer_list.cpp
+  src/initial_position/initial_position.cpp
+  src/initial_position/initial_position_node.cpp
 )
 target_link_libraries(${PROJECT_NAME}_node  
   ${catkin_LIBRARIES}
   ${YAML_CPP_LIBRARIES}
+  
   )
 # target_link_libraries(${PROJECT_NAME}
 #     ${YAML_CPP_LIBRARIES}

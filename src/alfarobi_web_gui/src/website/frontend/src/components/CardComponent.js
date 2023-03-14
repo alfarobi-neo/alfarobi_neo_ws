@@ -12,10 +12,6 @@ function CardComponent(props) {
   const [edited, setEdited] = useState(0.0);
   const [saved, setSaved] = useState(0.0);
 
-  var ros = new ROSLIB.Ros({
-    // url: "ws://localhost:8080",
-  });
-
   useEffect(() => {
     console.log("card component");
     // console.log(robotState[`${props.children}`]);
@@ -23,37 +19,11 @@ function CardComponent(props) {
     //lewat
   }, []);
 
-  ros.on("connection", function () {
-    // console.log("Connected to websocket server.");
-  });
-
-  ros.on("error", function (error) {
-    // console.log("Error connecting to websocket server: ", error);
-  });
-
-  ros.on("close", function () {
-    // console.log("Connection to websocket server closed.");
-  });
-
-  var cmdVel = new ROSLIB.Topic({
-    ros: ros,
-    name: "/roll",
-    messageType: "interface/ActionModule",
-  });
-
-  var twist = new ROSLIB.Message();
-  twist[`${props.children}`] = parseFloat(edited);
-  cmdVel.publish(twist);
-
-  var listener = new ROSLIB.Topic({
-    ros: ros,
-    name: "/roll",
-    messageType: "interface/ActionModule",
-  });
-
-  listener.subscribe(function (message) {
-    // console.log("Received message " + listener.name + ": " + message);
-  });
+  // var listener = new ROSLIB.Topic({
+  //   ros: ros,
+  //   name: "/roll",
+  //   messageType: "alfarobi_web_gui/ActionModule",
+  // });
 
   return (
     <div className="bg-secondary_bg mx-1 py-0.5  mt-1 rounded">

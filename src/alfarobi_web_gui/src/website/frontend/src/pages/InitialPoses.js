@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import ROSLIB from "roslib";
 import axios from "axios";
 import AppBar from "../components/AppBar";
 import DropdownBM from "../components/DropdownBM";
@@ -20,7 +21,7 @@ function InitialPoses(props) {
       const response = await axios.get(
         `http://127.0.0.1:5000/init?robot=${robot}`
       );
-      console.log(response.data);
+      // console.log(response.data);
       props.handleInit("GET_INIT", robot, response.data.data);
     } catch (error) {
       console.log(error);
@@ -36,7 +37,9 @@ function InitialPoses(props) {
     e.preventDefault();
     try {
       const robotState = robots.getState()[`${robot}`];
-      console.log(robotState);
+      twist = robotState;
+      console.log(twist);
+      cmdVel.publish(twist);
       await axios.post(`http://127.0.0.1:5000/init?robot=${robot}`, robotState);
       getInit();
       setLoaded(false);
@@ -44,6 +47,52 @@ function InitialPoses(props) {
       console.log(error);
     }
   };
+
+  var ros = new ROSLIB.Ros({
+    url: "ws://10.42.0.91:6969",
+  });
+
+  ros.on("connection", function () {
+    console.log("Connected to websocket server.");
+  });
+
+  ros.on("error", function (error) {
+    // console.log("Error connecting to websocket server: ", error);
+  });
+
+  ros.on("close", function () {
+    // console.log("Connection to websocket server closed.");
+  });
+
+  var cmdVel = new ROSLIB.Topic({
+    ros: ros,
+    name: "initial_pose/joint_value_web",
+    messageType: "alfarobi_web_gui/Sequencer",
+  });
+
+  var instruction = new ROSLIB.Topic({
+    ros: ros,
+    name: "initial_pose/web_button",
+    messageType: "std_msgs/String",
+  });
+
+  var instructionMsg = new ROSLIB.Message({
+    data: "",
+  });
+
+  var twist = new ROSLIB.Message();
+  var listener = new ROSLIB.Topic({
+    ros: ros,
+    name: "initial_pose/joint_value",
+    messageType: "alfarobi_web_gui/Sequencer",
+  });
+
+  listener.subscribe(function (message) {
+    console.log("Received message " + listener.name + ": " + message);
+  });
+
+  // twist[`${props.children}`] = parseFloat(edited);
+
   return (
     <div>
       {loaded && (
@@ -56,8 +105,8 @@ function InitialPoses(props) {
             </div>
             <div className="flex flex-row align-center mt-4 mb-12 mx-4 p-2 px-4 bg-primary_bg rounded-xl">
               <p className="text-white text-1xl">Torque(s)</p>
-              <DropdownT color={"white"} />
-              <button
+              <DropdownT color={"white"} ros={ros} />
+              {/* <button
                 className="text-black w-[3vw] pl-2 text-left text-sm rounded shadow ml-2 hover:bg-white outline-none focus:outline-none bg-[#59E867]"
                 style={{ transition: "all .15s ease" }}
                 type="button"
@@ -72,25 +121,56 @@ function InitialPoses(props) {
                 onClick={() => {}}
               >
                 OFF
-              </button>
+              </button> */}
             </div>
             <div
               className="flex flex-row align-center mt-4 mb-12 mx-4 p-2 px-10 bg-[#04C3FF] hover:bg-black text-black hover:text-[#B0ECFF] rounded-xl hover:cursor-pointer"
               onClick={saveInit}
             >
-              <p>SAVE!</p>
+              <p>Apply!</p>
+            </div>
+            <div
+              className="flex flex-row align-center mt-4 mb-12 mx-4 p-2 px-10 bg-[#04C3FF] hover:bg-black text-black hover:text-[#B0ECFF] rounded-xl hover:cursor-pointer"
+              onClick={() => {
+                instructionMsg.data = "save";
+                instruction.publish(instructionMsg);
+              }}
+            >
+              {/* init_pose save apply refresh */}
+              <p>Save!</p>
+            </div>
+            <div
+              className="flex flex-row align-center mt-4 mb-12 mx-4 p-2 px-10 bg-[#04C3FF] hover:bg-black text-black hover:text-[#B0ECFF] rounded-xl hover:cursor-pointer"
+              onClick={() => {
+                instructionMsg.data = "init_pose";
+                instruction.publish(instructionMsg);
+              }}
+            >
+              {/* init_pose save apply refresh */}
+              <p>init_pose!</p>
+            </div>
+
+            <div
+              className="flex flex-row align-center mt-4 mb-12 mx-4 p-2 px-10 bg-[#04C3FF] hover:bg-black text-black hover:text-[#B0ECFF] rounded-xl hover:cursor-pointer"
+              onClick={() => {
+                instructionMsg.data = "refresh";
+                instruction.publish(instructionMsg);
+              }}
+            >
+              {/* init_pose save apply refresh */}
+              <p>refresh!</p>
             </div>
           </div>
           <div className="flex flex-row w-screen justify-center">
             <div className="flex flex-col w-[31vw] mt-[5vw]">
-              <InputCard robot={robot} titles={["r_sho_roll", "r_sho_pitch"]} />
-              <InputCard robot={robot} titles={["r_el_pitch"]} />
+              <InputCard robot={robot} titles={["r_sho_r", "r_sho_p"]} />
+              <InputCard robot={robot} titles={["r_el"]} />
               <InputCard
                 robot={robot}
-                titles={["r_hip_roll", "r_hip_pitch", "r_hip_yaw"]}
+                titles={["r_hip_r", "r_hip_p", "r_hip_y"]}
               />
-              <InputCard robot={robot} titles={["r_knee_pitch"]} />
-              <InputCard robot={robot} titles={["r_ank_roll", "r_ank_pitch"]} />
+              <InputCard robot={robot} titles={["r_knee"]} />
+              <InputCard robot={robot} titles={["r_ank_r", "r_ank_p"]} />
             </div>
             <div className="grid justify-center items-center">
               <img src={robotBody} alt="robot" className="w-[32vw] h-[74vh]" />
@@ -98,20 +178,14 @@ function InitialPoses(props) {
             <div className="flex flex-col w-[31vw] text-center space-x-2">
               <div className="flex flex-col w-[31vw]">
                 <InputCard robot={robot} titles={["head_tilt", "head_pan"]} />
+                <InputCard robot={robot} titles={["l_sho_r", "l_sho_p"]} />
+                <InputCard robot={robot} titles={["l_el"]} />
                 <InputCard
                   robot={robot}
-                  titles={["l_sho_roll", "l_sho_pitch"]}
+                  titles={["l_hip_r", "l_hip_p", "l_hip_y"]}
                 />
-                <InputCard robot={robot} titles={["l_el_pitch"]} />
-                <InputCard
-                  robot={robot}
-                  titles={["l_hip_roll", "l_hip_pitch", "l_hip_yaw"]}
-                />
-                <InputCard robot={robot} titles={["l_knee_pitch"]} />
-                <InputCard
-                  robot={robot}
-                  titles={["l_ank_roll", "l_ank_pitch"]}
-                />
+                <InputCard robot={robot} titles={["l_knee"]} />
+                <InputCard robot={robot} titles={["l_ank_r", "l_ank_p"]} />
               </div>
             </div>
           </div>

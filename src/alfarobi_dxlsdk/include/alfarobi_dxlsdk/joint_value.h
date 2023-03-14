@@ -21,10 +21,10 @@
 #define L_HIP_R    12
 #define R_KNEE     13
 #define L_KNEE     14
-#define R_ANK_R    15
-#define L_ANK_R    16
-#define R_ANK_P    17
-#define L_ANK_P    18
+#define R_ANK_P    15
+#define L_ANK_P    16
+#define R_ANK_R    17
+#define L_ANK_R    18
 #define HEAD_PAN   19
 #define HEAD_TILT  20
     
@@ -38,32 +38,33 @@ namespace alfarobi {
 struct joint_value {    
     /* members */
     double  val[20],
+            // pos[20],
             target_time[20], 
             pause_time[20];
     bool    torque_enabled[20], 
             write[20],
             read[20];
     std::string name[20] = {
-        "R_SHO_P",
-        "L_SHO_P",
-        "R_SHO_R",
-        "L_SHO_R",
-        "R_ELB",
-        "L_ELB",
-        "R_HIP_Y",
-        "L_HIP_Y",
-        "R_HIP_P",
-        "L_HIP_P",
-        "R_HIP_R",
-        "L_HIP_R",
-        "R_KNEE",
-        "L_KNEE",
-        "R_ANK_R",
-        "L_ANK_R",
-        "R_ANK_P",
-        "L_ANK_P",
-        "HEAD_PAN",
-        "HEAD_TILT",
+        "r_sho_p",
+        "l_sho_p",
+        "r_sho_r",
+        "l_sho_r",
+        "r_el",
+        "l_el",
+        "r_hip_y",
+        "l_hip_y",
+        "r_hip_p",
+        "l_hip_p",
+        "r_hip_r",
+        "l_hip_r",
+        "r_knee",
+        "l_knee",
+        "r_ank_p",
+        "l_ank_p",
+        "r_ank_r",
+        "l_ank_r",
+        "head_pan",
+        "head_tilt",
     };
 
     /* constructor */
@@ -82,6 +83,22 @@ struct joint_value {
     /* methods */
     uint8_t getIdByName(uint16_t joint_name) {
         return joint_name;
+    }
+
+    uint8_t getIdByString(std::string joint_name) {
+        uint8_t i = 0;
+        
+        while(i < 20){
+            if(name[i] == joint_name){
+                break;
+            }
+            i++;
+        }
+        
+        // if(i >= 20) {
+        //     std::cout<<"WRONG JOINT NAME !!!\n";
+        // }
+        return i;
     }
 
     double getVal(int index) {

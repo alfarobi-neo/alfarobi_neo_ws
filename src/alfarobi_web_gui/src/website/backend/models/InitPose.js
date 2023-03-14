@@ -6,39 +6,39 @@ const InitPose = mongoose.Schema({
     required: true,
   },
   data: {
-    r_sho_roll: {
+    r_sho_r: {
       type: Number,
       required: true,
     },
-    r_sho_pitch: {
+    r_sho_p: {
       type: Number,
       required: true,
     },
-    r_el_pitch: {
+    r_el: {
       type: Number,
       required: true,
     },
-    r_hip_roll: {
+    r_hip_r: {
       type: Number,
       required: true,
     },
-    r_hip_pitch: {
+    r_hip_p: {
       type: Number,
       required: true,
     },
-    r_hip_yaw: {
+    r_hip_y: {
       type: Number,
       required: true,
     },
-    r_knee_pitch: {
+    r_knee: {
       type: Number,
       required: true,
     },
-    r_ank_roll: {
+    r_ank_r: {
       type: Number,
       required: true,
     },
-    r_ank_pitch: {
+    r_ank_p: {
       type: Number,
       required: true,
     },
@@ -50,39 +50,39 @@ const InitPose = mongoose.Schema({
       type: Number,
       required: true,
     },
-    l_sho_roll: {
+    l_sho_r: {
       type: Number,
       required: true,
     },
-    l_sho_pitch: {
+    l_sho_p: {
       type: Number,
       required: true,
     },
-    l_el_pitch: {
+    l_el: {
       type: Number,
       required: true,
     },
-    l_hip_roll: {
+    l_hip_r: {
       type: Number,
       required: true,
     },
-    l_hip_pitch: {
+    l_hip_p: {
       type: Number,
       required: true,
     },
-    l_hip_yaw: {
+    l_hip_y: {
       type: Number,
       required: true,
     },
-    l_knee_pitch: {
+    l_knee: {
       type: Number,
       required: true,
     },
-    l_ank_roll: {
+    l_ank_r: {
       type: Number,
       required: true,
     },
-    l_ank_pitch: {
+    l_ank_p: {
       type: Number,
       required: true,
     },

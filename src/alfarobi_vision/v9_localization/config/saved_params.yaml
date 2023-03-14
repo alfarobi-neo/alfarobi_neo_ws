@@ -1,0 +1,10 @@
+num_particles: 1000
+range_var: 0.3
+beam_var: 1.047
+gy_var: 1.22
+alpha1: 0
+alpha2: 0
+alpha3: 0
+alpha4: 0
+short_term_rate: 0.005
+long_term_rate: 0.002

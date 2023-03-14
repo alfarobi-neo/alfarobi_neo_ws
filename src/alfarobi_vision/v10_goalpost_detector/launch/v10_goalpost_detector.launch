@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+    <include file="$(find img_source)/launch/img_source.launch" />
+
+    <node pkg="v10_goalpost_detector" type="v10_goalpost_detector_node" name="v10_goalpost_detector_node" output="screen" >
+        <!-- <remap from="/v10_goalpost_detector_node/image_in" to="/img_source_node/image_out" /> -->
+        <remap from="/v10_goalpost_detector_node/image_in" to="/img_source_node/image_src" />
+        <remap from="/v10_goalpost_detector_node/camera_info_in" to="/usb_cam/camera_info" />
+        <remap from="/v10_goalpost_detector_node/frame_mode" to="/vision_monitor_node/frame_mode" />
+        <remap from="/v10_goalpost_detector_node/save_param" to="/vision_monitor_node/save_param" />
+        <remap from="/v10_goalpost_detector_node/goalpost_ref" to="/vision_monitor_node/goalpost_ref" />
+        <param name="goalpost_config_path" type="string" value="$(find v10_goalpost_detector)/config/saved_config.yaml" />
+    </node>
+</launch>

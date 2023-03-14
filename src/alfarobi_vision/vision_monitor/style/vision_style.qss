@@ -1,0 +1,77 @@
+QMainWindow {
+	background-color:black;
+}
+
+/*QMainWindow > QWidget{
+	border:none;
+}*/
+
+QStatusBar{
+	background:grey;
+}
+
+QPushButton{
+	color:white;
+	background:black;
+	/*background-color:rgb(77,77,77);*/
+}
+
+QTabWidget > QWidget{
+	background:black;	
+}
+
+QTabWidget::pane{
+	/*background:white;*/
+	border-top:2px solid green;
+	border-right:2px solid green;
+	border-left:2px solid green;
+	border-bottom:2px solid green;
+}
+
+QTabBar::tab{
+	background:gray;
+}
+
+QTabBar::tab:selected{
+	color:white;
+	background:green;
+}
+
+QTabWidget::pane#motion_tab{
+	border-top:2px solid blue;
+	border-right:2px solid blue;
+	border-left:2px solid blue;
+	border-bottom:2px solid blue;
+}
+
+/*QSpinBox{
+	border:none;
+	background:rgba(0,0,255,125);
+}*/
+
+QGroupBox{
+	border:5px solid rgb(77,77,77);
+	border-radius:10px;	
+	margin-top:10px;
+}
+
+QGroupBox::title{
+	padding-top:-10px;
+	color:white;
+}
+
+QMessageBox{
+	background-color:black;
+}
+
+QCheckBox{	
+	color:white;	
+}
+
+QLabel{
+	color:white;
+}
+
+QRadioButton{
+	color:white;
+}

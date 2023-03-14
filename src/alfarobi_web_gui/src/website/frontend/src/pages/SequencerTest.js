@@ -2,31 +2,36 @@ import React from "react";
 import AppBar from "../components/AppBar";
 import ROSLIB from "roslib";
 import { useState, useEffect } from "react";
+import DropdownT from "../components/DropdownT";
 
 function SequencerTest() {
+  const [robotState, setRobotState] = useState({ data: "Stop" });
+
   const [sequence, setSequence] = useState({
-    HEAD_PAN: 0.0,
-    HEAD_TILT: 0.0,
-    L_ANK_P: 0.0,
-    L_ANK_R: 0.0,
-    L_HIP_P: 0.0,
-    L_HIP_R: 0.0,
-    L_HIP_Y: 0.0,
-    L_KNEE: 0.0,
-    L_SHO_P: 0.0,
-    L_SHO_R: 0.0,
-    L_EL: 0.0,
-    R_ANK_P: 0.0,
-    R_ANK_R: 0.0,
-    R_HIP_P: 0.0,
-    R_HIP_R: 0.0,
-    R_HIP_Y: 0.0,
-    R_KNEE: 0.0,
-    R_SHO_P: 0.0,
-    R_SHO_R: 0.0,
-    R_EL: 0.0,
-    TARGET_TIME: 0.0,
-    STOP_TIME: 0.0,
+    head_pan: 0.0,
+    head_tilt: 0.0,
+    l_ank_p: 0.0,
+    l_ank_l: 0.0,
+    l_ank_r: 0.0,
+    l_hip_p: 0.0,
+    l_hip_r: 0.0,
+    l_hip_y: 0.0,
+    l_knee: 0.0,
+    l_sho_p: 0.0,
+    l_sho_r: 0.0,
+    l_el: 0.0,
+    r_ank_p: 0.0,
+    r_ank_r: 0.0,
+    r_hip_p: 0.0,
+    r_hip_r: 0.0,
+    r_hip_y: 0.0,
+    r_knee: 0.0,
+    r_sho_p: 0.0,
+    r_sho_r: 0.0,
+    r_el: 0.0,
+    target_time: 0.0,
+    pause_time: 0.0,
+    stop_time: 0.0,
   });
 
   const [sequenceArr, setSequenceArr] = useState({
@@ -35,34 +40,34 @@ function SequencerTest() {
   });
 
   const joints = [
-    "HEAD_PAN",
-    "HEAD_TILT",
-    "L_ANK_P",
-    "L_ANK_R",
-    "L_HIP_P",
-    "L_HIP_R",
-    "L_HIP_Y",
-    "L_KNEE",
-    "L_SHO_P",
-    "L_SHO_R",
-    "L_EL",
-    "R_ANK_P",
-    "R_ANK_R",
-    "R_HIP_P",
-    "R_HIP_R",
-    "R_HIP_Y",
-    "R_KNEE",
-    "R_SHO_P",
-    "R_SHO_R",
-    "R_EL",
-    "TARGET_TIME",
-    "STOP_TIME",
+    "head_pan",
+    "head_tilt",
+    "l_ank_p",
+    "l_ank_r",
+    "l_hip_p",
+    "l_hip_r",
+    "l_hip_y",
+    "l_knee",
+    "l_sho_p",
+    "l_sho_r",
+    "l_el",
+    "r_ank_p",
+    "r_ank_r",
+    "r_hip_p",
+    "r_hip_r",
+    "r_hip_y",
+    "r_knee",
+    "r_sho_p",
+    "r_sho_r",
+    "r_el",
+    "target_time",
+    "stop_time",
   ];
 
-  console.log("value is:", sequence);
+  // console.log("value is:", sequence);
 
   var ros = new ROSLIB.Ros({
-    url: "ws://10.42.0.91:6969",
+    url: "ws://localhost:6969",
   });
 
   useEffect(() => {});
@@ -91,34 +96,44 @@ function SequencerTest() {
     messageType: "alfarobi_web_gui/SequencerArr",
   });
 
+  var instruction = new ROSLIB.Topic({
+    ros: ros,
+    name: "/RobotState",
+    messageType: "std_msgs/String",
+  });
+
   var sequencer = new ROSLIB.Message({
-    HEAD_PAN: parseFloat(sequence["HEAD_PAN"]),
-    HEAD_TILT: parseFloat(sequence["HEAD_TILT"]),
-    L_ANK_P: parseFloat(sequence["L_ANK_P"]),
-    L_ANK_R: parseFloat(sequence["L_ANK_R"]),
-    L_HIP_P: parseFloat(sequence["L_HIP_P"]),
-    L_HIP_R: parseFloat(sequence["L_HIP_R"]),
-    L_HIP_Y: parseFloat(sequence["L_HIP_Y"]),
-    L_KNEE: parseFloat(sequence["L_KNEE"]),
-    L_SHO_P: parseFloat(sequence["L_SHO_P"]),
-    L_SHO_R: parseFloat(sequence["L_SHO_R"]),
-    L_EL: parseFloat(sequence["L_EL"]),
-    R_ANK_P: parseFloat(sequence["R_ANK_P"]),
-    R_ANK_R: parseFloat(sequence["R_ANK_R"]),
-    R_HIP_P: parseFloat(sequence["R_HIP_P"]),
-    R_HIP_R: parseFloat(sequence["R_HIP_R"]),
-    R_HIP_Y: parseFloat(sequence["R_HIP_Y"]),
-    R_KNEE: parseFloat(sequence["R_KNEE"]),
-    R_SHO_P: parseFloat(sequence["R_SHO_P"]),
-    R_SHO_R: parseFloat(sequence["R_SHO_R"]),
-    R_EL: parseFloat(sequence["R_EL"]),
-    TARGET_TIME: parseFloat(sequence["TARGET_TIME"]),
-    STOP_TIME: parseFloat(sequence["STOP_TIME"]),
+    head_pan: parseFloat(sequence["head_pan"]),
+    head_tilt: parseFloat(sequence["head_tilt"]),
+    l_ank_p: parseFloat(sequence["l_ank_p"]),
+    l_ank_r: parseFloat(sequence["l_ank_r"]),
+    l_hip_p: parseFloat(sequence["l_hip_p"]),
+    l_hip_r: parseFloat(sequence["l_hip_r"]),
+    l_hip_y: parseFloat(sequence["l_hip_y"]),
+    l_knee: parseFloat(sequence["l_knee"]),
+    l_sho_p: parseFloat(sequence["l_sho_p"]),
+    l_sho_r: parseFloat(sequence["l_sho_r"]),
+    l_el: parseFloat(sequence["l_el"]),
+    r_ank_p: parseFloat(sequence["r_ank_p"]),
+    r_ank_r: parseFloat(sequence["r_ank_r"]),
+    r_hip_p: parseFloat(sequence["r_hip_p"]),
+    r_hip_r: parseFloat(sequence["r_hip_r"]),
+    r_hip_y: parseFloat(sequence["r_hip_y"]),
+    r_knee: parseFloat(sequence["r_knee"]),
+    r_sho_p: parseFloat(sequence["r_sho_p"]),
+    r_sho_r: parseFloat(sequence["r_sho_r"]),
+    r_el: parseFloat(sequence["r_el"]),
+    target_time: parseFloat(sequence["target_time"]),
+    stop_time: parseFloat(sequence["stop_time"]),
   });
 
   var sequencerArr = new ROSLIB.Message({
     SEQUENCE_NAME: "NGACENG",
     SEQUENCE: [],
+  });
+
+  var instructionData = new ROSLIB.Message({
+    data: String(robotState.data),
   });
 
   var seqListener = new ROSLIB.Topic({
@@ -133,17 +148,20 @@ function SequencerTest() {
 
   var seqArrListener = new ROSLIB.Topic({
     ros: ros,
-    name: "/SequencerArr",
+    name: "/SequenceArr",
     messageType: "alfarobi_web_gui/SequencerArr",
   });
 
   seqArrListener.subscribe(function (message) {
-    // console.log("Received message " + seqArrListener.name + ": " + message);
+    console.log(
+      "DAPET BOS " + seqArrListener.name + ": " + message.SEQUENCE_NAME
+    );
   });
 
   return (
     <div className="flex flex-col h-screen bg-secondary_bg">
       <AppBar />
+      <DropdownT color={"white"} ros={ros} />
       <div className="flex flex-row">
         <form className="bg-primary_bg mt-5 mb-1 p-2 rounded-lg">
           {joints.map((data) => (
@@ -189,6 +207,17 @@ function SequencerTest() {
           type="submit"
         >
           Send
+        </button>
+        <button
+          className="mt-4 mb-12 mx-4 p-2 px-10 bg-[#04C3FF] hover:bg-black text-black hover:text-[#B0ECFF] rounded-xl hover:cursor-pointer"
+          onClick={() => {
+            robotState.data == "Stop"
+              ? setRobotState({ data: "Play" })
+              : setRobotState({ data: "Stop" });
+            instruction.publish(instructionData);
+          }}
+        >
+          {robotState.data == "Stop" ? "Play" : "Stop"}
         </button>
       </div>
     </div>

@@ -2,28 +2,28 @@ import React from "react";
 import Popper from "popper.js";
 import CheckBox from "./CheckBox";
 
-function DropdownT({ color }) {
+function DropdownT({ color, ros }) {
   const props = [
-    "r_sho_roll",
-    "r_sho_pitch",
-    "r_el_pitch",
-    "r_hip_roll",
-    "r_hip_pitch",
-    "r_hip_yaw",
-    "r_knee_pitch",
-    "r_ank_roll",
-    "r_ank_pitch",
+    "r_sho_r",
+    "r_sho_p",
+    "r_el",
+    "r_hip_r",
+    "r_hip_p",
+    "r_hip_y",
+    "r_knee",
+    "r_ank_r",
+    "r_ank_p",
     "head_tilt",
     "head_pan",
-    "l_sho_roll",
-    "l_sho_pitch",
-    "l_el_pitch",
-    "l_hip_roll",
-    "l_hip_pitch",
-    "l_hip_yaw",
-    "l_knee_pitch",
-    "l_ank_roll",
-    "l_ank_pitch",
+    "l_sho_r",
+    "l_sho_p",
+    "l_el",
+    "l_hip_r",
+    "l_hip_p",
+    "l_hip_y",
+    "l_knee",
+    "l_ank_r",
+    "l_ank_p",
   ];
   // dropdown props
   const [dropdownPopoverShow, setDropdownPopoverShow] = React.useState(false);
@@ -65,7 +65,7 @@ function DropdownT({ color }) {
         >
           {props.map((data, index) => (
             <div>
-              <CheckBox>{data}</CheckBox>
+              <CheckBox ros={ros} joint={data} />
               {/* <a
                 className={
                   "text-sm py-2 px-4 font-normal block whitespace-no-wrap bg-white text-black hover:bg-secondary_bg hover:cursor-pointer"

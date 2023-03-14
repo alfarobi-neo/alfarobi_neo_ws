@@ -1,0 +1,167 @@
+#include "vision_utils/localization_utils.h"
+
+LocalizationUtils *LocalizationUtils::instance = 0;
+
+LocalizationUtils::LocalizationUtils(){
+
+}
+
+LocalizationUtils::~LocalizationUtils(){
+
+}
+
+// Unfortunately it must pass by value
+void LocalizationUtils::scanLinePoints(cv::Mat _invert_green, cv::Mat _segmented_white, const vision_utils::FieldBoundary &_field_boundary,
+                             std::vector<cv::Point> &_target_points, int _orientation){
+
+    if(_orientation){
+        transpose(_invert_green,_invert_green);
+        transpose(_segmented_white,_segmented_white);
+    }
+
+    std::vector<geometry_msgs::Vector3> boundary = (_orientation==0)?_field_boundary.bound1:_field_boundary.bound2;
+    for(size_t i = 0; i < boundary.size(); i+=10){
+        cv::Point target(boundary[i].x,-1);
+        int start = boundary[i].y;
+        while(_invert_green.at<uchar>(start, target.x)
+              && start < boundary[i].z){
+            start++;
+        }
+        for(int j=start;j<boundary[i].z;j++){
+            if(_invert_green.at<uchar>(j,target.x) > 0 && target.y == -1){
+                target.y = j;
+            }else if(_invert_green.at<uchar>(j,target.x) == 0 && target.y != -1){
+                int diff = j-target.y;
+                if(diff<50){
+                    target.y = (target.y + (j-1))/2;
+                    if(_segmented_white.at<uchar>(target.y,target.x))
+                        _target_points.push_back(_orientation==1?cv::Point(target.y,target.x):target);
+                }
+                target.y = -1;
+            }
+        }
+    }
+}
+
+/*
+ n - number of samples
+ k - max. iteration
+ t - error threshold as inliers
+ d - num. inliers requirement as best model
+ */
+
+void LocalizationUtils::RANSAC(std::vector<cv::Point > &_data_points, geometry_msgs::Vector3 &_line_model,
+                               int _n, int _k, float _t, int _d,
+                               std::vector<cv::Point > &_inliers){
+
+    cv::Mat A,b,x,r;
+    cv::Mat temp1,temp2,temp3,temp4,temp5,temp6;
+    std::vector<cv::Point > best_inliers;
+    std::vector<int > best_inliers_idx;
+    cv::Mat ones_N2 = cv::Mat::ones(_n,2,CV_32FC1);
+    cv::Mat zeros_N1 = cv::Mat::zeros(_n,1,CV_32FC1);
+    cv::Vec2f temp_model;
+    cv::Vec2f best_model;
+
+    int data_sz = _data_points.size();
+    float opt_error=FLT_MAX;
+    int opt_inliers=0;
+
+    for(int i=0;i<_k;i++){
+        A = ones_N2.clone();
+        b = zeros_N1.clone();
+        for(int j=0;j<_n;j++){
+            int data_idx = rand()%data_sz;
+            A.at<float > (2*j+1) = _data_points[data_idx].x;
+            b.at<float > (j) = _data_points[data_idx].y;
+        }
+
+        temp1 = A.t();
+        temp2 = temp1*A;
+        temp3 = temp1*b;
+        temp4 = temp2.inv();
+
+        x = temp4*temp3;
+        temp_model[0] = x.at<float>(0);
+        temp_model[1] = x.at<float>(1);
+
+        std::vector<cv::Point > inliers;
+        std::vector<int > inliers_idx;
+
+        for(int j=0;j<data_sz;j++){
+
+            float err = fabs(_data_points[j].y - (temp_model[0] + temp_model[1]*_data_points[j].x));
+
+            if(err < _t){
+                inliers.push_back(_data_points[j]);
+                inliers_idx.push_back(j);
+            }
+        }
+
+        int inliers_sz = inliers.size();
+
+        if(inliers_sz > _d && inliers_sz > opt_inliers){
+
+            A = cv::Mat::ones(inliers_sz,2,CV_32FC1);
+            b = cv::Mat::zeros(inliers_sz,1,CV_32FC1);
+
+            for(int j=0;j<inliers_sz;j++){
+                A.at<float > (2*j+1) = inliers[j].x;
+                b.at<float > (j) = inliers[j].y;
+            }
+
+            temp1 = A.t();
+            temp2 = temp1*A;
+            temp3 = temp1*b;
+            temp4 = temp2.inv();
+
+            x = temp4*temp3;
+            r = (A*x);
+            r = b - r;
+            temp5 = r.t();
+            temp6 = temp5*r;
+            float err = temp6.at<float > (0);
+            if(err < opt_error){
+                cv::Vec2f temp7;
+                temp7[0] = x.at<float > (0);
+                temp7[1] = x.at<float > (1);
+                best_model=temp7;
+                opt_error=err;
+                opt_inliers=inliers_sz;
+                best_inliers = inliers;
+                best_inliers_idx = inliers_idx;
+            }
+        }
+    }
+
+    std::vector<cv::Point > selected_inliers;
+    std::vector<cv::Point > temp_inliers;
+
+    int best_inliers_sz = (int)best_inliers.size() - 1;
+    if((best_inliers_sz+1)){
+        temp_inliers.push_back(best_inliers[0]);
+    }
+    for(int i=0;i<best_inliers_sz;i++){
+        if(abs(best_inliers[i].x - best_inliers[i+1].x) < 15 && abs(best_inliers[i].y - best_inliers[i+1].y) < 15){
+            temp_inliers.push_back(best_inliers[i+1]);
+        }else{
+            if(temp_inliers.size() > selected_inliers.size()){
+                selected_inliers = temp_inliers;
+            }
+            temp_inliers.resize(0);
+        }
+    }
+
+    if(temp_inliers.size() > selected_inliers.size()){
+        selected_inliers = temp_inliers;
+    }
+
+    for(size_t i=0;i<best_inliers_idx.size();i++){
+        _data_points.erase(_data_points.begin() + best_inliers_idx[i] - i);
+    }
+
+    _inliers = selected_inliers;
+    _line_model.x = best_model[0];
+    _line_model.y = best_model[1];
+
+}

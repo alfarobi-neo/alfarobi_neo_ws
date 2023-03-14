@@ -1,0 +1,2 @@
+string joint_name
+bool joint_state

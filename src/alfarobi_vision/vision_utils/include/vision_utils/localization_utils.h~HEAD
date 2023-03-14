@@ -1,0 +1,26 @@
+#pragma once
+
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include "vision_utils/FieldBoundary.h"
+
+class LocalizationUtils{
+public:
+    LocalizationUtils();
+    ~LocalizationUtils();
+
+    static LocalizationUtils* getInstance(){
+        if(!instance)
+            instance = new LocalizationUtils;
+        return instance;
+    }
+
+    void scanLinePoints(cv::Mat _invert_green, cv::Mat _segmented_white , const vision_utils::FieldBoundary &_field_boundary,
+              std::vector<cv::Point > &_target_points, int _orientation);
+    void RANSAC(std::vector<cv::Point > &_data_points, geometry_msgs::Vector3 &_line_model,int _n, int _k, float _t, int _d,std::vector<cv::Point > &_inliers);
+
+//    void RANSCCircle(std::vector<cv::Point > &_data_points, geometry_msgs::Vector3 &_line_model,int _n, int _k, float _t, int _d,std::vector<cv::Point > &_inliers);
+private:
+    static LocalizationUtils *instance;
+
+};

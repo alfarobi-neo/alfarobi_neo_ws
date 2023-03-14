@@ -1,0 +1,8 @@
+min_ball_sat: 0
+max_ball_sat: 255
+min_ball_val: 0
+max_ball_val: 255
+min_white_percentage: 0
+max_white_percentage: 1
+variance: 0.8999999761581421
+score: 9.999999747378752e-05

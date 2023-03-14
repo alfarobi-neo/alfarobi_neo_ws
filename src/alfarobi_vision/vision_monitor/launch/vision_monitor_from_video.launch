@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<launch>
+
+    <include file="$(find v9_ball_detector)/launch/v9_ball_detector_from_video.launch" />
+    <include file="$(find localization_monitor)/launch/localization_monitor.launch" />
+    <include file="$(find v9_localization)/launch/v9_localization.launch" />
+
+    <node pkg="vision_monitor" name="vision_monitor_node" type="vision_monitor_node" output="screen" >
+        <remap from="/vision_monitor_node/image_in" to="/v9_ball_detector_node/image_out" />
+    </node>
+
+</launch>

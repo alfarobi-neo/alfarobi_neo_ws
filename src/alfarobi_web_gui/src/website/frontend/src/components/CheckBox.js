@@ -1,12 +1,24 @@
 import React from "react";
 import { useState } from "react";
+import ROSLIB from "roslib";
 
-function CheckBox(props) {
+function CheckBox({ joint, ros }) {
   const [checked, setChecked] = useState(false);
 
   const handleChange = () => {
     setChecked(!checked);
   };
+
+  var setTorque = new ROSLIB.Topic({
+    ros: ros,
+    name: "/torque",
+    messageType: "alfarobi_web_gui/Torque",
+  });
+
+  var torque = new ROSLIB.Message({
+    joint_name: joint,
+    joint_state: checked,
+  });
 
   return (
     <label>
@@ -15,9 +27,13 @@ function CheckBox(props) {
           className="mx-2"
           type="checkbox"
           checked={checked}
-          onChange={handleChange}
+          onChange={() => {
+            handleChange();
+            torque.joint_state = !checked;
+            setTorque.publish(torque);
+          }}
         />
-        <p>{props.children}</p>
+        <p>{joint}</p>
       </div>
     </label>
   );

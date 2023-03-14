@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+
+    <node pkg="v10_goalpost_detector" type="v10_goalpost_detector_node" name="v10_goalpost_detector_node" output="screen" >
+        <remap from="/v10_goalpost_detector_node/image_in" to="/robotis_op3/camera/image_raw" />
+<!--        <remap from="/v10_goalpost_detector_node/camera_info_in" to="/robotis_op3/camera/camera_info" />-->
+        <remap from="/v10_goalpost_detector_node/frame_mode" to="/goalpost_monitor_node/frame_mode" />
+        <remap from="/v10_goalpost_detector_node/LUT_data" to="/goalpost_monitor_node/LUT_data" />
+        <remap from="/v10_goalpost_detector_node/save_param" to="/goalpost_monitor_node/save_param" />
+        <remap from="/v10_goalpost_detector_node/ball_ref" to="/goalpost_monitor_node/ball_ref" />
+        <remap from="/v10_goalpost_detector_node/line_tip" to="/v9_localization_node/line_tip" />
+        <param name="ball_config_path" type="string" value="$(find v10_goalpost_detector)/config/saved_config.yaml" />
+    </node>
+</launch>

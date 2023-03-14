@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<launch>
+    <node name="usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen">
+    <!-- Logitech -->
+        <!-- <param name="video_device" type="string" value="/dev/video0" />
+        <param name="image_width" type="int" value="640" />
+        <param name="image_height" type="int" value="480" />
+        <param name="pixel_format" value="yuyv" />
+        <param name="framerate" type="int" value="30" />
+        <param name="camera_frame_id" type="string" value="cam_link" />
+        <param name="camera_name" type="string" value="camera" />
+        <param name="autofocus" type="bool" value="False" />
+        <param name="contrast" type="int" value="150" />
+        <param name="saturation" type="int" value="200" />
+        <param name="brightness" type="int" value="100" />
+        <param name="gain" value="200" />
+        <param name="autoexposure" type="bool" value="False" />
+        <param name="exposure" value="150" />
+        <param name="auto_white_balance" type="bool" value="False" />
+        <param name="white_balance" value="5500" />
+        <param name="camera_info_url" type="string" value="file://$(find img_source)/config/c922_calib_data.yaml" /> -->
+<!--        <param name="sharpness" type="int" value="" />-->
+
+<!-- Microsoft -->
+
+<!-- Pitstop -->
+        <!--<param name="video_device" type="string" value="/dev/video1"/>
+        <param name="image_width" type="int" value="640" />
+        <param name="image_height" type="int" value="480" />
+        <param name="pixel_format" value="yuyv" />
+        <param name="framerate" type="int" value="30" />
+        <param name="camera_frame_id" type="string" value="cam_link" />
+        <param name="camera_name" type="string" value="camera" />
+        <param name="autofocus" type="bool" value="False" />
+        <param name="contrast" type="int" value="7" />
+        <param name="saturation" type="int" value="125" />
+        <param name="brightness" type="int" value="150" />
+        <param name="autoexposure" type="bool" value="False" />
+        <param name="exposure" value="39" />
+        <param name="auto_white_balance" type="bool" value="False" />
+        <param name="white_balance" value="5000" />
+        <param name="camera_info_url" type="string" value="file://$(find img_source)/config/lifecam_cinema_190619.yaml" />-->
+
+        <!-- Lapang -->
+        <!-- <param name="video_device" type="string" value="/dev/video0"/>
+        <param name="image_width" type="int" value="640" />
+        <param name="image_height" type="int" value="480" />
+        <param name="pixel_format" value="yuyv" />
+        <param name="framerate" type="int" value="60" />
+        <param name="camera_frame_id" type="string" value="cam_link" />
+        <param name="camera_name" type="string" value="camera" />
+        <param name="autofocus" type="bool" value="False" />
+        <param name="contrast" type="int" value="9" />
+        <param name="saturation" type="int" value="200" />
+        <param name="brightness" type="int" value="200" />
+        <param name="autoexposure" type="bool" value="False" />
+        <param name="exposure" value="20" />
+        <param name="auto_white_balance" type="bool" value="False" />
+        <param name="white_balance" value="5000" />
+        <param name="camera_info_url" type="string" value="file://$(find img_source)/config/lifecam_cinema2.yaml" /> -->
+
+        <!-- Penginapan Semarang 20 Juni 2019 Siang -->
+        <!--<param name="video_device" type="string" value="/dev/video1"/>
+        <param name="image_width" type="int" value="640" />
+        <param name="image_height" type="int" value="480" />
+        <param name="pixel_format" value="yuyv" />
+        <param name="framerate" type="int" value="30" />
+        <param name="camera_frame_id" type="string" value="cam_link" />
+        <param name="camera_name" type="string" value="camera" />
+        <param name="autofocus" type="bool" value="False" />
+        <param name="contrast" type="int" value="7" />
+        <param name="saturation" type="int" value="125" />
+        <param name="brightness" type="int" value="1" />
+        <param name="autoexposure" type="bool" value="False" />
+        <param name="exposure" value="20" />
+        <param name="auto_white_balance" type="bool" value="False" />
+        <param name="white_balance" value="5000" />
+        <param name="camera_info_url" type="string" value="file://$(find img_source)/config/lifecam_cinema_190619.yaml" />-->
+
+        <param name="video_device" type="string" value="/dev/video0"/>
+        <param name="image_width" type="int" value="640" />
+        <param name="image_height" type="int" value="480" />
+        <param name="pixel_format" value="yuyv" />
+        <param name="framerate" type="int" value="30" />
+        <param name="camera_frame_id" type="string" value="cam_link" />
+        <param name="camera_name" type="string" value="camera" />
+        <param name="autofocus" type="bool" value="False" />
+        <param name="contrast" type="int" value="7" />
+        <param name="saturation" type="int" value="160" />
+        <param name="brightness" type="int" value="150" />
+        <param name="autoexposure" type="bool" value="False" />
+        <param name="exposure" value="45" />
+        <param name="auto_white_balance" type="bool" value="False" />
+        <param name="white_balance" value="5000" />
+        <param name="camera_info_url" type="string" value="file://$(find img_source)/config/lifecam_cinema_190619.yaml" />
+    </node>
+
+    <node pkg="img_source" type="img_source_node" name="img_source_node" output="screen" >
+        <remap from="img_source_node/image_in" to="/usb_cam/image_raw" />
+        <remap from="/img_source_node/camera_info_in" to="/usb_cam/camera_info" />
+        <remap from="/img_source_node/frame_mode" to="/vision_monitor_node/frame_mode" />
+        <remap from="/img_source_node/LUT_data" to="/vision_monitor_node/LUT_data" />
+        <remap from="/img_source_node/save_param" to="/vision_monitor_node/save_param" />
+    </node>
+</launch>

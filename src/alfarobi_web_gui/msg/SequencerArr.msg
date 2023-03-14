@@ -1,2 +1,2 @@
 string SEQUENCE_NAME
-Sequencer[] SEQUENCE
+Sequencer[10] SEQUENCE

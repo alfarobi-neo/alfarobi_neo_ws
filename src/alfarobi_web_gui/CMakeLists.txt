@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   message_generation
+  
 )
 
 ## System dependencies are found with CMake's conventions
@@ -52,6 +53,8 @@ add_message_files(
   FILES
   Sequencer.msg
   SequencerArr.msg
+  Torque.msg
+  ActionModule.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -105,8 +108,8 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES alfarobi_web_gui
-  CATKIN_DEPENDS message_runtime roscpp rospy std_msgs
+  # LIBRARIES alfarobi_web_gui
+  CATKIN_DEPENDS message_runtime roscpp rospy std_msgs 
 #  DEPENDS system_lib
 )
 
@@ -117,7 +120,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -144,7 +147,7 @@ include_directories(
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node

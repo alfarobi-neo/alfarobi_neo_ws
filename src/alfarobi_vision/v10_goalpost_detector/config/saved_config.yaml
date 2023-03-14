@@ -1,0 +1,4 @@
+canny1: 20
+canny2: 20
+intersections: 58
+threshold_corner: 20

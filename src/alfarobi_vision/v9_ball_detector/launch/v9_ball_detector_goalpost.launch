@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<launch>
+    <include file="$(find v10_goalpost_detector)/launch/v10_goalpost_detector.launch" />
+
+    <node pkg="v9_ball_detector" type="v9_ball_detector_node" name="v9_ball_detector_node" output="screen" >
+<!--             <param name="variance" type="double" value="2.0" />    -->
+        <remap from="/v9_ball_detector_node/image_in" to="/img_source_node/image_out" />
+        <remap from="/v9_ball_detector_node/camera_info_in" to="/usb_cam/camera_info" />
+        <remap from="/v9_ball_detector_node/frame_mode" to="/vision_monitor_node/frame_mode" />
+        <remap from="/v9_ball_detector_node/LUT_data" to="/vision_monitor_node/LUT_data" />
+        <remap from="/v9_ball_detector_node/save_param" to="/vision_monitor_node/save_param" />
+        <remap from="/v9_ball_detector_node/ball_ref" to="/vision_monitor_node/ball_ref" />
+        <remap from="/v9_ball_detector_node/line_tip" to="/v9_localization_node/line_tip" />
+        <param name="ball_config_path" type="string" value="$(find v9_ball_detector)/config/saved_config.yaml" />
+    </node>
+</launch>
