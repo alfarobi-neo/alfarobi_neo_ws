@@ -31,26 +31,52 @@ void InitialPosition::loadParams() {
     std::cout << "=== WELCOME TO INITIAL POSITION ===\n";
     std::cout << "===================================\n";
     
-    present_position[0] = init_pose_params["R_SHO_P"].as<double>();
-    present_position[1] = init_pose_params["L_SHO_P"].as<double>();
-    present_position[2] = init_pose_params["R_SHO_R"].as<double>();
-    present_position[3] = init_pose_params["L_SHO_R"].as<double>();
-    present_position[4] = init_pose_params["R_ELB"].as<double>();
-    present_position[5] = init_pose_params["L_ELB"].as<double>();
-    present_position[6] = init_pose_params["R_HIP_Y"].as<double>();
-    present_position[7] = init_pose_params["L_HIP_Y"].as<double>();
-    present_position[8] = init_pose_params["R_HIP_P"].as<double>();
-    present_position[9] = init_pose_params["L_HIP_P"].as<double>();
-    present_position[10] = init_pose_params["R_HIP_R"].as<double>();
-    present_position[11] = init_pose_params["L_HIP_R"].as<double>();
-    present_position[12] = init_pose_params["R_KNEE"].as<double>();
-    present_position[13] = init_pose_params["L_KNEE"].as<double>();
-    present_position[14] = init_pose_params["R_ANK_R"].as<double>();
-    present_position[15] = init_pose_params["L_ANK_R"].as<double>();
-    present_position[16] = init_pose_params["R_ANK_P"].as<double>();
-    present_position[17] = init_pose_params["L_ANK_P"].as<double>();
-    present_position[18] = init_pose_params["HEAD_PAN"].as<double>();
-    present_position[19] = init_pose_params["HEAD_TILT"].as<double>();
+    try{
+        present_position[0] = init_pose_params["r_sho_p"].as<double>();
+        present_position[1] = init_pose_params["l_sho_p"].as<double>();
+        present_position[2] = init_pose_params["r_sho_r"].as<double>();
+        present_position[3] = init_pose_params["l_sho_r"].as<double>();
+        present_position[4] = init_pose_params["r_el"].as<double>();
+        present_position[5] = init_pose_params["l_el"].as<double>();
+        present_position[6] = init_pose_params["r_hip_y"].as<double>();
+        present_position[7] = init_pose_params["l_hip_y"].as<double>();
+        present_position[8] = init_pose_params["r_hip_r"].as<double>();
+        present_position[9] = init_pose_params["l_hip_r"].as<double>();
+        present_position[10] = init_pose_params["r_hip_p"].as<double>();
+        present_position[11] = init_pose_params["l_hip_p"].as<double>();
+        present_position[12] = init_pose_params["r_knee"].as<double>();
+        present_position[13] = init_pose_params["l_knee"].as<double>();
+        present_position[14] = init_pose_params["r_ank_p"].as<double>();
+        present_position[15] = init_pose_params["l_ank_p"].as<double>();
+        present_position[16] = init_pose_params["r_ank_r"].as<double>();
+        present_position[17] = init_pose_params["l_ank_r"].as<double>();
+        present_position[18] = init_pose_params["head_pan"].as<double>();
+        present_position[19] = init_pose_params["head_tilt"].as<double>();
+    }catch(const std::exception &e){
+        ROS_ERROR("[alfarobi_motion]: %s", e.what());
+    }
+    
+
+    ROS_INFO("r_sho_p: %f", present_position[0]);
+    ROS_INFO("l_sho_p: %f", present_position[1]);
+    ROS_INFO("r_sho_r: %f", present_position[2]);
+    ROS_INFO("l_sho_r: %f", present_position[3]);
+    ROS_INFO("r_el: %f", present_position[4]);
+    ROS_INFO("l_el: %f", present_position[5]);
+    ROS_INFO("r_hip_y: %f", present_position[6]);
+    ROS_INFO("l_hip_y: %f", present_position[7]);
+    ROS_INFO("r_hip_r: %f", present_position[8]);
+    ROS_INFO("l_hip_r: %f", present_position[9]);
+    ROS_INFO("r_hip_p: %f", present_position[10]);
+    ROS_INFO("l_hip_p: %f", present_position[11]);
+    ROS_INFO("r_knee: %f", present_position[12]);
+    ROS_INFO("l_knee: %f", present_position[13]);
+    ROS_INFO("r_ank_p: %f", present_position[14]);
+    ROS_INFO("l_ank_p: %f", present_position[15]);
+    ROS_INFO("r_ank_r: %f", present_position[16]);
+    ROS_INFO("l_ank_r: %f", present_position[17]);
+    ROS_INFO("head_pan: %f", present_position[18]);
+    ROS_INFO("head_tilt: %f", present_position[19]);
 
     alfarobi_web_gui::Sequencer joint_val;
     joint_val.r_sho_p = present_position[0];
@@ -61,16 +87,16 @@ void InitialPosition::loadParams() {
     joint_val.l_el = present_position[5];
     joint_val.r_hip_y = present_position[6];
     joint_val.l_hip_y = present_position[7];
-    joint_val.r_hip_p = present_position[8];
-    joint_val.l_hip_p = present_position[9];
-    joint_val.r_hip_r = present_position[10];
-    joint_val.l_hip_r = present_position[11];
+    joint_val.r_hip_r = present_position[8];
+    joint_val.l_hip_r = present_position[9];
+    joint_val.r_hip_p = present_position[10];
+    joint_val.l_hip_p = present_position[11];
     joint_val.r_knee = present_position[12];
     joint_val.l_knee = present_position[13];
-    joint_val.r_ank_r = present_position[14];
-    joint_val.l_ank_r = present_position[15];
-    joint_val.r_ank_p = present_position[16];
-    joint_val.l_ank_p = present_position[17];
+    joint_val.r_ank_p = present_position[14];
+    joint_val.l_ank_p = present_position[15];
+    joint_val.r_ank_r = present_position[16];
+    joint_val.l_ank_r = present_position[17];
     joint_val.head_pan = present_position[18];
     joint_val.head_tilt = present_position[19];
 
@@ -127,7 +153,7 @@ void InitialPosition::webButtonCallback(const std_msgs::String::ConstPtr& msg) {
     else if(msg->data == "refresh") {
         // comm = msg->data;
         ROS_INFO("REFRESH");
-        refresh(); //refresh sementara untuk ngeread dulu
+        refresh(); //refresh sementara untuk ngeread dulu, uncommand untuk ngeread
     }
 }
 
@@ -145,16 +171,16 @@ void InitialPosition::refresh() {
     joint_val.l_el = present_position[5];
     joint_val.r_hip_y = present_position[6];
     joint_val.l_hip_y = present_position[7];
-    joint_val.r_hip_p = present_position[8];
-    joint_val.l_hip_p = present_position[9];
-    joint_val.r_hip_r = present_position[10];
-    joint_val.l_hip_r = present_position[11];
+    joint_val.r_hip_r = present_position[8];
+    joint_val.l_hip_r = present_position[9];
+    joint_val.r_hip_p = present_position[10];
+    joint_val.l_hip_p = present_position[11];
     joint_val.r_knee = present_position[12];
     joint_val.l_knee = present_position[13];
-    joint_val.r_ank_r = present_position[14];
-    joint_val.l_ank_r = present_position[15];
-    joint_val.r_ank_p = present_position[16];
-    joint_val.l_ank_p = present_position[17];
+    joint_val.r_ank_p = present_position[14];
+    joint_val.l_ank_p = present_position[15];
+    joint_val.r_ank_r = present_position[16];
+    joint_val.l_ank_r = present_position[17];
     joint_val.head_pan = present_position[18];
     joint_val.head_tilt = present_position[19];
 
@@ -192,22 +218,41 @@ void InitialPosition::applyCallback(const alfarobi_web_gui::Sequencer::ConstPtr&
     present_position[5]  = web_joint->l_el     ;
     present_position[6]  = web_joint->r_hip_y  ;
     present_position[7]  = web_joint->l_hip_y  ;
-    present_position[8]  = web_joint->r_hip_p  ;
-    present_position[9]  = web_joint->l_hip_p  ;
-    present_position[10] = web_joint->r_hip_r  ;
-    present_position[11] = web_joint->l_hip_r  ;
+    present_position[8]  = web_joint->r_hip_r  ;
+    present_position[9]  = web_joint->l_hip_r  ;
+    present_position[10] = web_joint->r_hip_p  ;
+    present_position[11] = web_joint->l_hip_p  ;
     present_position[12] = web_joint->r_knee   ;
     present_position[13] = web_joint->l_knee   ;
-    present_position[14] = web_joint->r_ank_r  ;
-    present_position[15] = web_joint->l_ank_r  ;
-    present_position[16] = web_joint->r_ank_p  ;
-    present_position[17] = web_joint->l_ank_p  ;
+    present_position[14] = web_joint->r_ank_p  ;
+    present_position[15] = web_joint->l_ank_p  ;
+    present_position[16] = web_joint->r_ank_r  ;
+    present_position[17] = web_joint->l_ank_r  ;
     present_position[18] = web_joint->head_pan ;
     present_position[19] = web_joint->head_tilt;  
-
-    write();
      
     ROS_INFO("APPLIED");
+    ROS_INFO("r_sho_p: %f", present_position[0]);
+    ROS_INFO("l_sho_p: %f", present_position[1]);
+    ROS_INFO("r_sho_r: %f", present_position[2]);
+    ROS_INFO("l_sho_r: %f", present_position[3]);
+    ROS_INFO("r_el: %f", present_position[4]);
+    ROS_INFO("l_el: %f", present_position[5]);
+    ROS_INFO("r_hip_y: %f", present_position[6]);
+    ROS_INFO("l_hip_y: %f", present_position[7]);
+    ROS_INFO("r_hip_r: %f", present_position[8]);
+    ROS_INFO("l_hip_r: %f", present_position[9]);
+    ROS_INFO("r_hip_p: %f", present_position[10]);
+    ROS_INFO("l_hip_p: %f", present_position[11]);
+    ROS_INFO("r_knee: %f", present_position[12]);
+    ROS_INFO("l_knee: %f", present_position[13]);
+    ROS_INFO("r_ank_p: %f", present_position[14]);
+    ROS_INFO("l_ank_p: %f", present_position[15]);
+    ROS_INFO("r_ank_r: %f", present_position[16]);
+    ROS_INFO("l_ank_r: %f", present_position[17]);
+    ROS_INFO("head_pan: %f", present_position[18]);
+    ROS_INFO("head_tilt: %f", present_position[19]);
+    write();
 }
 
 void InitialPosition::saveParams() {
@@ -240,29 +285,30 @@ void InitialPosition::saveParams() {
 }
 
 void InitialPosition::write() {
-    // if(!is_moving) {
-    //     time_start = ros::Time::now().toSec();
-    //     is_moving = true;
-    //     for(uint8_t i=0; i<20; i++) {
-    //         temp_servo->write(i+1, present_position[i] , 3000); //5 detik
-    //         ROS_INFO("WRITING");
-    //     }
-    //     // write(tempSeq->getJoint());
-    //     // readAll();
-    // }
-    read(20);
-    ROS_INFO("JOINT VALUE: %f", present_position[19]);
-    temp_servo->write(20, temp_servo->deg2Bit(200) , 10000); 
+    if(!is_moving) {
+        time_start = ros::Time::now().toSec();
+        is_moving = true;
+        for(uint8_t i=0; i<20; i++) {
+            temp_servo->write(i+1, temp_servo->deg2Bit(present_position[i]) , 3000); //5 detik
+            
+            ROS_INFO("WRITING");
+        }
+        // write(tempSeq->getJoint());
+        // readAll();
+    }
+    // read(20);
+    // ROS_INFO("JOINT VALUE: %f", present_position[19]);
+    // temp_servo->write(20, temp_servo->deg2Bit(present_position[19]) , 3000); 
     // ROS_INFO("AAAAAAAa");
-    // time_now = ros::Time::now().toSec() - time_start;
-    // std::cout<<"Time Now: "<<time_now<<'\n';
-    // if(time_now >= 5000/1000) {
-    //     is_moving = false;
-    //     // tempSeq = tempSeq->next;
-    //     // for(int i=0; i<20; i++) {
-    //     //     tempSeq->getJoint()->write[i] = false;
-    //     // }
-    // }
+    time_now = ros::Time::now().toSec() - time_start;
+    ROS_INFO("Time now: %f", time_now);
+    if(time_now >= 3000/1000) {
+        is_moving = false;
+        // tempSeq = tempSeq->next;
+        // for(int i=0; i<20; i++) {
+        //     tempSeq->getJoint()->write[i] = false;
+        // }
+    }
     
 }
 

@@ -15,10 +15,10 @@
 #define L_ELB      6
 #define R_HIP_Y    7
 #define L_HIP_Y    8
-#define R_HIP_P    9
-#define L_HIP_P    10
-#define R_HIP_R    11
-#define L_HIP_R    12
+#define R_HIP_R    9
+#define L_HIP_R    10
+#define R_HIP_P    11
+#define L_HIP_p    12
 #define R_KNEE     13
 #define L_KNEE     14
 #define R_ANK_P    15
@@ -53,10 +53,10 @@ struct joint_value {
         "l_el",
         "r_hip_y",
         "l_hip_y",
-        "r_hip_p",
-        "l_hip_p",
         "r_hip_r",
         "l_hip_r",
+        "r_hip_p",
+        "l_hip_p",
         "r_knee",
         "l_knee",
         "r_ank_p",

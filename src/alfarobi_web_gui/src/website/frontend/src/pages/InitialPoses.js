@@ -15,7 +15,7 @@ function InitialPoses(props) {
   const { robot } = useParams();
   const robots = useSelector(() => robotStore);
   const [loaded, setLoaded] = useState(false);
-
+  const [edited, setEdited] = useState({})
   const getInit = async () => {
     try {
       const response = await axios.get(
@@ -36,6 +36,8 @@ function InitialPoses(props) {
   const saveInit = async (e) => {
     e.preventDefault();
     try {
+      instructionMsg.data = "apply";
+      instruction.publish(instructionMsg); 
       const robotState = robots.getState()[`${robot}`];
       twist = robotState;
       console.log(twist);
@@ -49,7 +51,7 @@ function InitialPoses(props) {
   };
 
   var ros = new ROSLIB.Ros({
-    url: "ws://10.42.0.91:6969",
+    url: "ws://localhost:6969",
   });
 
   ros.on("connection", function () {
@@ -57,11 +59,21 @@ function InitialPoses(props) {
   });
 
   ros.on("error", function (error) {
-    // console.log("Error connecting to websocket server: ", error);
+    console.log("Error connecting to websocket server: ", error);
   });
 
   ros.on("close", function () {
-    // console.log("Connection to websocket server closed.");
+    console.log("Connection to websocket server closed.");
+  });
+
+  var listener = new ROSLIB.Topic({
+    ros: ros,
+    name: "initial_pose/joint_value",
+    messageType: "alfarobi_web_gui/Sequencer",
+  });
+
+  listener.subscribe(function (message) {
+    setEdited(message);
   });
 
   var cmdVel = new ROSLIB.Topic({
@@ -81,17 +93,6 @@ function InitialPoses(props) {
   });
 
   var twist = new ROSLIB.Message();
-  var listener = new ROSLIB.Topic({
-    ros: ros,
-    name: "initial_pose/joint_value",
-    messageType: "alfarobi_web_gui/Sequencer",
-  });
-
-  listener.subscribe(function (message) {
-    console.log("Received message " + listener.name + ": " + message);
-  });
-
-  // twist[`${props.children}`] = parseFloat(edited);
 
   return (
     <div>
@@ -106,22 +107,6 @@ function InitialPoses(props) {
             <div className="flex flex-row align-center mt-4 mb-12 mx-4 p-2 px-4 bg-primary_bg rounded-xl">
               <p className="text-white text-1xl">Torque(s)</p>
               <DropdownT color={"white"} ros={ros} />
-              {/* <button
-                className="text-black w-[3vw] pl-2 text-left text-sm rounded shadow ml-2 hover:bg-white outline-none focus:outline-none bg-[#59E867]"
-                style={{ transition: "all .15s ease" }}
-                type="button"
-                onClick={() => {}}
-              >
-                ON
-              </button>
-              <button
-                className="text-black w-[3vw] pl-2 text-left text-sm rounded shadow ml-2 hover:bg-white outline-none focus:outline-none bg-[#DC5047]"
-                style={{ transition: "all .15s ease" }}
-                type="button"
-                onClick={() => {}}
-              >
-                OFF
-              </button> */}
             </div>
             <div
               className="flex flex-row align-center mt-4 mb-12 mx-4 p-2 px-10 bg-[#04C3FF] hover:bg-black text-black hover:text-[#B0ECFF] rounded-xl hover:cursor-pointer"
@@ -163,29 +148,31 @@ function InitialPoses(props) {
           </div>
           <div className="flex flex-row w-screen justify-center">
             <div className="flex flex-col w-[31vw] mt-[5vw]">
-              <InputCard robot={robot} titles={["r_sho_r", "r_sho_p"]} />
-              <InputCard robot={robot} titles={["r_el"]} />
+              <InputCard robot={robot} titles={["r_sho_r", "r_sho_p"]} init_joint={edited} />
+              <InputCard robot={robot} titles={["r_el"]} init_joint={edited} />
               <InputCard
                 robot={robot}
                 titles={["r_hip_r", "r_hip_p", "r_hip_y"]}
+                init_joint={edited}
               />
-              <InputCard robot={robot} titles={["r_knee"]} />
-              <InputCard robot={robot} titles={["r_ank_r", "r_ank_p"]} />
+              <InputCard robot={robot} titles={["r_knee"]} init_joint={edited}/>
+              <InputCard robot={robot} titles={["r_ank_r", "r_ank_p"]} init_joint={edited}/>
             </div>
             <div className="grid justify-center items-center">
               <img src={robotBody} alt="robot" className="w-[32vw] h-[74vh]" />
             </div>
             <div className="flex flex-col w-[31vw] text-center space-x-2">
               <div className="flex flex-col w-[31vw]">
-                <InputCard robot={robot} titles={["head_tilt", "head_pan"]} />
-                <InputCard robot={robot} titles={["l_sho_r", "l_sho_p"]} />
-                <InputCard robot={robot} titles={["l_el"]} />
+                <InputCard robot={robot} titles={["head_tilt", "head_pan"]} init_joint={edited}/>
+                <InputCard robot={robot} titles={["l_sho_r", "l_sho_p"]} init_joint={edited}/>
+                <InputCard robot={robot} titles={["l_el"]} init_joint={edited}/>
                 <InputCard
                   robot={robot}
                   titles={["l_hip_r", "l_hip_p", "l_hip_y"]}
+                  init_joint={edited}
                 />
-                <InputCard robot={robot} titles={["l_knee"]} />
-                <InputCard robot={robot} titles={["l_ank_r", "l_ank_p"]} />
+                <InputCard robot={robot} titles={["l_knee"]} init_joint={edited}/>
+                <InputCard robot={robot} titles={["l_ank_r", "l_ank_p"]} init_joint={edited}/>
               </div>
             </div>
           </div>

@@ -1,7 +1,7 @@
 import React from "react";
 import CardComponent from "./CardComponent";
 
-function InputCard({ robot, titles }) {
+function InputCard({ robot, titles, init_joint }) {
   // console.log(robot);
   return (
     <div className="bg-primary_bg mb-1 p-2 rounded-lg">
@@ -12,7 +12,7 @@ function InputCard({ robot, titles }) {
         <p className="w-[7vw] text-[12px]">Saved value</p>
       </div>
       {titles.map((data, index) => (
-        <CardComponent key={index} robot={robot}>
+        <CardComponent key={index} robot={robot} init_joint={init_joint}>
           {data}
         </CardComponent>
       ))}

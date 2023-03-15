@@ -3,7 +3,7 @@ import { useState } from "react";
 import ROSLIB from "roslib";
 
 function CheckBox({ joint, ros }) {
-  const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useState(true);
 
   const handleChange = () => {
     setChecked(!checked);

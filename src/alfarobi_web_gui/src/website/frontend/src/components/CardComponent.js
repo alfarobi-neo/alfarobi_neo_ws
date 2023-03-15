@@ -8,23 +8,15 @@ import robotStore from "../redux/GlobalState";
 function CardComponent(props) {
   const robot = useSelector(() => robotStore);
   const robotState = robot.getState()[`${props.robot}`];
-  const [last, setLast] = useState(0.0);
+  // const [last, setLast] = useState();
   const [edited, setEdited] = useState(0.0);
   const [saved, setSaved] = useState(0.0);
-
+  console.log(props.init_joint[`${props.children}`])
   useEffect(() => {
     console.log("card component");
-    // console.log(robotState[`${props.children}`]);
+    // setLast(parseFloat(props.init_joint[`${props.children}`]))
     setSaved(robotState[`${props.children}`]);
-    //lewat
   }, []);
-
-  // var listener = new ROSLIB.Topic({
-  //   ros: ros,
-  //   name: "/roll",
-  //   messageType: "alfarobi_web_gui/ActionModule",
-  // });
-
   return (
     <div className="bg-secondary_bg mx-1 py-0.5  mt-1 rounded">
       <div className="flex flex-row items-center text-center">
@@ -33,9 +25,9 @@ function CardComponent(props) {
           type="number"
           step="0.01"
           className="w-[6vw] h-[2vh] ml-[0.3vw]"
-          value={last}
+          value={parseFloat(props.init_joint[`${props.children}`])}
           onChange={(event) => {
-            setLast(event.target.value);
+            // setLast(event.target.value);
           }}
         />
         <input
