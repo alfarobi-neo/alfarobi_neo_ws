@@ -17,9 +17,10 @@ Sequencer::~Sequencer() {
     delete temp_servo;
 }
 
-void Sequencer::process() {
+void Sequencer::process(alfarobi::ServoController **serv) {
     if(!in_action) {
         loadSequences();
+        temp_servo = *serv;
     }
     
     if(state_now == "sequencer") {
@@ -76,16 +77,16 @@ void Sequencer::loadSequences() {
         seq_depan.insertVal(jatuh_depan[j]["L_ELB"].as<double>(), 5);
         seq_depan.insertVal(jatuh_depan[j]["R_HIP_Y"].as<double>(), 6);
         seq_depan.insertVal(jatuh_depan[j]["L_HIP_Y"].as<double>(), 7);
-        seq_depan.insertVal(jatuh_depan[j]["R_HIP_P"].as<double>(), 8);
-        seq_depan.insertVal(jatuh_depan[j]["L_HIP_P"].as<double>(), 9);
-        seq_depan.insertVal(jatuh_depan[j]["R_HIP_R"].as<double>(), 10);
-        seq_depan.insertVal(jatuh_depan[j]["L_HIP_R"].as<double>(), 11);
+        seq_depan.insertVal(jatuh_depan[j]["R_HIP_R"].as<double>(), 8);
+        seq_depan.insertVal(jatuh_depan[j]["L_HIP_R"].as<double>(), 9);
+        seq_depan.insertVal(jatuh_depan[j]["R_HIP_P"].as<double>(), 10);
+        seq_depan.insertVal(jatuh_depan[j]["L_HIP_P"].as<double>(), 11);
         seq_depan.insertVal(jatuh_depan[j]["R_KNEE"].as<double>(), 12);
         seq_depan.insertVal(jatuh_depan[j]["L_KNEE"].as<double>(), 13);
-        seq_depan.insertVal(jatuh_depan[j]["R_ANK_R"].as<double>(), 14);
-        seq_depan.insertVal(jatuh_depan[j]["L_ANK_R"].as<double>(), 15);
-        seq_depan.insertVal(jatuh_depan[j]["R_ANK_P"].as<double>(), 16);
-        seq_depan.insertVal(jatuh_depan[j]["L_ANK_P"].as<double>(), 17);
+        seq_depan.insertVal(jatuh_depan[j]["R_ANK_P"].as<double>(), 14);
+        seq_depan.insertVal(jatuh_depan[j]["L_ANK_P"].as<double>(), 15);
+        seq_depan.insertVal(jatuh_depan[j]["R_ANK_R"].as<double>(), 16);
+        seq_depan.insertVal(jatuh_depan[j]["L_ANK_R"].as<double>(), 17);
         seq_depan.insertVal(jatuh_depan[j]["HEAD_PAN"].as<double>(), 18);
         seq_depan.insertVal(jatuh_depan[j]["HEAD_TILT"].as<double>(), 19);
         for(int idx = 0; idx<20; idx++) {
@@ -115,16 +116,16 @@ void Sequencer::loadSequences() {
         seq_belakang.insertVal(jatuh_belakang[j]["L_ELB"].as<double>(), 5);
         seq_belakang.insertVal(jatuh_belakang[j]["R_HIP_Y"].as<double>(), 6);
         seq_belakang.insertVal(jatuh_belakang[j]["L_HIP_Y"].as<double>(), 7);
-        seq_belakang.insertVal(jatuh_belakang[j]["R_HIP_P"].as<double>(), 8);
-        seq_belakang.insertVal(jatuh_belakang[j]["L_HIP_P"].as<double>(), 9);
-        seq_belakang.insertVal(jatuh_belakang[j]["R_HIP_R"].as<double>(), 10);
-        seq_belakang.insertVal(jatuh_belakang[j]["L_HIP_R"].as<double>(), 11);
+        seq_belakang.insertVal(jatuh_belakang[j]["R_HIP_R"].as<double>(), 8);
+        seq_belakang.insertVal(jatuh_belakang[j]["L_HIP_R"].as<double>(), 9);
+        seq_belakang.insertVal(jatuh_belakang[j]["R_HIP_P"].as<double>(), 10);
+        seq_belakang.insertVal(jatuh_belakang[j]["L_HIP_P"].as<double>(), 11);
         seq_belakang.insertVal(jatuh_belakang[j]["R_KNEE"].as<double>(), 12);
         seq_belakang.insertVal(jatuh_belakang[j]["L_KNEE"].as<double>(), 13);
-        seq_belakang.insertVal(jatuh_belakang[j]["R_ANK_R"].as<double>(), 14);
-        seq_belakang.insertVal(jatuh_belakang[j]["L_ANK_R"].as<double>(), 15);
-        seq_belakang.insertVal(jatuh_belakang[j]["R_ANK_P"].as<double>(), 16);
-        seq_belakang.insertVal(jatuh_belakang[j]["L_ANK_P"].as<double>(), 17);
+        seq_belakang.insertVal(jatuh_belakang[j]["R_ANK_P"].as<double>(), 14);
+        seq_belakang.insertVal(jatuh_belakang[j]["L_ANK_P"].as<double>(), 15);
+        seq_belakang.insertVal(jatuh_belakang[j]["R_ANK_R"].as<double>(), 16);
+        seq_belakang.insertVal(jatuh_belakang[j]["L_ANK_R"].as<double>(), 17);
         seq_belakang.insertVal(jatuh_belakang[j]["HEAD_PAN"].as<double>(), 18);
         seq_belakang.insertVal(jatuh_belakang[j]["HEAD_TILT"].as<double>(), 19);
         for(int idx = 0; idx<20; idx++) {
@@ -154,16 +155,16 @@ void Sequencer::loadSequences() {
         seq_kiri.insertVal(jatuh_kiri[j]["L_ELB"].as<double>(), 5);
         seq_kiri.insertVal(jatuh_kiri[j]["R_HIP_Y"].as<double>(), 6);
         seq_kiri.insertVal(jatuh_kiri[j]["L_HIP_Y"].as<double>(), 7);
-        seq_kiri.insertVal(jatuh_kiri[j]["R_HIP_P"].as<double>(), 8);
-        seq_kiri.insertVal(jatuh_kiri[j]["L_HIP_P"].as<double>(), 9);
-        seq_kiri.insertVal(jatuh_kiri[j]["R_HIP_R"].as<double>(), 10);
-        seq_kiri.insertVal(jatuh_kiri[j]["L_HIP_R"].as<double>(), 11);
+        seq_kiri.insertVal(jatuh_kiri[j]["R_HIP_R"].as<double>(), 8);
+        seq_kiri.insertVal(jatuh_kiri[j]["L_HIP_R"].as<double>(), 9);
+        seq_kiri.insertVal(jatuh_kiri[j]["R_HIP_P"].as<double>(), 10);
+        seq_kiri.insertVal(jatuh_kiri[j]["L_HIP_P"].as<double>(), 11);
         seq_kiri.insertVal(jatuh_kiri[j]["R_KNEE"].as<double>(), 12);
         seq_kiri.insertVal(jatuh_kiri[j]["L_KNEE"].as<double>(), 13);
-        seq_kiri.insertVal(jatuh_kiri[j]["R_ANK_R"].as<double>(), 14);
-        seq_kiri.insertVal(jatuh_kiri[j]["L_ANK_R"].as<double>(), 15);
-        seq_kiri.insertVal(jatuh_kiri[j]["R_ANK_P"].as<double>(), 16);
-        seq_kiri.insertVal(jatuh_kiri[j]["L_ANK_P"].as<double>(), 17);
+        seq_kiri.insertVal(jatuh_kiri[j]["R_ANK_P"].as<double>(), 14);
+        seq_kiri.insertVal(jatuh_kiri[j]["L_ANK_P"].as<double>(), 15);
+        seq_kiri.insertVal(jatuh_kiri[j]["R_ANK_R"].as<double>(), 16);
+        seq_kiri.insertVal(jatuh_kiri[j]["L_ANK_R"].as<double>(), 17);
         seq_kiri.insertVal(jatuh_kiri[j]["HEAD_PAN"].as<double>(), 18);
         seq_kiri.insertVal(jatuh_kiri[j]["HEAD_TILT"].as<double>(), 19);
         for(int idx = 0; idx<20; idx++) {
@@ -193,16 +194,16 @@ void Sequencer::loadSequences() {
         seq_kanan.insertVal(jatuh_kanan[j]["L_ELB"].as<double>(), 5);
         seq_kanan.insertVal(jatuh_kanan[j]["R_HIP_Y"].as<double>(), 6);
         seq_kanan.insertVal(jatuh_kanan[j]["L_HIP_Y"].as<double>(), 7);
-        seq_kanan.insertVal(jatuh_kanan[j]["R_HIP_P"].as<double>(), 8);
-        seq_kanan.insertVal(jatuh_kanan[j]["L_HIP_P"].as<double>(), 9);
-        seq_kanan.insertVal(jatuh_kanan[j]["R_HIP_R"].as<double>(), 10);
-        seq_kanan.insertVal(jatuh_kanan[j]["L_HIP_R"].as<double>(), 11);
+        seq_kanan.insertVal(jatuh_kanan[j]["R_HIP_R"].as<double>(), 8);
+        seq_kanan.insertVal(jatuh_kanan[j]["L_HIP_R"].as<double>(), 9);
+        seq_kanan.insertVal(jatuh_kanan[j]["R_HIP_P"].as<double>(), 10);
+        seq_kanan.insertVal(jatuh_kanan[j]["L_HIP_P"].as<double>(), 11);
         seq_kanan.insertVal(jatuh_kanan[j]["R_KNEE"].as<double>(), 12);
         seq_kanan.insertVal(jatuh_kanan[j]["L_KNEE"].as<double>(), 13);
-        seq_kanan.insertVal(jatuh_kanan[j]["R_ANK_R"].as<double>(), 14);
-        seq_kanan.insertVal(jatuh_kanan[j]["L_ANK_R"].as<double>(), 15);
-        seq_kanan.insertVal(jatuh_kanan[j]["R_ANK_P"].as<double>(), 16);
-        seq_kanan.insertVal(jatuh_kanan[j]["L_ANK_P"].as<double>(), 17);
+        seq_kanan.insertVal(jatuh_kanan[j]["R_ANK_P"].as<double>(), 14);
+        seq_kanan.insertVal(jatuh_kanan[j]["L_ANK_P"].as<double>(), 15);
+        seq_kanan.insertVal(jatuh_kanan[j]["R_ANK_R"].as<double>(), 16);
+        seq_kanan.insertVal(jatuh_kanan[j]["L_ANK_R"].as<double>(), 17);
         seq_kanan.insertVal(jatuh_kanan[j]["HEAD_PAN"].as<double>(), 18);
         seq_kanan.insertVal(jatuh_kanan[j]["HEAD_TILT"].as<double>(), 19);
         for(int idx = 0; idx<20; idx++) {
@@ -225,7 +226,7 @@ void Sequencer::loadSequences() {
 void Sequencer::write(alfarobi::joint_value *joints_) {
     for(int i=0; i<20; i++) {
         if(joints_->write[i]) {
-            temp_servo->write(i+1, joints_->val[i] , joints_->target_time[i]);
+            temp_servo->write(i+1, temp_servo->deg2Bit(joints_->val[i]) , joints_->target_time[i]);
             std::cout<<"Writing\n";
         }
     }
@@ -327,16 +328,16 @@ void Sequencer::applyCallback(const alfarobi_web_gui::SequencerArr::ConstPtr& ar
         tempSeq->getJoint()->setVal(5, arr->SEQUENCE[i].l_el);
         tempSeq->getJoint()->setVal(6, arr->SEQUENCE[i].r_hip_y);
         tempSeq->getJoint()->setVal(7, arr->SEQUENCE[i].l_hip_y);
-        tempSeq->getJoint()->setVal(8, arr->SEQUENCE[i].r_hip_p);
-        tempSeq->getJoint()->setVal(9, arr->SEQUENCE[i].l_hip_p);
-        tempSeq->getJoint()->setVal(10, arr->SEQUENCE[i].r_hip_r);
-        tempSeq->getJoint()->setVal(11, arr->SEQUENCE[i].l_hip_r);
+        tempSeq->getJoint()->setVal(8, arr->SEQUENCE[i].r_hip_r);
+        tempSeq->getJoint()->setVal(9, arr->SEQUENCE[i].l_hip_r);
+        tempSeq->getJoint()->setVal(10, arr->SEQUENCE[i].r_hip_p);
+        tempSeq->getJoint()->setVal(11, arr->SEQUENCE[i].l_hip_p);
         tempSeq->getJoint()->setVal(12, arr->SEQUENCE[i].r_knee);
         tempSeq->getJoint()->setVal(13, arr->SEQUENCE[i].l_knee);
-        tempSeq->getJoint()->setVal(14, arr->SEQUENCE[i].r_ank_r);
-        tempSeq->getJoint()->setVal(15, arr->SEQUENCE[i].l_ank_r);
-        tempSeq->getJoint()->setVal(16, arr->SEQUENCE[i].r_ank_p);
-        tempSeq->getJoint()->setVal(17, arr->SEQUENCE[i].l_ank_p);
+        tempSeq->getJoint()->setVal(14, arr->SEQUENCE[i].r_ank_p);
+        tempSeq->getJoint()->setVal(15, arr->SEQUENCE[i].l_ank_p);
+        tempSeq->getJoint()->setVal(16, arr->SEQUENCE[i].r_ank_r);
+        tempSeq->getJoint()->setVal(17, arr->SEQUENCE[i].l_ank_r);
         tempSeq->getJoint()->setVal(18, arr->SEQUENCE[i].head_pan);
         tempSeq->getJoint()->setVal(19, arr->SEQUENCE[i].head_tilt);
         for(int j=0; j < 20; j++) {
@@ -389,16 +390,16 @@ void Sequencer::loadParams(std::string name) {
         arr.SEQUENCE[i].l_el    = tempSeq->getJoint()->getVal(5);
         arr.SEQUENCE[i].r_hip_y = tempSeq->getJoint()->getVal(6);
         arr.SEQUENCE[i].l_hip_y = tempSeq->getJoint()->getVal(7);
-        arr.SEQUENCE[i].r_hip_p = tempSeq->getJoint()->getVal(8);
-        arr.SEQUENCE[i].l_hip_p = tempSeq->getJoint()->getVal(9);
-        arr.SEQUENCE[i].r_hip_r = tempSeq->getJoint()->getVal(10);
-        arr.SEQUENCE[i].l_hip_r = tempSeq->getJoint()->getVal(11);
+        arr.SEQUENCE[i].r_hip_r = tempSeq->getJoint()->getVal(8);
+        arr.SEQUENCE[i].l_hip_r = tempSeq->getJoint()->getVal(9);
+        arr.SEQUENCE[i].r_hip_p = tempSeq->getJoint()->getVal(10);
+        arr.SEQUENCE[i].l_hip_p = tempSeq->getJoint()->getVal(11);
         arr.SEQUENCE[i].r_knee  = tempSeq->getJoint()->getVal(12);
         arr.SEQUENCE[i].l_knee  = tempSeq->getJoint()->getVal(13);
-        arr.SEQUENCE[i].r_ank_r = tempSeq->getJoint()->getVal(14);
-        arr.SEQUENCE[i].l_ank_r = tempSeq->getJoint()->getVal(15);
-        arr.SEQUENCE[i].r_ank_p = tempSeq->getJoint()->getVal(16);
-        arr.SEQUENCE[i].l_ank_p = tempSeq->getJoint()->getVal(17);
+        arr.SEQUENCE[i].r_ank_p = tempSeq->getJoint()->getVal(14);
+        arr.SEQUENCE[i].l_ank_p = tempSeq->getJoint()->getVal(15);
+        arr.SEQUENCE[i].r_ank_r = tempSeq->getJoint()->getVal(16);
+        arr.SEQUENCE[i].l_ank_r = tempSeq->getJoint()->getVal(17);
         arr.SEQUENCE[i].head_pan = tempSeq->getJoint()->getVal(18);
         arr.SEQUENCE[i].head_tilt = tempSeq->getJoint()->getVal(19);
         arr.SEQUENCE[i].target_time = tempSeq->getJoint()->target_time[0];
@@ -502,7 +503,7 @@ void Sequencer::saveParams() {
         temp = sequences_list_[n].getSeq();
         while(temp != NULL) {
             emitter << YAML::Value << YAML::BeginMap;
-            std::cout<<sequences_list_[n].getSeq()->getName()<<" VALDII\n";
+            // std::cout<<sequences_list_[n].getSeq()->getName()<<" VALDII\n";
             for(int i=0; i< 20; i++) {
                 emitter << YAML::Key << sequences_list_[n].getSeq()->joint_->name[i];
                 {
@@ -526,7 +527,7 @@ void Sequencer::saveParams() {
             temp = temp->next;
             emitter << YAML::EndMap;
         } if(temp != NULL) {
-            std::cout<<sequences_list_[n].getSeq()->getName()<<" VALDII JUGAA\n";
+            // std::cout<<sequences_list_[n].getSeq()->getName()<<" VALDII JUGAA\n";
         }
         
         

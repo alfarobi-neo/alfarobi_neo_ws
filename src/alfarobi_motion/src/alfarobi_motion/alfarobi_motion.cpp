@@ -3,12 +3,14 @@
 // #include "alfarobi_motion/alfarobi_motion.h"
 #include "sequencer/sequencer.h"
 #include "initial_position/initial_position.h"
+#include "head_control/head_control.h"
 #include "ros/ros.h"
 
 bool
     initial_position = false, 
     sequencer = false,
     kicking = false,
+    head_control = false,
     walking = false;
 
 void motionCallback(const std_msgs::String::ConstPtr &msg) {
@@ -36,8 +38,13 @@ void motionCallback(const std_msgs::String::ConstPtr &msg) {
         sequencer = false;
         kicking = false;
         walking = true;
+    } else if(msg->data == "head_control"){
+        initial_position = false;
+        sequencer = false;
+        kicking = false;
+        walking = false;
+        head_control = true;
     }
-    // std::cout<<"NOW: "<<msg->data;
     ROS_INFO("TUNING STATE NOW: %s", msg->data.c_str());
 }
 
@@ -56,6 +63,7 @@ int main(int argc, char** argv) {
 
     Sequencer *sequencer_temp = new Sequencer();
     InitialPosition *init_pose_temp = new InitialPosition();
+    HeadControl *head_control_temp = new HeadControl();
 
     
     servo_temp->initialize();
@@ -65,17 +73,20 @@ int main(int argc, char** argv) {
     while(ros::ok()) {
         
         if(sequencer) {
-            sequencer_temp->process();
+            sequencer_temp->process(&servo_temp);
             // in_action = true;
         }
         else if(initial_position) {
-            init_pose_temp->process();
+            init_pose_temp->process(&servo_temp);
         }
         else if(kicking) {
             //belum ada
         }
         else if(walking) {
             //belum ada
+        }
+        else if(head_control) {
+            head_control_temp->process(&servo_temp);
         }
 
         loop_rate.sleep();

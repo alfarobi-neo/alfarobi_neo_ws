@@ -35,7 +35,7 @@ public:
     void loadParams();
     void goInitPose();
     void saveParams();
-    void process();
+    void process(alfarobi::ServoController **serv);
 
     void applyCallback(const alfarobi_web_gui::Sequencer::ConstPtr& web_joint);
     void torqueCallback(const alfarobi_web_gui::Torque::ConstPtr& torque);

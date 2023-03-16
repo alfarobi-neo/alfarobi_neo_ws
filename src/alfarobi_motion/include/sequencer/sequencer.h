@@ -44,7 +44,7 @@ public:
     void loadSequences();
 
     void apply(Sequence newSeq);
-    void process();
+    void process(alfarobi::ServoController **serv);
     
     void loadParams(std::string name);
     void saveParams();

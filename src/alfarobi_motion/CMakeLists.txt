@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   roslib
   alfarobi_dxlsdk
   alfarobi_web_gui
+  geometry_msgs
   # dynamic_reconfigure
 )
 find_package(yaml-cpp REQUIRED)
@@ -118,7 +119,7 @@ find_package(yaml-cpp REQUIRED)
 catkin_package(
  INCLUDE_DIRS include
  LIBRARIES alfarobi_motion
- CATKIN_DEPENDS roscpp rospy roslib alfarobi_dxlsdk alfarobi_web_gui
+ CATKIN_DEPENDS roscpp rospy roslib alfarobi_dxlsdk alfarobi_web_gui geometry_msgs
 #  DEPENDS system_lib
 )
 
@@ -142,6 +143,7 @@ add_library(${PROJECT_NAME}
   src/sequencer/sequencer_node.cpp
   src/initial_position/initial_position.cpp
   src/initial_position/initial_position_node.cpp
+  src/head_control/head_control.cpp
 )
 
 ## Add cmake target dependencies of the library
@@ -159,6 +161,7 @@ add_executable(${PROJECT_NAME}_node
   src/sequencer/sequencer_list.cpp
   src/initial_position/initial_position.cpp
   src/initial_position/initial_position_node.cpp
+  src/head_control/head_control.cpp
 )
 target_link_libraries(${PROJECT_NAME}_node  
   ${catkin_LIBRARIES}

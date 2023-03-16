@@ -8,14 +8,14 @@ InitialPosition::InitialPosition(){
     torque_sub = nh_.subscribe("/torque", 1000, &InitialPosition::torqueCallback, this);
 
     temp_servo = new alfarobi::ServoController();
-    temp_servo->initialize();
+    // temp_servo->initialize();
     // temp_servo->torqueEnable();
 }
 
 InitialPosition::~InitialPosition() {
     // delete temp_motion;
     // temp_servo->torqueDisable();
-    temp_servo->dispose();
+    // temp_servo->dispose();
     delete temp_servo;
 }
 
@@ -107,10 +107,11 @@ void InitialPosition::goInitPose() {
     write();
 }
 
-void InitialPosition::process() {
+void InitialPosition::process(alfarobi::ServoController **serv) {
     if(!in_action){
         // enable();
         loadParams();
+        temp_servo = *serv;
     }
 
     if(state_now == "initial_position") {
