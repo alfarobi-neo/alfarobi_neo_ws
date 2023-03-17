@@ -302,8 +302,6 @@ function SequencerTest() {
     "target_time",
   ];
 
-  // console.log("value is:", sequence);
-
   var ros = new ROSLIB.Ros({
     url: "ws://localhost:6969",
   });
@@ -609,11 +607,22 @@ function SequencerTest() {
   return (
     <div className="flex flex-col h-screen bg-secondary_bg">
       <AppBar />
-      <DropdownT color={"white"} ros={ros} />
       <div className="flex flex-row">
+        <div className="flex flex-row align-center mt-4 mb-12 mx-4 p-2 px-4 bg-primary_bg rounded-xl">
+          <p className="text-white text-1xl">Sequence: </p>
+          <p className="text-black w-[2vw] ml-2 pl-2 text-left text-sm rounded shadow outline-none focus:outline-none bg-secondary_bg">
+            {sequenceNumb + 1}
+          </p>
+        </div>
+        <div className="flex flex-row align-center mt-4 mb-12 mx-4 p-2 px-4 bg-primary_bg rounded-xl">
+          <p className="text-white text-1xl">Torque(s)</p>
+          <DropdownT color={"white"} ros={ros} />
+        </div>
+      </div>
+      <div className="flex flex-row items-center mx-auto">
         <form className="bg-primary_bg mt-5 mb-1 p-2 rounded-lg">
           {joints.map((data) => (
-            <div className="flex flex-row bg-secondary_bg mx-1 py-0.5  mt-1 rounded">
+            <div className="flex bg-secondary_bg mx-1 py-0.5  mt-1 rounded">
               <div className="flex flex-row items-center text-center">
                 <p className="w-[7vw] text-[12px]">{data}</p>
                 <input
@@ -640,25 +649,9 @@ function SequencerTest() {
       </div>
 
       <div className="flex flex-row">
-        {/* <button
+        <button
           className="mt-4 mb-12 mx-4 p-2 px-10 bg-[#04C3FF] hover:bg-black text-black hover:text-[#B0ECFF] rounded-xl hover:cursor-pointer"
           onClick={() => {
-            var myArr = new Array(10);
-            for (let i = 0; i < 10; i++) {
-              myArr.push(sequence[i]);
-            }
-            sequencerArr.SEQUENCE = myArr;
-          }}
-        >
-          Save Sequence
-        </button> */}
-        <button
-          className="mt-4 mb-12 mx-4 p-2 px-10 bg-[#59E867] hover:bg-black text-black hover:text-[#B0ECFF] rounded-xl hover:cursor-pointer"
-          onClick={() => {
-            // sequencerArr.SEQUENCE_NAME = sequenceArr.SEQUENCE_NAME;
-            // sequencerArr.SEQUENCE = sequencer;
-
-            // seq.publish(sequencer);
             console.log(sequencerArr);
             seqArr.publish(sequencerArr);
           }}
@@ -675,10 +668,10 @@ function SequencerTest() {
             instruction.publish(instructionData);
           }}
         >
-          {robotState.data == "play" ? "play" : "stop"}
+          {robotState.data == "play" ? "Play" : "Stop"}
         </button>
         <button
-          className="mt-4 mb-12 mx-4 p-2 px-10 bg-[#59E867] hover:bg-black text-black hover:text-[#B0ECFF] rounded-xl hover:cursor-pointer"
+          className="mt-4 mb-12 mx-4 p-2 px-10 bg-[#04C3FF] hover:bg-black text-black hover:text-[#B0ECFF] rounded-xl hover:cursor-pointer"
           onClick={() => {
             setSequenceNumb(
               sequenceNumb + 1 < 10 ? sequenceNumb + 1 : sequenceNumb
@@ -691,7 +684,7 @@ function SequencerTest() {
           Next
         </button>
         <button
-          className="mt-4 mb-12 mx-4 p-2 px-10 bg-[#59E867] hover:bg-black text-black hover:text-[#B0ECFF] rounded-xl hover:cursor-pointer"
+          className="mt-4 mb-12 mx-4 p-2 px-10 bg-[#04C3FF] hover:bg-black text-black hover:text-[#B0ECFF] rounded-xl hover:cursor-pointer"
           onClick={() => {
             setSequenceNumb(
               sequenceNumb - 1 >= 0 ? sequenceNumb - 1 : sequenceNumb
@@ -703,7 +696,6 @@ function SequencerTest() {
         >
           Previous
         </button>
-        <p>{sequenceNumb}</p>
       </div>
     </div>
   );

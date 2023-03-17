@@ -63,7 +63,6 @@ function DropdownT({ color, ros }) {
     target_time: true,
     pause_time: true,
   });
-  // dropdown props
   const [dropdownPopoverShow, setDropdownPopoverShow] = React.useState(false);
   const btnDropdownRef = React.createRef();
   const popoverDropdownRef = React.createRef();
@@ -110,52 +109,46 @@ function DropdownT({ color, ros }) {
                 setTorqueState={setTorqueState}
                 message={setTorque}
               />
-              {/* <a
-                className={
-                  "text-sm py-2 px-4 font-normal block whitespace-no-wrap bg-white text-black hover:bg-secondary_bg hover:cursor-pointer"
-                }
-                key={index}
-              >
-                {data}
-              </a> */}
             </div>
           ))}
-          <button
-            className="flex flex-row text-sm pl-4 font-normal whitespace-no-wrap bg-white text-black"
-            onClick={() => {
-              setTorqueState({
-                head_pan: true,
-                head_tilt: true,
-                l_ank_p: true,
-                l_ank_r: true,
-                l_hip_p: true,
-                l_hip_r: true,
-                l_hip_y: true,
-                l_knee: true,
-                l_sho_p: true,
-                l_sho_r: true,
-                l_el: true,
-                r_ank_p: true,
-                r_ank_r: true,
-                r_hip_p: true,
-                r_hip_r: true,
-                r_hip_y: true,
-                r_knee: true,
-                r_sho_p: true,
-                r_sho_r: true,
-                r_el: true,
-                target_time: true,
-                pause_time: true,
-              });
-              props.forEach((joint) => {
-                torque.joint_name = joint;
-                setTorque.publish(torque);
-              });
-            }}
-            type="submit"
-          >
-            Enable All
-          </button>
+          <div className="bg-white">
+            <button
+              className="mt-2 mb-2 mx-4 p-2 px-10 bg-[#59E867] shadow-0 hover:bg-black text-black hover:text-[#B0ECFF] rounded-xl hover:cursor-pointer"
+              onClick={() => {
+                setTorqueState({
+                  head_pan: true,
+                  head_tilt: true,
+                  l_ank_p: true,
+                  l_ank_r: true,
+                  l_hip_p: true,
+                  l_hip_r: true,
+                  l_hip_y: true,
+                  l_knee: true,
+                  l_sho_p: true,
+                  l_sho_r: true,
+                  l_el: true,
+                  r_ank_p: true,
+                  r_ank_r: true,
+                  r_hip_p: true,
+                  r_hip_r: true,
+                  r_hip_y: true,
+                  r_knee: true,
+                  r_sho_p: true,
+                  r_sho_r: true,
+                  r_el: true,
+                  target_time: true,
+                  pause_time: true,
+                });
+                props.forEach((joint) => {
+                  torque.joint_name = joint;
+                  setTorque.publish(torque);
+                });
+              }}
+              type="submit"
+            >
+              Enable All
+            </button>
+          </div>
         </div>
       </div>
     </div>
