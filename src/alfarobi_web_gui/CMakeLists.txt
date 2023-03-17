@@ -54,6 +54,7 @@ add_message_files(
   Sequencer.msg
   SequencerArr.msg
   Torque.msg
+  SequencerTorque.msg
   ActionModule.msg
 )
 
