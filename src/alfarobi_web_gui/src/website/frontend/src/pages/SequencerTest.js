@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import DropdownT from "../components/DropdownT";
 
 function SequencerTest() {
-  const [robotState, setRobotState] = useState({ data: "Stop" });
+  const [robotState, setRobotState] = useState({ data: "play" });
 
   const [sequence, setSequence] = useState([
     {
@@ -334,14 +334,6 @@ function SequencerTest() {
     messageType: "alfarobi_web_gui/SequencerArr",
   });
 
-  var instruction = new ROSLIB.Topic({
-    ros: ros,
-    name: "/RobotState",
-    messageType: "std_msgs/String",
-  });
-
-  var sequencerTourque = new ROSLIB.Message({});
-
   var sequencerArr = new ROSLIB.Message({
     SEQUENCE_NAME: "NGACENG",
     SEQUENCE: [
@@ -578,6 +570,16 @@ function SequencerTest() {
     ],
   });
 
+  var instruction = new ROSLIB.Topic({
+    ros: ros,
+    name: "Sequencer/web_button",
+    messageType: "std_msgs/String",
+  });
+
+  var instructionMsg = new ROSLIB.Message({
+    data: "",
+  });
+
   var instructionData = new ROSLIB.Message({
     data: String(robotState.data),
   });
@@ -636,6 +638,7 @@ function SequencerTest() {
           ))}
         </form>
       </div>
+
       <div className="flex flex-row">
         {/* <button
           className="mt-4 mb-12 mx-4 p-2 px-10 bg-[#04C3FF] hover:bg-black text-black hover:text-[#B0ECFF] rounded-xl hover:cursor-pointer"
@@ -666,13 +669,13 @@ function SequencerTest() {
         <button
           className="mt-4 mb-12 mx-4 p-2 px-10 bg-[#04C3FF] hover:bg-black text-black hover:text-[#B0ECFF] rounded-xl hover:cursor-pointer"
           onClick={() => {
-            robotState.data == "Stop"
-              ? setRobotState({ data: "Play" })
-              : setRobotState({ data: "Stop" });
+            robotState.data == "stop"
+              ? setRobotState({ data: "play" })
+              : setRobotState({ data: "stop" });
             instruction.publish(instructionData);
           }}
         >
-          {robotState.data == "Stop" ? "Play" : "Stop"}
+          {robotState.data == "play" ? "play" : "stop"}
         </button>
         <button
           className="mt-4 mb-12 mx-4 p-2 px-10 bg-[#59E867] hover:bg-black text-black hover:text-[#B0ECFF] rounded-xl hover:cursor-pointer"
@@ -680,6 +683,8 @@ function SequencerTest() {
             setSequenceNumb(
               sequenceNumb + 1 < 10 ? sequenceNumb + 1 : sequenceNumb
             );
+            instructionMsg.data = "next";
+            instruction.publish(instructionMsg);
           }}
           type="submit"
         >
@@ -691,6 +696,8 @@ function SequencerTest() {
             setSequenceNumb(
               sequenceNumb - 1 >= 0 ? sequenceNumb - 1 : sequenceNumb
             );
+            instructionMsg.data = "previous";
+            instruction.publish(instructionMsg);
           }}
           type="submit"
         >
