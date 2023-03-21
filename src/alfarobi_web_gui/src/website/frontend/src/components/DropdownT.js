@@ -139,10 +139,17 @@ function DropdownT({ color, ros }) {
                   target_time: true,
                   pause_time: true,
                 });
-                props.forEach((joint) => {
-                  torque.joint_name = joint;
-                  setTorque.publish(torque);
+                var instruction = new ROSLIB.Topic({
+                  ros: ros,
+                  name: "Sequencer/web_button",
+                  messageType: "std_msgs/String",
                 });
+
+                var instructionMsg = new ROSLIB.Message({
+                  data: "",
+                });
+                instructionMsg.data = "enable_all";
+                instruction.publish(instructionMsg);
               }}
               type="submit"
             >
