@@ -1,8 +1,13 @@
 #ifndef Controller_H
 #define Controller_H
 
-#include <QSerialPort>
-#include <QSerialPortInfo>
+// #include <QSerialPort>
+// #include <QSerialPortInfo>
+
+
+// #include <libserial/SerialPort.h>
+// #include <libserial/SerialStream.h>
+// #include "./serial_lib/serialib.h"
 #include <QThread>
 #include <QMutex>
 #include <QDebug>
@@ -56,6 +61,9 @@ public slots:
 private:
   QSerialPort* serial;
   QSerialPortInfo devicedata;
+
+  // serialib* serial;
+  // // serialib 
   QMutex mutex;
   bool currentPortNameChanged;
   QString portName, currentPortName;

@@ -27,7 +27,7 @@ find_package(catkin REQUIRED COMPONENTS
   # geometry_msgs
   # eigen_conversions
   # robotis_math
-  # eigen_conversions
+  # eigen_conversions 
   # tf
   # tf2
 
@@ -39,15 +39,24 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOUIC ON)
 
-set(Qt5_DIR "/qt59/lib/cmake/Qt5")
-# set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/cmake/Qt5")
-# set(Qt5_DIR "/usr/lib/x86_64-linux-gnu/cmake/Qt5")
-find_package(Qt5 COMPONENTS Gui Widgets SerialPort Core REQUIRED)
-# find_package(Qt5 COMPONENTS SerialPort REQUIRED)
+# set(Qt5_DIR "/qt59/lib/cmake/Qt5")
+# # set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/cmake/Qt5")
+# # set(Qt5_DIR "/usr/lib/x86_64-linux-gnu/cmake/Qt5")
+# find_package(Qt5 COMPONENTS Gui Widgets SerialPort Core REQUIRED)
+# # find_package(Qt5 COMPONENTS SerialPort REQUIRED)
+
+set(CMAKE_PREFIX_PATH "/home/putubuddhi/qt-everywhere-src-6.4.2/qtbase/lib/cmake/Qt6")
+
+set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/cmake/Qt5")
+
+find_package(Qt6 REQUIRED COMPONENTS Gui)
+find_package(Qt6Widgets REQUIRED)
+find_package(Qt6Gui REQUIRED)
+
+find_package(Qt5SerialPort REQUIRED)
 
 set(EIGEN3_INCLUDE_DIRS "/usr/include/eigen3/Eigen")
 find_package(Eigen3 REQUIRED)
-
 # set(CMAKE_PREFIX_PATH "/home/putubuddhi/ROBOTIS-Math/robotis_math/src")
 
 find_package(yaml-cpp REQUIRED)
