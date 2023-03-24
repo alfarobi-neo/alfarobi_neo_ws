@@ -10,8 +10,9 @@ HeadControl::HeadControl() {
 
     ball_found = false;
 
-    p_gain = 0.5;
-    d_gain = 0.005;
+    p_gain = 0.7; //0.6
+    d_gain = 0.009; //0.050 /0.005
+    i_gain = 0.060; //0.040
 
     H_FOV = 61.25; //61.25
     V_FOV = 41.60; //41.60
@@ -80,10 +81,10 @@ void HeadControl::ballPosCallback(const geometry_msgs::Point::ConstPtr& msg) {
         ball_pos_.y = msg->y;
         ball_pos_.z = msg->z;
         ball_found = true;
-        ROS_INFO("BAGUS KONT");
+        ROS_INFO("NOT OK");
     }else{
         ball_found = false;
-        ROS_INFO("BAGUS KONT");
+        ROS_INFO("OK");
     }
 }
 
@@ -135,25 +136,67 @@ void HeadControl::calculation() {
 
     lost_count = 0;
 
+    //baru
+    // double i_gain = 0.1; //tambahan
+
     static double last_error_x = 0,last_error_y = 0;
+    //baru
+    static double error_x_sum = 0.0;
+    static double error_y_sum = 0.0; 
+
+    static double error_x_sub = 0.0;
+    static double error_y_sub = 0.0; 
+    //
 
     double error_x = center_frame_.x - ball_pos_.x;
     double error_y = center_frame_.y - ball_pos_.y;
 
-    double offset_x = p_gain*error_x + d_gain*(error_x - last_error_x);
-    double offset_y = p_gain*error_y + d_gain*(error_y - last_error_y);
-
     last_error_x = error_x;
     last_error_y = error_y;
 
-    // setHeadJoint(offset_x * (H_FOV)/(2*center_frame_.x),offset_y * (V_FOV)/(2*center_frame_.y));
-    present_position[18] = absolute_position[18] + (offset_x * (H_FOV)/(2*center_frame_.x));
-    present_position[19] = absolute_position[19] + (offset_y * (V_FOV)/(2*center_frame_.y));
-
+    //baru
+    error_x_sum += error_x;
+    error_y_sum += error_y;
     
+    error_x_sub -= error_x;
+    error_y_sub -= error_y;
+    //
+
+    // double offset_x = p_gain*error_x + d_gain*(error_x - last_error_x);
+    // double offset_y = p_gain*error_y + d_gain*(error_y - last_error_y);
+
+    //baru
+    double offset_x = p_gain*error_x + i_gain*(error_x + last_error_x)+ d_gain*(error_x - last_error_x);
+    double offset_y = p_gain*error_y + i_gain*(error_y + last_error_y)+ d_gain*(error_y - last_error_y);
+    //
+
+    // setHeadJoint(offset_x * (H_FOV)/(2*center_frame_.x),offset_y * (V_FOV)/(2*center_frame_.y));
+        
+    present_position[18] = absolute_position[18] + (offset_x * (H_FOV)/(2*center_frame_.x));
+    present_position[19] = absolute_position[19] - (offset_y * (V_FOV)/(2*center_frame_.y));
+
     ROS_INFO("head_pan: %f", present_position[18]);
     ROS_INFO("head_tilt: %f",present_position[19]);
     ball_found = false;
+
+    write();
+
+
+    // static double last_error_x = 0,last_error_y = 0;
+
+    // double error_x = center_frame_.x - ball_pos_.x;
+    // double error_y = center_frame_.y - ball_pos_.y;
+
+    // double offset_x = p_gain*error_x + d_gain*(error_x - last_error_x);
+    // double offset_y = p_gain*error_y + d_gain*(error_y - last_error_y);
+
+    // last_error_x = error_x;
+    // last_error_y = error_y;
+
+    // // setHeadJoint(offset_x * (H_FOV)/(2*center_frame_.x),offset_y * (V_FOV)/(2*center_frame_.y));
+    // present_position[18] = offset_x * (H_FOV)/(2*center_frame_.x);
+    // present_position[19] = offset_y * (V_FOV)/(2*center_frame_.y);
+    // ball_found = false;
 
     write();
 }

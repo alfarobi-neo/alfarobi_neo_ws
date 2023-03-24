@@ -3,24 +3,27 @@
 
 Sequencer::Sequencer(){
     sequence_pub = nh_.advertise<alfarobi_web_gui::SequencerArr>("/SequenceArr", 1000);
-    sequence_list_sub = nh_.subscribe("/SequenceList", 1000, &Sequencer::sequenceListCallback, this);
-    apply_sub = nh_.subscribe("/SequenceArr", 1000, &Sequencer::applyCallback, this);
-    web_button_sub = nh_.subscribe("/playButton", 1000, &Sequencer::webButtonCallback, this);
-    torque_sub = nh_.subscribe("/torqueState", 1000, &Sequencer::webButtonCallback, this);
+    sequence_list_sub = nh_.subscribe("/Sequencer/list", 1000, &Sequencer::sequenceListCallback, this);
+    apply_sub = nh_.subscribe("/Sequencer/apply", 1000, &Sequencer::applyCallback, this);
+    web_button_sub = nh_.subscribe("/Sequencer/web_button", 1000, &Sequencer::webButtonCallback, this);
+    torque_sub = nh_.subscribe("/Sequencer/torque", 1000, &Sequencer::torqueCallback, this);
     motion_state_sub = nh_.subscribe("/motion_state", 1000, &Sequencer::motionStateCallback, this);
 
     temp_servo = new alfarobi::ServoController();
+    current_index = 0;
+    temp_servo->initialize();
 }
 
 Sequencer::~Sequencer() {
     // delete temp_motion;
+    temp_servo->dispose();
     delete temp_servo;
 }
 
 void Sequencer::process(alfarobi::ServoController **serv) {
     if(!in_action) {
         loadSequences();
-        temp_servo = *serv;
+        // temp_servo = *serv;
     }
     
     if(state_now == "sequencer") {
@@ -226,7 +229,7 @@ void Sequencer::loadSequences() {
 void Sequencer::write(alfarobi::joint_value *joints_) {
     for(int i=0; i<20; i++) {
         if(joints_->write[i]) {
-            temp_servo->write(i+1, temp_servo->deg2Bit(joints_->val[i]) , joints_->target_time[i]);
+            temp_servo->write(i+1, temp_servo->deg2Bit(joints_->val[i]) , joints_->target_time[i]*1000);
             std::cout<<"Writing\n";
         }
     }
@@ -255,37 +258,43 @@ void Sequencer::torqueCallback(const alfarobi_web_gui::Torque::ConstPtr& torque)
     std::string torq_name = torque->joint_name;
     bool torq_state = torque->joint_state;
 
-    int name_index = 0;
+    // int name_index = 0;
 
     
-    for(int i=0; i<sequences_list_.size(); i++) {
-        if(sequences_list_[i].getSeq()->getName() == getCurrentName()){
-            break;
-        }
-        else if(sequences_list_[i].getSeq()->getName() != getCurrentName() && sequences_list_.size() - i <= 1){
-            ROS_ERROR("[alfarobi_motion] Sequence name doesn't exist");
-            return;
-        }
-        name_index++;
-    }
+    // for(int i=0; i<sequences_list_.size(); i++) {
+    //     if(sequences_list_[i].getSeq()->getName() == getCurrentName()){
+    //         break;
+    //     }
+    //     else if(sequences_list_[i].getSeq()->getName() != getCurrentName() && sequences_list_.size() - i <= 1){
+    //         ROS_ERROR("[alfarobi_motion] Sequence name doesn't exist");
+    //         return;
+    //     }
+    //     name_index++;
+    // }
 
-    Sequence *tempSeq = new Sequence();
-    tempSeq = sequences_list_[name_index].getSeq();
+    // Sequence *tempSeq = new Sequence();
+    // tempSeq = sequences_list_[name_index].getSeq();
+
+    alfarobi::joint_value *temp_joint = new alfarobi::joint_value();
 
     if(torq_state) {
-        enable(tempSeq->getJoint()->getIdByString(torq_name));
+        enable(temp_joint->getIdByString(torq_name) + 1);
+        ROS_INFO("Servo-%d enabled", temp_joint->getIdByString(torq_name));
     }
     else if(!torq_state) {
-        disable(tempSeq->getJoint()->getIdByString(torq_name));
+        disable(temp_joint->getIdByString(torq_name) + 1);
+        ROS_INFO("Servo-%d disabled", temp_joint->getIdByString(torq_name));
     }
 
-    delete tempSeq;
+    // delete tempSeq;
+    delete temp_joint;
 
     
 }
 
 void Sequencer::sequenceListCallback(const std_msgs::String::ConstPtr& msg) {
     setCurrentName(msg->data);
+    current_index = 0;
     try {
         loadParams(getCurrentName());
     }catch(const std::exception &e) {
@@ -425,6 +434,14 @@ void Sequencer::webButtonCallback(const std_msgs::String::ConstPtr& msg) {
     else if(msg->data == "refresh") {
         refresh();
     }
+    else if(msg->data == "next") {
+        current_index += 1;
+    }
+    else if(msg->data == "previous") {
+        if(current_index > 0){
+            current_index -= 1;
+        }
+    }
 }
 
 void Sequencer::play() {
@@ -461,9 +478,14 @@ void Sequencer::play() {
             std::cout<<"Time Now: "<<time_now<<'\n';
             if(time_now >= (tempSeq->getJoint()->target_time[0] + tempSeq->getJoint()->pause_time[0])) {
                 is_moving = false;
-                tempSeq = tempSeq->next;
                 for(int i=0; i<20; i++) {
                     tempSeq->getJoint()->write[i] = false;
+                }
+                if(tempSeq->next != NULL){
+                    tempSeq = tempSeq->next;
+                }
+                else if(tempSeq->next == NULL) {
+                    break;
                 }
             }
         }

@@ -380,7 +380,7 @@ void ImageSource::publishObjectColors(const cv::Mat &_segmented_white, const cv:
     it_sw_pub_.publish(cv_sw_pub_.toImageMsg());
     it_inv_sg_pub_.publish(cv_inv_sg_pub_.toImageMsg());
     it_sbc_pub_.publish(cv_sbc_pub_.toImageMsg());
-    it_sg_pub_.publish(cv_sbc_pub_.toImageMsg());
+    it_sg_pub_.publish(cv_sg_pub_.toImageMsg());
     //yellow goalpost
     // it_sy_pub_.publish(cv_sy_pub_.toImageMsg());
     // it_sb_pub_.publish(cv_sb_pub_.toImageMsg());

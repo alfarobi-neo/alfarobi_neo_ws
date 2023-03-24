@@ -387,10 +387,14 @@ void BallDetector::process(){
     cv::Mat output_view = in_img_.clone();
 
     segmented_ball_color = cv_sbc_ptr_sub_->image;
-    segmented_green = cv_sbc_ptr_sub_->image;
+    segmented_green = cv_sg_ptr_sub_->image;
 
     cv::Mat field_contour;
     field_contour = getImageContours(segmented_green);
+    // cv::imshow("ball_segment",segmented_ball_color);
+    // cv::imshow("green",segmented_green);
+    // cv::imshow("field",field_contour);
+    cv::waitKey(1);
 
     cv::Mat ball_inside_field;
     cv::bitwise_and(segmented_ball_color,field_contour,ball_inside_field);

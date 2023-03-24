@@ -18,7 +18,7 @@ private:
     geometry_msgs::Point ball_pos_;
     geometry_msgs::Point center_frame_;
 
-    double p_gain, d_gain;
+    double p_gain, d_gain, i_gain;
     double H_FOV, V_FOV;
     int HOLD_THRESHOLD;
 

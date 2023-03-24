@@ -4,7 +4,7 @@ import CheckBox from "./CheckBox";
 import { useState } from "react";
 import ROSLIB from "roslib";
 
-function DropdownT({ color, ros }) {
+function DropdownT({ color, ros, topicNameTorque, topicNameInstruction }) {
   const props = [
     "r_sho_r",
     "r_sho_p",
@@ -30,13 +30,8 @@ function DropdownT({ color, ros }) {
 
   var setTorque = new ROSLIB.Topic({
     ros: ros,
-    name: "/torque",
+    name: topicNameTorque,
     messageType: "alfarobi_web_gui/Torque",
-  });
-
-  var torque = new ROSLIB.Message({
-    joint_name: "",
-    joint_state: true,
   });
 
   const [torqueState, setTorqueState] = useState({
@@ -141,7 +136,7 @@ function DropdownT({ color, ros }) {
                 });
                 var instruction = new ROSLIB.Topic({
                   ros: ros,
-                  name: "Sequencer/web_button",
+                  name: topicNameInstruction,
                   messageType: "std_msgs/String",
                 });
 

@@ -19,7 +19,7 @@ function InitialPoses(props) {
   const getInit = async () => {
     try {
       const response = await axios.get(
-        `http://127.0.0.1:5000/init?robot=${robot}`
+        `http://10.42.0.91:5000/init?robot=${robot}`
       );
       // console.log(response.data);
       props.handleInit("GET_INIT", robot, response.data.data);
@@ -42,7 +42,7 @@ function InitialPoses(props) {
       twist = robotState;
       console.log(twist);
       cmdVel.publish(twist);
-      await axios.post(`http://127.0.0.1:5000/init?robot=${robot}`, robotState);
+      await axios.post(`http://10.42.0.91:5000/init?robot=${robot}`, robotState);
       getInit();
       setLoaded(false);
     } catch (error) {
@@ -51,7 +51,7 @@ function InitialPoses(props) {
   };
 
   var ros = new ROSLIB.Ros({
-    url: "ws://localhost:6969",
+    url: "ws://10.42.0.91:6969",
   });
 
   ros.on("connection", function () {
@@ -106,7 +106,7 @@ function InitialPoses(props) {
             </div>
             <div className="flex flex-row align-center mt-4 mb-12 mx-4 p-2 px-4 bg-primary_bg rounded-xl">
               <p className="text-white text-1xl">Torque(s)</p>
-              <DropdownT color={"white"} ros={ros} />
+              <DropdownT color={"white"} ros={ros} topicNameTorque={"/torque"} topicNameInstruction={"/initial_pose/web_button"}/>
             </div>
             <div
               className="flex flex-row align-center mt-4 mb-12 mx-4 p-2 px-10 bg-[#04C3FF] hover:bg-black text-black hover:text-[#B0ECFF] rounded-xl hover:cursor-pointer"

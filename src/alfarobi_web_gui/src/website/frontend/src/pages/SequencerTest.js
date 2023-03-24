@@ -6,7 +6,246 @@ import DropdownT from "../components/DropdownT";
 
 function SequencerTest() {
   const [robotState, setRobotState] = useState({ data: "play" });
-
+  // const [edited, setEdited] = useState([{
+  //   head_pan: 0.0,
+  //   head_tilt: 0.0,
+  //   l_ank_p: 0.0,
+  //   l_ank_r: 0.0,
+  //   l_hip_p: 0.0,
+  //   l_hip_r: 0.0,
+  //   l_hip_y: 0.0,
+  //   l_knee: 0.0,
+  //   l_sho_p: 0.0,
+  //   l_sho_r: 0.0,
+  //   l_el: 0.0,
+  //   r_ank_p: 0.0,
+  //   r_ank_r: 0.0,
+  //   r_hip_p: 0.0,
+  //   r_hip_r: 0.0,
+  //   r_hip_y: 0.0,
+  //   r_knee: 0.0,
+  //   r_sho_p: 0.0,
+  //   r_sho_r: 0.0,
+  //   r_el: 0.0,
+  //   target_time: 0.0,
+  //   pause_time: 0.0,
+  // },
+  // {
+  //   head_pan: 0.0,
+  //   head_tilt: 0.0,
+  //   l_ank_p: 0.0,
+  //   l_ank_r: 0.0,
+  //   l_hip_p: 0.0,
+  //   l_hip_r: 0.0,
+  //   l_hip_y: 0.0,
+  //   l_knee: 0.0,
+  //   l_sho_p: 0.0,
+  //   l_sho_r: 0.0,
+  //   l_el: 0.0,
+  //   r_ank_p: 0.0,
+  //   r_ank_r: 0.0,
+  //   r_hip_p: 0.0,
+  //   r_hip_r: 0.0,
+  //   r_hip_y: 0.0,
+  //   r_knee: 0.0,
+  //   r_sho_p: 0.0,
+  //   r_sho_r: 0.0,
+  //   r_el: 0.0,
+  //   target_time: 0.0,
+  //   pause_time: 0.0,
+  // },
+  // {
+  //   head_pan: 0.0,
+  //   head_tilt: 0.0,
+  //   l_ank_p: 0.0,
+  //   l_ank_r: 0.0,
+  //   l_hip_p: 0.0,
+  //   l_hip_r: 0.0,
+  //   l_hip_y: 0.0,
+  //   l_knee: 0.0,
+  //   l_sho_p: 0.0,
+  //   l_sho_r: 0.0,
+  //   l_el: 0.0,
+  //   r_ank_p: 0.0,
+  //   r_ank_r: 0.0,
+  //   r_hip_p: 0.0,
+  //   r_hip_r: 0.0,
+  //   r_hip_y: 0.0,
+  //   r_knee: 0.0,
+  //   r_sho_p: 0.0,
+  //   r_sho_r: 0.0,
+  //   r_el: 0.0,
+  //   target_time: 0.0,
+  //   pause_time: 0.0,
+  // },
+  // {
+  //   head_pan: 0.0,
+  //   head_tilt: 0.0,
+  //   l_ank_p: 0.0,
+  //   l_ank_r: 0.0,
+  //   l_hip_p: 0.0,
+  //   l_hip_r: 0.0,
+  //   l_hip_y: 0.0,
+  //   l_knee: 0.0,
+  //   l_sho_p: 0.0,
+  //   l_sho_r: 0.0,
+  //   l_el: 0.0,
+  //   r_ank_p: 0.0,
+  //   r_ank_r: 0.0,
+  //   r_hip_p: 0.0,
+  //   r_hip_r: 0.0,
+  //   r_hip_y: 0.0,
+  //   r_knee: 0.0,
+  //   r_sho_p: 0.0,
+  //   r_sho_r: 0.0,
+  //   r_el: 0.0,
+  //   target_time: 0.0,
+  //   pause_time: 0.0,
+  // },
+  // {
+  //   head_pan: 0.0,
+  //   head_tilt: 0.0,
+  //   l_ank_p: 0.0,
+  //   l_ank_r: 0.0,
+  //   l_hip_p: 0.0,
+  //   l_hip_r: 0.0,
+  //   l_hip_y: 0.0,
+  //   l_knee: 0.0,
+  //   l_sho_p: 0.0,
+  //   l_sho_r: 0.0,
+  //   l_el: 0.0,
+  //   r_ank_p: 0.0,
+  //   r_ank_r: 0.0,
+  //   r_hip_p: 0.0,
+  //   r_hip_r: 0.0,
+  //   r_hip_y: 0.0,
+  //   r_knee: 0.0,
+  //   r_sho_p: 0.0,
+  //   r_sho_r: 0.0,
+  //   r_el: 0.0,
+  //   target_time: 0.0,
+  //   pause_time: 0.0,
+  // },
+  // {
+  //   head_pan: 0.0,
+  //   head_tilt: 0.0,
+  //   l_ank_p: 0.0,
+  //   l_ank_r: 0.0,
+  //   l_hip_p: 0.0,
+  //   l_hip_r: 0.0,
+  //   l_hip_y: 0.0,
+  //   l_knee: 0.0,
+  //   l_sho_p: 0.0,
+  //   l_sho_r: 0.0,
+  //   l_el: 0.0,
+  //   r_ank_p: 0.0,
+  //   r_ank_r: 0.0,
+  //   r_hip_p: 0.0,
+  //   r_hip_r: 0.0,
+  //   r_hip_y: 0.0,
+  //   r_knee: 0.0,
+  //   r_sho_p: 0.0,
+  //   r_sho_r: 0.0,
+  //   r_el: 0.0,
+  //   target_time: 0.0,
+  //   pause_time: 0.0,
+  // },
+  // {
+  //   head_pan: 0.0,
+  //   head_tilt: 0.0,
+  //   l_ank_p: 0.0,
+  //   l_ank_r: 0.0,
+  //   l_hip_p: 0.0,
+  //   l_hip_r: 0.0,
+  //   l_hip_y: 0.0,
+  //   l_knee: 0.0,
+  //   l_sho_p: 0.0,
+  //   l_sho_r: 0.0,
+  //   l_el: 0.0,
+  //   r_ank_p: 0.0,
+  //   r_ank_r: 0.0,
+  //   r_hip_p: 0.0,
+  //   r_hip_r: 0.0,
+  //   r_hip_y: 0.0,
+  //   r_knee: 0.0,
+  //   r_sho_p: 0.0,
+  //   r_sho_r: 0.0,
+  //   r_el: 0.0,
+  //   target_time: 0.0,
+  //   pause_time: 0.0,
+  // },
+  // {
+  //   head_pan: 0.0,
+  //   head_tilt: 0.0,
+  //   l_ank_p: 0.0,
+  //   l_ank_r: 0.0,
+  //   l_hip_p: 0.0,
+  //   l_hip_r: 0.0,
+  //   l_hip_y: 0.0,
+  //   l_knee: 0.0,
+  //   l_sho_p: 0.0,
+  //   l_sho_r: 0.0,
+  //   l_el: 0.0,
+  //   r_ank_p: 0.0,
+  //   r_ank_r: 0.0,
+  //   r_hip_p: 0.0,
+  //   r_hip_r: 0.0,
+  //   r_hip_y: 0.0,
+  //   r_knee: 0.0,
+  //   r_sho_p: 0.0,
+  //   r_sho_r: 0.0,
+  //   r_el: 0.0,
+  //   target_time: 0.0,
+  //   pause_time: 0.0,
+  // },
+  // {
+  //   head_pan: 0.0,
+  //   head_tilt: 0.0,
+  //   l_ank_p: 0.0,
+  //   l_ank_r: 0.0,
+  //   l_hip_p: 0.0,
+  //   l_hip_r: 0.0,
+  //   l_hip_y: 0.0,
+  //   l_knee: 0.0,
+  //   l_sho_p: 0.0,
+  //   l_sho_r: 0.0,
+  //   l_el: 0.0,
+  //   r_ank_p: 0.0,
+  //   r_ank_r: 0.0,
+  //   r_hip_p: 0.0,
+  //   r_hip_r: 0.0,
+  //   r_hip_y: 0.0,
+  //   r_knee: 0.0,
+  //   r_sho_p: 0.0,
+  //   r_sho_r: 0.0,
+  //   r_el: 0.0,
+  //   target_time: 0.0,
+  //   pause_time: 0.0,
+  // },
+  // {
+  //   head_pan: 0.0,
+  //   head_tilt: 0.0,
+  //   l_ank_p: 0.0,
+  //   l_ank_r: 0.0,
+  //   l_hip_p: 0.0,
+  //   l_hip_r: 0.0,
+  //   l_hip_y: 0.0,
+  //   l_knee: 0.0,
+  //   l_sho_p: 0.0,
+  //   l_sho_r: 0.0,
+  //   l_el: 0.0,
+  //   r_ank_p: 0.0,
+  //   r_ank_r: 0.0,
+  //   r_hip_p: 0.0,
+  //   r_hip_r: 0.0,
+  //   r_hip_y: 0.0,
+  //   r_knee: 0.0,
+  //   r_sho_p: 0.0,
+  //   r_sho_r: 0.0,
+  //   r_el: 0.0,
+  //   target_time: 0.0,
+  //   pause_time: 0.0,
+  // },])
   const [sequence, setSequence] = useState([
     {
       head_pan: 0.0,
@@ -303,7 +542,7 @@ function SequencerTest() {
   ];
 
   var ros = new ROSLIB.Ros({
-    url: "ws://localhost:6969",
+    url: "ws://10.42.0.91:6969",
   });
 
   useEffect(() => {});
@@ -582,16 +821,6 @@ function SequencerTest() {
     data: String(robotState.data),
   });
 
-  var seqListener = new ROSLIB.Topic({
-    ros: ros,
-    name: "/Sequence",
-    messageType: "alfarobi_web_gui/Sequencer",
-  });
-
-  seqListener.subscribe(function (message) {
-    // console.log("Received message " + seqListener.name + ": " + message);
-  });
-
   var seqArrListener = new ROSLIB.Topic({
     ros: ros,
     name: "/SequenceArr",
@@ -600,10 +829,12 @@ function SequencerTest() {
 
   seqArrListener.subscribe(function (message) {
     console.log(
-      "DAPET BOS " + seqArrListener.name + ": " + message.SEQUENCE_NAME
+      "DAPET BOS " + seqArrListener.name + ": " + message.SEQUENCE
     );
+    setSequence(message.SEQUENCE)
+    
   });
-
+  
   return (
     <div className="flex flex-col h-screen bg-secondary_bg">
       <AppBar />
@@ -616,7 +847,7 @@ function SequencerTest() {
         </div>
         <div className="flex flex-row align-center mt-4 mb-12 mx-4 p-2 px-4 bg-primary_bg rounded-xl">
           <p className="text-white text-1xl">Torque(s)</p>
-          <DropdownT color={"white"} ros={ros} />
+          <DropdownT color={"white"} ros={ros} topicNameInstruction={"/Sequencer/web_button"} topicNameTorque={"/Sequencer/torque"}/>
         </div>
       </div>
       <div className="flex flex-row items-center mx-auto">
@@ -642,6 +873,13 @@ function SequencerTest() {
                     setSequence(nextSeq);
                   }}
                 />
+                {/* <input
+                  type="number"
+                  step="0.01"
+                  className="w-[6vw] h-[2vh] ml-[1.8vw]"
+                  value={parseFloat(edited[sequenceNumb][`${data}`])}
+                  onChange={(event) => {}}
+                /> */}
               </div>
             </div>
           ))}

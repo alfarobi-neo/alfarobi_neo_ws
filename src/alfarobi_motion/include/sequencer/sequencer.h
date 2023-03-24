@@ -31,6 +31,7 @@ private:
 
     double time_start;
     double time_now;
+    int current_index;
     bool is_playing = false;
     bool is_moving = false;
     bool in_action = false;
