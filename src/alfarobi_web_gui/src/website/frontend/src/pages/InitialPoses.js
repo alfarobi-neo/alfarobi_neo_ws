@@ -102,7 +102,7 @@ function InitialPoses(props) {
           <div className="flex flex-row">
             <div className="flex flex-row align-center mt-4 mb-12 mx-4 p-2 px-4 bg-primary_bg rounded-xl">
               <p className="text-white text-1xl">Body module : </p>
-              <DropdownBM color={"white"} />
+              <DropdownBM color={"white"} sequence={["JATUH_DEPAN", "JATUH_BELAKANG", "JATUH_KANAN", "JATUH_KIRI"]} />
             </div>
             <div className="flex flex-row align-center mt-4 mb-12 mx-4 p-2 px-4 bg-primary_bg rounded-xl">
               <p className="text-white text-1xl">Torque(s)</p>
@@ -143,7 +143,7 @@ function InitialPoses(props) {
               }}
             >
               {/* init_pose save apply refresh */}
-              <p>refresh!</p>
+              <p>Refresh!</p>
             </div>
           </div>
           <div className="flex flex-row w-screen justify-center">

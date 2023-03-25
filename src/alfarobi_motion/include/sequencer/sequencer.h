@@ -23,6 +23,7 @@ private:
     std::vector<std::string> sequence_names;
 
     ros::Publisher sequence_pub;
+    ros::Publisher joint_pub;
     ros::Subscriber apply_sub;
     ros::Subscriber web_button_sub;
     ros::Subscriber sequence_list_sub;
@@ -76,6 +77,7 @@ public:
     void readAll();
     void read(int id);
     void enable(int id);
+    void enableAll();
     void disable(int id);
 };
 #endif

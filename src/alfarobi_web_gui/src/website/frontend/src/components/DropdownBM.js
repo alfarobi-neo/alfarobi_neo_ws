@@ -1,7 +1,8 @@
 import React from "react";
 import Popper from "popper.js";
+import ROSLIB from "roslib";
 
-function DropdownBM({ color }) {
+function DropdownBM({ color, sequence, state, updateState, message }) {
   // dropdown props
   const [dropdownPopoverShow, setDropdownPopoverShow] = React.useState(false);
   const btnDropdownRef = React.createRef();
@@ -15,6 +16,10 @@ function DropdownBM({ color }) {
   const closeDropdownPopover = () => {
     setDropdownPopoverShow(false);
   };
+
+  var arrList = new ROSLIB.Message({
+    data: ""
+  })
 
   return (
     <div className="flex flex-wrap pl-4">
@@ -30,7 +35,7 @@ function DropdownBM({ color }) {
               : openDropdownPopover();
           }}
         >
-          Ready
+          {state != "" ? state : "Ready"}
         </button>
         <div
           ref={popoverDropdownRef}
@@ -40,24 +45,23 @@ function DropdownBM({ color }) {
           }
           style={{ minWidth: "12rem" }}
         >
-          <a
-            href="#babi"
-            className={
-              "text-sm py-2 px-4 font-normal block whitespace-no-wrap bg-white text-black"
-            }
-            onClick={(e) => e.preventDefault()}
-          >
-            Babi
-          </a>
-          <a
-            href="#anjing"
-            className={
-              "text-sm py-2 px-4 font-normal block whitespace-no-wrap bg-white text-black"
-            }
-            onClick={(e) => e.preventDefault()}
-          >
-            Anjing
-          </a>
+          {sequence.map((data, index) => (
+          <div>
+            <a
+              className={
+                "text-sm py-2 px-4 font-normal block whitespace-no-wrap bg-white text-black hover:cursor-pointer"
+              }
+              onClick={()=> {
+                updateState(data)
+                arrList.data=data
+                message.publish(arrList)
+                console.log(data)
+              }}
+            >
+              {data}
+            </a>
+          </div>
+          ))}
         </div>
       </div>
     </div>

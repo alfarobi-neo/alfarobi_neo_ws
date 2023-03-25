@@ -9,9 +9,9 @@ function Sidebar() {
   const Menus = [
     { title: "Motion", header: true },
     { title: "Initial Pose", nav: "/init/" + robot },
-    { title: "Walking" },
+    { title: "Walking" ,},
     { title: "Kicking" },
-    { title: "Sequential Movement" },
+    { title: "Sequential Movement",  nav: "/sequencer/" + robot },
     { title: "Vision", header: true },
     { title: "Nunggu vision" },
     { title: "Nunggu vision" },

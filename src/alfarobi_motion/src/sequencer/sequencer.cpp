@@ -8,6 +8,7 @@ Sequencer::Sequencer(){
     web_button_sub = nh_.subscribe("/Sequencer/web_button", 1000, &Sequencer::webButtonCallback, this);
     torque_sub = nh_.subscribe("/Sequencer/torque", 1000, &Sequencer::torqueCallback, this);
     motion_state_sub = nh_.subscribe("/motion_state", 1000, &Sequencer::motionStateCallback, this);
+    joint_pub = nh_.advertise<alfarobi_web_gui::Sequencer>("/Sequencer/joint_value", 1000);
 
     temp_servo = new alfarobi::ServoController();
     current_index = 0;
@@ -247,7 +248,14 @@ void Sequencer::read(int id) {
 
 void Sequencer::enable(int id) {
     temp_servo->torqueEnableID(id);
-    read(id);
+    // read(id);
+}
+
+void Sequencer::enableAll() {
+    for(int i=1; i<21; i++) {
+        enable(i);
+    }
+    // readAll();
 }
 
 void Sequencer::disable(int id) {
@@ -442,6 +450,9 @@ void Sequencer::webButtonCallback(const std_msgs::String::ConstPtr& msg) {
             current_index -= 1;
         }
     }
+    else if(msg->data == "enable_all") {
+        enableAll();
+    }
 }
 
 void Sequencer::play() {
@@ -499,6 +510,63 @@ void Sequencer::play() {
 
 void Sequencer::refresh() {
     ROS_INFO("REFRESH");
+    readAll();
+    // int name_index = 0;
+// 
+    // 
+    // for(int i=0; i<sequences_list_.size(); i++) {
+        // if(sequences_list_[i].getSeq()->getName() == getCurrentName()){
+            // break;
+        // }
+        // else if(sequences_list_[i].getSeq()->getName() != getCurrentName() && sequences_list_.size() - i <= 1){
+            // ROS_ERROR("[alfarobi_motion] Sequence name doesn't exist");
+            // return;
+        // }
+        // name_index++;
+    // }
+// 
+    // Sequence *tempSeq = new Sequence();
+    // tempSeq = sequences_list_[name_index].getSeq();
+    alfarobi_web_gui::Sequencer joint_val;
+
+    // int i=0;
+    // arr.SEQUENCE_NAME = sequences_list_[name_index].getSeq()->getName();
+
+    // std::cout<<"==="<<arr.SEQUENCE_NAME<<"======\n";
+
+    // while(tempSeq != NULL) {
+    // std::cout << "AAAAAA\n";
+    
+    // std::cout<<"BBBB\n";
+    joint_val.r_sho_p = present_position[0];
+    joint_val.l_sho_p = present_position[1];
+    joint_val.r_sho_r = present_position[2];
+    joint_val.l_sho_r = present_position[3];
+    joint_val.r_el    = present_position[4];
+    joint_val.l_el    = present_position[5];
+    joint_val.r_hip_y = present_position[6];
+    joint_val.l_hip_y = present_position[7];
+    joint_val.r_hip_r = present_position[8];
+    joint_val.l_hip_r = present_position[9];
+    joint_val.r_hip_p = present_position[10];
+    joint_val.l_hip_p = present_position[11];
+    joint_val.r_knee  = present_position[12];
+    joint_val.l_knee  = present_position[13];
+    joint_val.r_ank_p = present_position[14];
+    joint_val.l_ank_p = present_position[15];
+    joint_val.r_ank_r = present_position[16];
+    joint_val.l_ank_r = present_position[17];
+    joint_val.head_pan = present_position[18];
+    joint_val.head_tilt = present_position[19];
+    // arr.SEQUENCE[i].target_time = tempSeq->getJoint()->target_time[0];
+    // arr.SEQUENCE[i].pause_time = tempSeq->getJoint()->pause_time[0];
+    // i++;
+    // tempSeq = tempSeq->next;
+    // }
+
+    joint_pub.publish(joint_val);
+
+    // delete tempSeq;
 }
 
 void Sequencer::saveParams() {

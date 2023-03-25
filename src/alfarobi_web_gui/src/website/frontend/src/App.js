@@ -11,8 +11,8 @@ function App() {
     <div className="App">
       <Router>
         <Routes>
-          {/* <Route exact path="/" element={<LandingPage />} /> */}
-          <Route exact path="/" element={<SequencerTest />} />
+          <Route exact path="/" element={<LandingPage />} />
+          <Route exact path="/sequencer/:type" element={<SequencerTest />} />
           <Route path="/pick" element={<RobotPicker />} />
           <Route path="/tune/:robot" element={<TuningPage />} />
           <Route path="/init/:robot" element={<InitialPoses />} />

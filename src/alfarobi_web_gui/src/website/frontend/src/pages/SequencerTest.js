@@ -3,8 +3,12 @@ import AppBar from "../components/AppBar";
 import ROSLIB from "roslib";
 import { useState, useEffect } from "react";
 import DropdownT from "../components/DropdownT";
+import { useParams } from "react-router-dom";
+import DropdownBM from "../components/DropdownBM";
 
 function SequencerTest() {
+  const { robot } = useParams();
+  const [sequenceName, setSequenceName] = useState("")
   const [robotState, setRobotState] = useState({ data: "play" });
   // const [edited, setEdited] = useState([{
   //   head_pan: 0.0,
@@ -542,7 +546,7 @@ function SequencerTest() {
   ];
 
   var ros = new ROSLIB.Ros({
-    url: "ws://10.42.0.91:6969",
+    url: "ws://localhost:6969",
   });
 
   useEffect(() => {});
@@ -559,6 +563,16 @@ function SequencerTest() {
     console.log("Connection to websocket server closed.");
   });
 
+  var motionState = new ROSLIB.Topic({
+    ros: ros, 
+    name: "/motion_state",
+    messageType: "std_msgs/String"
+  })
+
+  var motionMessage = new ROSLIB.Message({
+    data: "sequencer"
+  })
+
   var seqTorque = new ROSLIB.Topic({
     ros: ros,
     name: "/Sequencer/Torque",
@@ -572,7 +586,7 @@ function SequencerTest() {
   });
 
   var sequencerArr = new ROSLIB.Message({
-    SEQUENCE_NAME: "NGACENG",
+    SEQUENCE_NAME: sequenceName,
     SEQUENCE: [
       {
         head_pan: parseFloat(sequence[0]["head_pan"]),
@@ -813,6 +827,18 @@ function SequencerTest() {
     messageType: "std_msgs/String",
   });
 
+  var seqArrList = new ROSLIB.Topic({
+    ros: ros,
+    name: "Sequencer/list",
+    messageType: "std_msgs/String",
+  });
+
+  var listener = new ROSLIB.Topic({
+    ros: ros,
+    name: "Sequencer/joint_value",
+    messageType: "alfarobi_web_gui/Sequencer",
+  });
+
   var instructionMsg = new ROSLIB.Message({
     data: "",
   });
@@ -821,19 +847,44 @@ function SequencerTest() {
     data: String(robotState.data),
   });
 
-  var seqArrListener = new ROSLIB.Topic({
-    ros: ros,
-    name: "/SequenceArr",
-    messageType: "alfarobi_web_gui/SequencerArr",
-  });
+  motionState.publish(motionMessage)
 
-  seqArrListener.subscribe(function (message) {
+  seqArr.subscribe(function (message) {
     console.log(
-      "DAPET BOS " + seqArrListener.name + ": " + message.SEQUENCE
+      "DAPET BOS " + seqArr.name + ": " + message.SEQUENCE
     );
     setSequence(message.SEQUENCE)
-    
   });
+
+  listener.subscribe(function (message) {
+    const updateSeq = {
+        ...sequence,
+        [sequenceNumb]: {
+          ...sequence[sequenceNumb],
+            head_pan: parseFloat(message["head_pan"]),
+            head_tilt: parseFloat(message["head_tilt"]),
+            l_ank_p: parseFloat(message["l_ank_p"]),
+            l_ank_r: parseFloat(message["l_ank_r"]),
+            l_hip_p: parseFloat(message["l_hip_p"]),
+            l_hip_r: parseFloat(message["l_hip_r"]),
+            l_hip_y: parseFloat(message["l_hip_y"]),
+            l_knee: parseFloat(message["l_knee"]),
+            l_sho_p: parseFloat(message["l_sho_p"]),
+            l_sho_r: parseFloat(message["l_sho_r"]),
+            l_el: parseFloat(message["l_el"]),
+            r_ank_p: parseFloat(message["r_ank_p"]),
+            r_ank_r: parseFloat(message["r_ank_r"]),
+            r_hip_p: parseFloat(message["r_hip_p"]),
+            r_hip_r: parseFloat(message["r_hip_r"]),
+            r_hip_y: parseFloat(message["r_hip_y"]),
+            r_knee: parseFloat(message["r_knee"]),
+            r_sho_p: parseFloat(message["r_sho_p"]),
+            r_sho_r: parseFloat(message["r_sho_r"]),
+        },
+      };
+      console.log("gacor")
+  setSequence(updateSeq);
+});
   
   return (
     <div className="flex flex-col h-screen bg-secondary_bg">
@@ -846,8 +897,12 @@ function SequencerTest() {
           </p>
         </div>
         <div className="flex flex-row align-center mt-4 mb-12 mx-4 p-2 px-4 bg-primary_bg rounded-xl">
+              <p className="text-white text-1xl">Body module : </p>
+              <DropdownBM color={"white"} sequence={["JATUH_DEPAN", "JATUH_BELAKANG", "JATUH_KANAN", "JATUH_KIRI"]} state={sequenceName} updateState={setSequenceName}  message={seqArrList} />
+        </div>
+        <div className="flex flex-row align-center mt-4 mb-12 mx-4 p-2 px-4 bg-primary_bg rounded-xl">
           <p className="text-white text-1xl">Torque(s)</p>
-          <DropdownT color={"white"} ros={ros} topicNameInstruction={"/Sequencer/web_button"} topicNameTorque={"/Sequencer/torque"}/>
+          <DropdownT color={"white"} ros={ros} topicNameInstruction={"/Sequencer/web_button"} topicNameTorque={"/Sequencer/torque"} />
         </div>
       </div>
       <div className="flex flex-row items-center mx-auto">
@@ -869,7 +924,7 @@ function SequencerTest() {
                         [`${data}`]: parseFloat(event.target.value),
                       },
                     };
-                    console.log(nextSeq);
+                    // console.log(nextSeq);
                     setSequence(nextSeq);
                   }}
                 />
@@ -896,6 +951,15 @@ function SequencerTest() {
           type="submit"
         >
           Send
+        </button>
+        <button
+          className="mt-4 mb-12 mx-4 p-2 px-10 bg-[#04C3FF] hover:bg-black text-black hover:text-[#B0ECFF] rounded-xl hover:cursor-pointer"
+          onClick={() => {
+            instruction.publish({data: "refresh"})         
+          }}
+          type="submit"
+        >
+          Refresh!
         </button>
         <button
           className="mt-4 mb-12 mx-4 p-2 px-10 bg-[#04C3FF] hover:bg-black text-black hover:text-[#B0ECFF] rounded-xl hover:cursor-pointer"
