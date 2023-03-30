@@ -1,0 +1,258 @@
+onthespot:
+  trunkXOffsetPCoefTurn: 0
+  trunkXOffsetPCoefForward: 0.5
+  footApexPhase: 0.5
+  footOvershootRatio: 0.0500000007
+  trunkSwing: 0.25
+  freq: 1.55
+  trunkPitch: 0.209439516
+  trunkPitchPCoefForward: 0
+  trunkYOffset: 0
+  footDistance: 0.129999995
+  footRise: 0.0399999991
+  trunkPitchPCoefTurn: 0
+  trunkYOnlyInDoubleSupport: false
+  footPutDownPhase: 1
+  trunkXOffset: 0.00800000038
+  footOvershootPhase: 0.850000024
+  trunkPhase: 0.5
+  doubleSupportRatio: 0.0799999982
+  footPutDownZOffset: 0
+  trunkPause: 0.5
+  trunkHeight: 0.379999995
+
+walkXForward:
+  trunkXOffsetPCoefTurn: 0
+  trunkXOffsetPCoefForward: 0.300000012
+  footApexPhase: 0.5
+  footOvershootRatio: 0.0500000007
+  trunkSwing: 0.2
+  freq: 1.60000002
+  trunkPitch: 0.261799395
+  trunkPitchPCoefForward: 0
+  trunkYOffset: 0.00
+  footDistance: 0.129999995
+  footRise: 0.0400000007
+  trunkPitchPCoefTurn: 0
+  trunkYOnlyInDoubleSupport: false
+  footPutDownPhase: 1
+  trunkXOffset: 0.0149999997
+  footOvershootPhase: 0.850000024
+  trunkPhase: 0.5
+  doubleSupportRatio: 0.0799999982
+  footPutDownZOffset: 0
+  trunkPause: 0.5
+  trunkHeight: 0.380000014
+    
+
+walkXBackward:
+  trunkXOffsetPCoefTurn: 0
+  trunkXOffsetPCoefForward: 0.5
+  footApexPhase: 0.5
+  footOvershootRatio: 0.0500000007
+  trunkSwing: 0.25
+  freq: 1.60000002
+  trunkPitch: 0.279252678
+  trunkPitchPCoefForward: 0
+  trunkYOffset: -0.00300000003
+  footDistance: 0.129999995
+  footRise: 0.0399999991
+  trunkPitchPCoefTurn: 0
+  trunkYOnlyInDoubleSupport: false
+  footPutDownPhase: 1
+  trunkXOffset: 0.0250000004
+  footOvershootPhase: 0.850000024
+  trunkPhase: 0.5
+  doubleSupportRatio: 0.0799999982
+  footPutDownZOffset: 0
+  trunkPause: 0.5
+  trunkHeight: 0.380000014
+  
+
+walkYRight:
+  trunkXOffsetPCoefTurn: 0
+  trunkXOffsetPCoefForward: 0.5
+  footApexPhase: 0.5
+  footOvershootRatio: 0.0500000007
+  trunkSwing: 0.25
+  freq: 1.60000002
+  trunkPitch: 0.244346097
+  trunkPitchPCoefForward: 0
+  trunkYOffset: -0.00300000003
+  footDistance: 0.129999995
+  footRise: 0.0399999991
+  trunkPitchPCoefTurn: 0
+  trunkYOnlyInDoubleSupport: false
+  footPutDownPhase: 1
+  trunkXOffset: 0.025
+  footOvershootPhase: 0.850000024
+  trunkPhase: 0.5
+  doubleSupportRatio: 0.00999999978
+  footPutDownZOffset: 0
+  trunkPause: 0.5
+  trunkHeight: 0.380000014
+  
+
+walkYLeft:
+  trunkXOffsetPCoefTurn: 0
+  trunkXOffsetPCoefForward: 0.5
+  footApexPhase: 0.5
+  footOvershootRatio: 0.0500000007
+  trunkSwing: 0.25
+  freq: 1.60000002
+  trunkPitch: 0.244346097
+  trunkPitchPCoefForward: 0
+  trunkYOffset: 0.00499999989
+  footDistance: 0.129999995
+  footRise: 0.0399999991
+  trunkPitchPCoefTurn: 0
+  trunkYOnlyInDoubleSupport: false
+  footPutDownPhase: 1
+  trunkXOffset: 0.025
+  footOvershootPhase: 0.850000024
+  trunkPhase: 0.5
+  doubleSupportRatio: 0.00999999978
+  footPutDownZOffset: 0
+  trunkPause: 0.5
+  trunkHeight: 0.380000014
+  
+
+revoCW:
+  trunkXOffsetPCoefTurn: 0
+  trunkXOffsetPCoefForward: 0.5
+  footApexPhase: 0.5
+  footOvershootRatio: 0.0500000007
+  trunkSwing: 0.25
+  freq: 1.60000002
+  trunkPitch: 0.22
+  trunkPitchPCoefForward: 0
+  trunkYOffset: -0.00300000003
+  footDistance: 0.129999995
+  footRise: 0.0399999991
+  trunkPitchPCoefTurn: 0
+  trunkYOnlyInDoubleSupport: false
+  footPutDownPhase: 1
+  trunkXOffset: 0.015
+  footOvershootPhase: 0.850000024
+  trunkPhase: 0.5
+  doubleSupportRatio: 0.0799999982
+  footPutDownZOffset: 0
+  trunkPause: 0.5
+  trunkHeight: 0.380000014
+  
+
+revoCCW:
+  trunkXOffsetPCoefTurn: 0
+  trunkXOffsetPCoefForward: 0.5
+  footApexPhase: 0.5
+  footOvershootRatio: 0.0500000007
+  trunkSwing: 0.25
+  freq: 1.60000002
+  trunkPitch: 0.2
+  trunkPitchPCoefForward: 0
+  trunkYOffset: -0.00300000003
+  footDistance: 0.129999995
+  footRise: 0.0399999991
+  trunkPitchPCoefTurn: 0
+  trunkYOnlyInDoubleSupport: false
+  footPutDownPhase: 1
+  trunkXOffset: 0.015
+  footOvershootPhase: 0.850000024
+  trunkPhase: 0.5
+  doubleSupportRatio: 0.0799999982
+  footPutDownZOffset: 0
+  trunkPause: 0.5
+  trunkHeight: 0.380000014
+  
+
+rotateCW:
+  trunkXOffsetPCoefTurn: 0
+  trunkXOffsetPCoefForward: 0.5
+  footApexPhase: 0.5
+  footOvershootRatio: 0.0500000007
+  trunkSwing: 0.2
+  freq: 1.60000002
+  trunkPitch: 0.244346097
+  trunkPitchPCoefForward: 0
+  trunkYOffset: -0.00300000003
+  footDistance: 0.129999995
+  footRise: 0.0399999991
+  trunkPitchPCoefTurn: 0
+  trunkYOnlyInDoubleSupport: false
+  footPutDownPhase: 1
+  trunkXOffset: 0.010
+  footOvershootPhase: 0.850000024
+  trunkPhase: 0.5
+  doubleSupportRatio: 0.150000006
+  footPutDownZOffset: 0
+  trunkPause: 0.5
+  trunkHeight: 0.380000014
+
+rotateCCW:
+  trunkXOffsetPCoefTurn: 0
+  trunkXOffsetPCoefForward: 0.5
+  footApexPhase: 0.5
+  footOvershootRatio: 0.0500000007
+  trunkSwing: 0.25
+  freq: 1.60000002
+  trunkPitch: 0.244346097
+  trunkPitchPCoefForward: 0
+  trunkYOffset: 0.00
+  footDistance: 0.129999995
+  footRise: 0.0399999991
+  trunkPitchPCoefTurn: 0
+  trunkYOnlyInDoubleSupport: false
+  footPutDownPhase: 1
+  trunkXOffset: 0.010
+  footOvershootPhase: 0.850000024
+  trunkPhase: 0.5
+  doubleSupportRatio: 0.150000006
+  footPutDownZOffset: 0
+  trunkPause: 0.5
+  trunkHeight: 0.380000014
+
+walkXFast:
+  footDistance: 0.13
+  trunkSwing: 0.25
+  trunkXOffset: 0.025
+  footRise: 0.05
+  trunkPitch: 0.349066
+  trunkYOnlyInDoubleSupport: false
+  trunkYOffset: 0
+  trunkPause: 0.5
+  trunkPhase: 0.5
+  doubleSupportRatio: 0.08
+  footPutDownZOffset: 0
+  trunkXOffsetPCoefForward: 0.3
+  footPutDownPhase: 1
+  footOvershootRatio: 0.05
+  trunkXOffsetPCoefTurn: 0
+  footApexPhase: 0.5
+  footOvershootPhase: 0.85
+  trunkPitchPCoefForward: 0
+  freq: 1.6
+  trunkPitchPCoefTurn: 0
+  trunkHeight: 0.38
+  
+sampah: 
+  trunkXOffsetPCoefTurn: 0
+  trunkXOffsetPCoefForward: 0
+  footApexPhase: 0.5
+  footOvershootRatio: 0.0500000007
+  trunkSwing: 0.200000003
+  freq: 1.60000002
+  trunkPitch: 0.279252678
+  trunkPitchPCoefForward: 0
+  trunkYOffset: 0
+  footDistance: 0.129999995
+  footRise: 0.0500000007
+  trunkPitchPCoefTurn: 0
+  trunkYOnlyInDoubleSupport: false
+  footPutDownPhase: 1
+  trunkXOffset: 0.0149999997
+  footOvershootPhase: 0.850000024
+  trunkPhase: 0.5
+  doubleSupportRatio: 0.0500000007
+  footPutDownZOffset: 0
+  trunkPause: 0.5
+  trunkHeight: 0.379999995

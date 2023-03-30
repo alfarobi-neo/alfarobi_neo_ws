@@ -1,0 +1,32 @@
+densisMode: true
+densis:
+  inputType: 0
+  # 0: constant angle
+  # 1: sinusoidal
+  # 2: psudonoise
+  # 3: PRBS
+  # 4: pulsed rich
+  # 5: random pulsed rich
+  # 6: sine sweep
+  inputAmp: 0
+  freq: 2
+  ankleMode: 0
+  pseudonoise:
+    min: -1
+    max: 5
+    resolution: 0.01
+    holdTime: 0.03
+  pulsedRich:
+    min: 0
+    max: 3
+    onTime: 1
+    offTime: 2
+  randomPulsedRich:
+    min: 0
+    max: 5
+  sinesweep:
+    min: -2
+    max: 6
+    fmin: 0.5
+    fmax: 8
+    period: 5

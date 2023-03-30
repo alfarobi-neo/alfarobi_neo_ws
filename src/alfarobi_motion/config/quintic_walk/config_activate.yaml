@@ -1,0 +1,5 @@
+printWalkVar: false
+printJointVar: false
+printFeedbackVar: true
+fullStateFeedback: true
+positionFeedback: false

@@ -1,0 +1,88 @@
+reset: 0
+M: 4
+inputMode: 6
+# 0: step
+# 1: sinus + noise
+# 2: pseudonoise
+# 3: pseudonoise to PRBS
+# 4: pulsed rich input
+# 5: random pulsed rich input
+# 6: sine sweep
+x:
+ amp: 5
+ freq: 1.5
+ noise: 50
+y:
+ amp: 2
+ freq: 2
+ noise: 80
+z:
+ amp: 0.1
+ freq: 3
+ noise: 0
+sinesweep:
+  min: 0
+  max: 3
+  fmin: 1
+  fmax: 8
+  period: 10
+pseudonoise:
+  min: -1
+  max: 1
+  resolution: 0.01
+  holdTime: 0.033
+pulsedRich:
+  min: 0
+  max: 10
+  onTime: 1
+  offTime: 2
+randomPulsedRich:
+  min: 0
+  max: 10
+#  onTime: 2
+ # offTime: 2
+physicalParams:
+  m: 5.5 # total mass (kg)
+  g: 9.80 # gravitational acceleration (m/s^2)
+  B: 0.0347 # servo damping
+  F: 0.0843 # servo rotational friction
+  Is: 0.0147 # servo moment of inertial (no load)
+  MX64:
+    Kp: 850 # /8 
+    Kt: 10.7 #* 10^-3
+    N:  200
+    R: 8.3
+    omegaNoLoad: 10600 #* rpmToRad;
+    iNoLoad: 9.2 #* 10^-3;
+    Jm: 0.868 #* 10^-3 * (10^-2)^2;
+    stallTorqueMotor: 15.5 #* 10^-3
+    stallTorqueServo: 6.0
+  discreteStateSpace:
+    a_11: 1
+    a_12: 0.0029991
+    a_21: 0
+    a_22: 0.99941
+    b_1: 0.0000074157
+    b_2: 0.0049433
+    c_1: 1
+    c_2: 0
+  transferFunction:
+    b0: 0
+    b1: 0.0000074157
+    b2: 0.0000074143
+    a0: 1
+    a1: -1.9994
+    a2: 0.99941
+  DSP:
+    L: 0.36 # pendulum length (m)
+    I_xx: 0.5880 #0.4066 # kg/m^2
+    I_yy: 0.5920 #0.3855 # kg/m^2
+  LSSP:
+    L: 0.36 # pendulum length (m)
+    I_xx: 0.5880 #0.4066 # kg/m^2
+    I_yy: 0.5920 #0.3855 # kg/m^2
+  RSSP:
+    L: 0.36 # pendulum length (m)
+    I_xx: 0.5880 #0.4066 # kg/m^2
+    I_yy: 0.5920 #0.3855 # kg/m^2
+  

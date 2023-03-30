@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+
+<launch>s
+    <node name="model_based_control_node" pkg="model_based_control" type="model_based_control_exec" output="screen"/>
+    
+</launch>
+

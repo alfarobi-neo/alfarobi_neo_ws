@@ -1,0 +1,54 @@
+onthespot:
+  XMove: 0
+  YMove: 0
+  ZMove: 0 
+
+walkXForward:
+  XMove: 0.4
+  YMove: 0
+  ZMove: 0 
+
+walkXBackward:
+  XMove: 0
+  YMove: 0
+  ZMove: 0 
+  
+walkYRight:
+  XMove: 0
+  YMove: -0.2
+  ZMove: -0.8 
+
+walkYLeft:
+  XMove: 0
+  YMove: 0.2
+  ZMove: 0.8
+
+revoCW:
+  XMove: 0
+  YMove: 0.2
+  ZMove: -1
+
+revoCCW:
+  XMove: 0
+  YMove: -0.2
+  ZMove: 1
+
+rotateCW:
+  XMove: 0
+  YMove: 0.1
+  ZMove: -1.2
+
+rotateCCW:
+  XMove: 0
+  YMove: 0
+  ZMove: 1.2
+
+walkXFast:
+  XMove: 0.5
+  YMove: 0
+  ZMove: 0
+  
+sampah: 
+  XMove: 0
+  YMove: 0
+  ZMove: 0 

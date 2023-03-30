@@ -1,0 +1,17 @@
+bodyHeight: 0.3
+bodyTilt: 5.729578036685597
+stepHeight: 0.06
+footX: 0.01
+footY: 0.038
+tStep: 0.285
+tZmp: 0.165
+frontComp: 0.008
+supportFront: 0
+supportFront2: 0.005
+supportSideX: -0.25
+supportTurn: -0.25
+supportY: 0.075
+supportX: 0
+ArmPitch: 70
+ArmRoll: 0
+ArmElbow: 90

@@ -1,0 +1,41 @@
+GyroStabilizer: "\x00"
+bodyHeight: 0.32
+bodyTilt: 0
+stepHeight: 0.055
+footX: 0
+footY: 0.05
+tStep: 0.29
+tZmp: 0.1806094
+frontComp: 0.008
+supportFront: 0.01
+supportFront2: 0.005
+supportSideX: -0.25
+supportTurn: -0.25
+supportY: 0.02
+supportX: 0
+ArmPitch: 90
+ArmRoll: 0
+ArmElbow: 0
+hipY_fact: 0
+hipY_deadband: 0
+hipY_maxVal: 0
+kneeX_fact: 1.08
+kneeX_deadband: 5
+kneeX_maxVal: 17
+ankleX_fact: 1
+ankleX_deadband: 4
+ankleX_maxVal: 22
+ankleY_fact: 0.9
+ankleY_deadband: 4
+ankleY_maxVal: 11
+armX_fact: 1
+armX_deadband: 20
+armX_maxVal: 45
+armY_fact: 0
+armY_deadband: 0
+armY_maxVal: 0
+Kp : 0.0
+Kd : 0.0
+TH1 : 0.0
+TH2 : 0.0
+Acc : 0.0

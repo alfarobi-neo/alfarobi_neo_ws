@@ -1,0 +1,34 @@
+m: 5.5 # total mass (kg)
+g: 9.80 # gravitational acceleration (m/s^2)
+dT: 0.040
+B: 0.0347 # servo damping
+F: 0.0843 # servo rotational friction
+Is: 0.0147 # servo moment of inertial (no load)
+DSP:
+  L: 0.36 # pendulum length (m)
+  I_xx: 0.5880 #0.4066 # kg/m^2
+  I_yy: 0.5920 #0.3855 # kg/m^2
+LSSP:
+  L: 0.36 # pendulum length (m)
+  I_xx: 0.5880 #0.4066 # kg/m^2
+  I_yy: 0.5920 #0.3855 # kg/m^2
+RSSP:
+  L: 0.36 # pendulum length (m)
+  I_xx: 0.5880 #0.4066 # kg/m^2
+  I_yy: 0.5920 #0.3855 # kg/m^2
+MX64:
+  Kp: 850 # /4 
+  Kt: 8.68 #* 10^-3
+  N:  200
+  R: 3.43
+  eta: 0.836
+  nominalVoltage: 15
+  omegaNoLoad: 15000 #* rpmToRad;
+  iNoLoad: 52.5 #* 10^-3;
+  Jm: 0.868 #* 10^-3 * (10^-2)^2;
+  stallTorqueMotor: 15.5 #* 10^-3
+  stallTorqueServo: 6.0
+servoTorqueController:
+  Kposition: 6.6359
+  Kvelocity: 0.0436
+  KrTrq: -0.1128

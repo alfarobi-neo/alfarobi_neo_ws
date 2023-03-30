@@ -81,7 +81,7 @@ void alfarobi::ServoController::torqueEnable()
     dynamixel::GroupSyncRead groupSyncRead(portHandler, packetHandler, ADDR_PRESENT_POSITION, LEN_PRESENT_POSITION);
     for(int i=0; i<20; i++)
     {
-        if((i == servo.getIdByName(R_ELB) - 1) || ( i == servo.getIdByName(L_ELB)))
+        if((i == servo->getIdByName(R_ELB) - 1) || ( i == servo->getIdByName(L_ELB)))
         {
             printf("Servo doesn't exist!\n");
             continue;
@@ -115,7 +115,7 @@ void alfarobi::ServoController::torqueDisable() {
     // Disable Dynamixels Torque
     for(int i=0;i<20;i++)
     {
-        if((i == servo.getIdByName(R_ELB) - 1) || (i == servo.getIdByName(L_ELB) - 1))
+        if((i == servo->getIdByName(R_ELB) - 1) || (i == servo->getIdByName(L_ELB) - 1))
         {
             printf("Servo doesn't exist!\n");
             continue;

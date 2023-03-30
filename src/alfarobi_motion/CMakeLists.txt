@@ -14,12 +14,21 @@ find_package(catkin REQUIRED COMPONENTS
   alfarobi_dxlsdk
   alfarobi_web_gui
   geometry_msgs
+  alfarobi_msgs_srvs_actions
+  robotis_math
+  op3_kinematics_dynamics
+  model_based_control
+  eigen_conversions
+  tf
+  tf_conversions
   # dynamic_reconfigure
 )
 find_package(yaml-cpp REQUIRED)
 
+find_package(Eigen3 REQUIRED)
+
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS system)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -138,12 +147,33 @@ include_directories(
 ## Declare a C++ library
 add_library(${PROJECT_NAME}
   src/alfarobi_motion/alfarobi_motion.cpp
+
+  # Sequencer
   src/sequencer/sequencer_list.cpp
   src/sequencer/sequencer.cpp
   src/sequencer/sequencer_node.cpp
+
+  # Initial position
   src/initial_position/initial_position.cpp
   src/initial_position/initial_position_node.cpp
+
   src/head_control/head_control.cpp
+
+  # Quintic walk
+  src/quintic_walk/AnalyticIKSolver.cpp
+  src/quintic_walk/Footstep.cpp
+  #src/quintic_walk/fuzzy_wa_mom.cpp
+  src/quintic_walk/fuzzy.cpp
+  src/quintic_walk/kinematics.cpp
+  src/quintic_walk/quinticwalk.cpp
+  src/quintic_walk/walk_engine.cpp
+  src/quintic_walk/Spline/Polynom.cpp
+  src/quintic_walk/Spline/SmoothSpline.cpp
+  src/quintic_walk/Spline/Spline.cpp
+  src/quintic_walk/Utils/Combination.cpp
+  src/quintic_walk/Utils/NewtonBinomial.cpp
+  src/quintic_walk/Utils/TrajectoryUtils.cpp
+  
 )
 
 ## Add cmake target dependencies of the library
@@ -162,6 +192,20 @@ add_executable(${PROJECT_NAME}_node
   src/initial_position/initial_position.cpp
   src/initial_position/initial_position_node.cpp
   src/head_control/head_control.cpp
+
+  src/quintic_walk/AnalyticIKSolver.cpp
+  src/quintic_walk/Footstep.cpp
+  #src/quintic_walk/fuzzy_wa_mom.cpp
+  src/quintic_walk/fuzzy.cpp
+  src/quintic_walk/kinematics.cpp
+  src/quintic_walk/quinticwalk.cpp
+  src/quintic_walk/walk_engine.cpp
+  src/quintic_walk/Spline/Polynom.cpp
+  src/quintic_walk/Spline/SmoothSpline.cpp
+  src/quintic_walk/Spline/Spline.cpp
+  src/quintic_walk/Utils/Combination.cpp
+  src/quintic_walk/Utils/NewtonBinomial.cpp
+  src/quintic_walk/Utils/TrajectoryUtils.cpp
 )
 target_link_libraries(${PROJECT_NAME}_node  
   ${catkin_LIBRARIES}

@@ -39,6 +39,7 @@ struct joint_value {
     /* members */
     double  val[20],
             // pos[20],
+            goal[20],
             target_time[20], 
             pause_time[20];
     bool    torque_enabled[20], 

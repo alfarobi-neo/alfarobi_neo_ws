@@ -1,0 +1,835 @@
+#include "quintic_walk/quinticwalk.h"
+
+using namespace boost::assign;
+namespace robotis_op
+{
+
+QuinticWalk::QuinticWalk()
+    :
+      _footstep(0.14, true),
+      _phase(0.0),
+      _params(),
+      _orders(0.0, 0.0, 0.0),
+      _isEnabled(false),
+      _wasEnabled(false),
+      _isTrajsOscillating(false),
+      _trunkPosAtLast(),
+      _trunkVelAtLast(),
+      _trunkAccAtLast(),
+      _trunkAxisPosAtLast(),
+      _trunkAxisVelAtLast(),
+      _trunkAxisAccAtLast(),
+      _trajs(),
+      _compensate_gravity(false),
+      debug_print_(false)
+{
+
+    enable_ = false;
+    module_name_ = "quintic_walk";
+    control_mode_ = robotis_framework::PositionControl;
+
+    // result
+    result_["r_hip_yaw"] = new robotis_framework::DynamixelState();
+    result_["r_hip_roll"] = new robotis_framework::DynamixelState();
+    result_["r_hip_pitch"] = new robotis_framework::DynamixelState();
+    result_["r_knee"] = new robotis_framework::DynamixelState();
+    result_["r_ank_pitch"] = new robotis_framework::DynamixelState();
+    result_["r_ank_roll"] = new robotis_framework::DynamixelState();
+
+    result_["l_hip_yaw"] = new robotis_framework::DynamixelState();
+    result_["l_hip_roll"] = new robotis_framework::DynamixelState();
+    result_["l_hip_pitch"] = new robotis_framework::DynamixelState();
+    result_["l_knee"] = new robotis_framework::DynamixelState();
+    result_["l_ank_pitch"] = new robotis_framework::DynamixelState();
+    result_["l_ank_roll"] = new robotis_framework::DynamixelState();
+
+    result_["r_sho_pitch"] = new robotis_framework::DynamixelState();
+    result_["l_sho_pitch"] = new robotis_framework::DynamixelState();
+
+    // joint table
+    joint_table_["r_hip_yaw"] = 0;
+    joint_table_["r_hip_roll"] = 1;
+    joint_table_["r_hip_pitch"] = 2;
+    joint_table_["r_knee"] = 3;
+    joint_table_["r_ank_pitch"] = 4;
+    joint_table_["r_ank_roll"] = 5;
+
+    joint_table_["l_hip_yaw"] = 6;
+    joint_table_["l_hip_roll"] = 7;
+    joint_table_["l_hip_pitch"] = 8;
+    joint_table_["l_knee"] = 9;
+    joint_table_["l_ank_pitch"] = 10;
+    joint_table_["l_ank_roll"] = 11;
+
+    joint_table_["r_sho_pitch"] = 12;
+    joint_table_["l_sho_pitch"] = 13;
+
+    // current_position
+    current_position["r_hip_yaw"] = 0;
+    current_position["r_hip_roll"] = 0;
+    current_position["r_hip_pitch"] = 0;
+    current_position["r_knee"] = 0;
+    current_position["r_ank_pitch"] = 0;
+    current_position["r_ank_roll"] = 0;
+
+    current_position["l_hip_yaw"] = 0;
+    current_position["l_hip_roll"] = 0;
+    current_position["l_hip_pitch"] = 0;
+    current_position["l_knee"] = 0;
+    current_position["l_ank_pitch"] = 0;
+    current_position["l_ank_roll"] = 0;
+
+    current_position["r_sho_pitch"] = 0;
+    current_position["l_sho_pitch"] = 0;
+
+    target_position_ = Eigen::MatrixXd::Zero(1, result_.size());
+    goal_position_ = Eigen::MatrixXd::Zero(1, result_.size());
+    init_position_ = Eigen::MatrixXd::Zero(1, result_.size());
+    joint_axis_direction_ = Eigen::MatrixXi::Zero(1, result_.size());
+
+
+
+}
+
+QuinticWalk::~QuinticWalk()
+{
+    queue_thread_.join();
+}
+
+void QuinticWalk::initialize(const int control_cycle_msec, robotis_framework::Robot *robot)
+{
+    queue_thread_ = boost::thread(boost::bind(&QuinticWalk::queueThread, this));
+    control_cycle_msec_ = control_cycle_msec;
+
+    //                     R_HIP_YAW, R_HIP_ROLL, R_HIP_PITCH, R_KNEE, R_ANKLE_PITCH, R_ANKLE_ROLL,
+    //                     L_HIP_YAW, L_HIP_ROLL, L_HIP_PITCH, L_KNEE, L_ANKLE_PITCH, L_ANKLE_ROLL,
+    //                     R_ARM_SWING, L_ARM_SWING
+    joint_axis_direction_ <<      -1,         -1,          -1,     -1,             1,            1,
+            -1,         -1,           1,      1,            -1,            1,
+            1,         -1;
+    init_position_        <<     0.0,        0.0,         0.0,    0.0,           0.0,          0.0,
+            0.0,        0.0,         0.0,    0.0,           0.0,          0.0,
+            5.0,       -5.0;
+    init_position_ *= DEGREE2RADIAN;
+
+    _stopRequest = true;
+    walkingReset();
+    _isLeftSupport = true;
+    _supportFootOdom = tf::Transform();
+    tf::Quaternion quat = tf::Quaternion();
+    quat.setRPY(0,0,0);
+    _supportFootOdom.setRotation(quat);
+    _supportFootOdom.setOrigin(tf::Vector3(0,0,0));
+
+    joint_goals.resize(12);
+    joint_goals += 0,0,0,0,0,0,0,0,0,0,0,0;
+
+
+    //Full walk cycle frequency
+    //(in Hz, > 0)
+    walking_param_.freq = 1.5;
+    //Length of double support phase in half cycle
+    //(ratio, [0:1])
+    walking_param_.doubleSupportRatio = 0.2;
+    //Lateral distance between the feet center
+    //(in m, >= 0)
+    walking_param_.footDistance = 0.13;
+    //Maximum flying foot height
+    //(in m, >= 0)
+    walking_param_.footRise = 0.035;
+    //Let the foot's downward trajectory end above the ground
+    //this is helpful if the support leg bends
+    //(in m, >= 0)
+    walking_param_.footPutDownZOffset = 0;
+    //Phase time for moving the foot from Z offset to ground
+    //(phase between apex and single support end [0:1])
+    walking_param_.footPutDownPhase = 1;
+    //Phase of flying foot apex
+    //(single support cycle phase, [0:1])
+    walking_param_.footApexPhase = 0.5;
+    //Foot X/Y overshoot in ratio of step length
+    //(ratio, >= 0)
+    walking_param_.footOvershootRatio = 0.05;
+    //Foot X/Y overshoot phase
+    //(single support cycle phase, [footApexPhase:1]
+    walking_param_.footOvershootPhase = 0.85;
+    //Height of the trunk from ground
+    //(in m, > 0)
+    walking_param_.trunkHeight = 0.27;
+    //Trunk pitch orientation
+    //(in rad)
+    walking_param_.trunkPitch = 0.2;
+    //Phase offset of trunk oscillation
+    //(half cycle phase, [0:1])
+    walking_param_.trunkPhase = 0.4;
+    //Trunk forward offset
+    //(in m)
+    walking_param_.trunkXOffset = 0.005;
+    //Trunk lateral offset
+    //(in m)
+    walking_param_.trunkYOffset = 0.0;
+    //Trunk lateral oscillation amplitude ratio
+    //(ratio, >= 0)
+    walking_param_.trunkSwing = 0.3;
+    //Trunk swing pause length in phase at apex
+    //(half cycle ratio, [0:1])
+    walking_param_.trunkPause = 0.0;
+    //Trunk forward offset proportional to forward step
+    //(in 1)
+    walking_param_.trunkXOffsetPCoefForward = 0.0;
+    //Trunk forward offset proportional to rotation step
+    //(in m/rad)
+    walking_param_.trunkXOffsetPCoefTurn = 0.0;
+    //Trunk pitch orientation proportional to forward step
+    //(in rad/m)
+    walking_param_.trunkPitchPCoefForward = 0.0;
+    //Trunk pitch orientation proportional to rotation step
+    //(in 1)
+    walking_param_.trunkPitchPCoefTurn = 0.0;
+
+    walking_param_.trunkYOnlyInDoubleSupport = false;
+
+    ros::NodeHandle ros_node;
+
+    std::string default_param_path = ros::package::getPath("quintic_walk") + "/config/config.yaml";
+    ros_node.param<std::string>("quintic_walk_param", param_path_, default_param_path);
+
+    loadParameter(param_path_);
+
+    //Initialize the footstep
+    _footstep.setFootDistance(walking_param_.footDistance);
+    _footstep.reset(true);
+    //Reset the trunk saved state
+    resetTrunkLastState();
+    //Trajectories initialization
+    buildTrajectories();
+
+}
+
+void QuinticWalk::stop()
+{
+    _stopRequest = true;
+    walkingReset();
+    _isLeftSupport = true;
+}
+
+bool QuinticWalk::isRunning()
+{
+    return _walkActive;
+}
+
+void QuinticWalk::onModuleDisable()
+{
+    ROS_INFO("Quintic Walk Disable");
+    walkingReset();
+}
+
+void QuinticWalk::onModuleEnable()
+{
+    ROS_INFO("Quintic Walk Enable");
+    walkingReset();
+}
+
+void QuinticWalk::queueThread()
+{
+    ros::NodeHandle ros_node;
+    ros::CallbackQueue callback_queue;
+
+    ros_node.setCallbackQueue(&callback_queue);
+
+    /* publish topics */
+    status_msg_pub_ = ros_node.advertise<robotis_controller_msgs::StatusMsg>("robotis/status", 1);
+
+    /* ROS Service Callback Functions */
+    ros::ServiceServer get_walking_param_server = ros_node.advertiseService("/robotis/quintic_walk/get_params",
+                                                                            &QuinticWalk::getWalkigParameterCallback,
+                                                                            this);
+
+    /* sensor topic subscribe */
+    ros::Subscriber walking_command_sub = ros_node.subscribe("/robotis/quintic_walk/command", 10,
+                                                             &QuinticWalk::walkingCommandCallback, this);
+    ros::Subscriber walking_param_sub = ros_node.subscribe("/robotis/quintic_walk/set_params", 10,
+                                                           &QuinticWalk::walkingParameterCallback, this);
+    
+    ros::Subscriber imu_callback = ros_node.subscribe("/arduino_controller/imu", 10, &QuinticWalk::IMUCallback, this);
+    ros::WallDuration duration(control_cycle_msec_ / 1000.0);
+    while(ros_node.ok())
+        callback_queue.callAvailable(duration);
+
+}
+
+void QuinticWalk::loadParameter(const std::string path)
+{
+    YAML::Node node;
+
+    try
+    {
+        // load yaml
+        node = YAML::LoadFile(param_path_.c_str());
+
+    } catch (const std::exception& e)
+    {
+        ROS_ERROR("Fail to load yaml file.");
+        return;
+    }
+
+    //    YAML::Node doc = node["walk_zmp"];
+
+    walking_param_.freq = node["freq"].as<double>();
+    walking_param_.doubleSupportRatio = node["doubleSupportRatio"].as<double>();
+    walking_param_.footDistance = node["footDistance"].as<double>();
+    
+    if(walking_param_.footDistance < 2*0.04)
+        walking_param_.footDistance = 2*0.04;
+    
+    walking_param_.footRise = node["footRise"].as<double>();
+    walking_param_.footPutDownZOffset = node["footPutDownZOffset"].as<double>();
+    walking_param_.footPutDownPhase = node["footPutDownPhase"].as<double>();
+    walking_param_.footApexPhase = node["footApexPhase"].as<double>();
+    walking_param_.footOvershootRatio = node["footOvershootRatio"].as<double>();
+    walking_param_.footOvershootPhase = node["footOvershootPhase"].as<double>();
+    walking_param_.trunkHeight = node["trunkHeight"].as<double>();
+    walking_param_.trunkPitch = node["trunkPitch"].as<double>();
+    walking_param_.trunkPhase = node["trunkPhase"].as<double>();
+    walking_param_.trunkXOffset = node["trunkXOffset"].as<double>();
+    walking_param_.trunkYOffset = node["trunkYOffset"].as<double>();
+    walking_param_.trunkSwing = node["trunkSwing"].as<double>();
+    walking_param_.trunkPause = node["trunkPause"].as<double>();
+    walking_param_.trunkXOffsetPCoefForward = node["trunkXOffsetPCoefForward"].as<double>();
+    walking_param_.trunkXOffsetPCoefTurn = node["trunkXOffsetPCoefTurn"].as<double>();
+    walking_param_.trunkPitchPCoefForward = node["trunkPitchPCoefForward"].as<double>();
+    walking_param_.trunkPitchPCoefTurn = node["trunkPitchPCoefTurn"].as<double>();
+
+    // walking_param_.KP_P = node["kP_pitch"].as<double>();
+    // walking_param_.KD_P = node["kD_pitch"].as<double>();
+    // walking_param_.KI_P = node["kI_pitch"].as<double>();
+    // walking_param_.D_HIP_P = node["d_hip_pitch"].as<double>();
+    // walking_param_.D_KNEE = node["d_knee"].as<double>();
+    // walking_param_.D_ANKLE_P = node["d_ankle_pitch"].as<double>();
+
+    // walking_param_.KP_R = node["kP_roll"].as<double>();
+    // walking_param_.KD_R = node["kD_roll"].as<double>();
+    // walking_param_.KI_R = node["kI_roll"].as<double>();
+    // walking_param_.D_HIP_R = node["d_hip_roll"].as<double>();
+    // walking_param_.D_ANKLE_R = node["d_ankle_roll"].as<double>();
+    // walking_param_.shoulder_gain = node["shoulder_gain"].as<double>();
+  
+    // walking_param_.r_x_offset = node["r_x_offset"].as<double>();
+    // walking_param_.r_y_offset = node["r_y_offset"].as<double>();
+    // walking_param_.r_z_offset = node["r_z_offset"].as<double>();
+    // walking_param_.r_roll_offset = node["r_roll_offset"].as<double>() ;
+    // walking_param_.r_pitch_offset = node["r_pitch_offset"].as<double>() ;
+    // walking_param_.r_yaw_offset = node["r_yaw_offset"].as<double>() ;
+    // walking_param_.l_x_offset = node["l_x_offset"].as<double>();
+    // walking_param_.l_y_offset = node["l_y_offset"].as<double>();
+    // walking_param_.l_z_offset = node["l_z_offset"].as<double>();
+    // walking_param_.l_roll_offset = node["l_roll_offset"].as<double>() ;
+    // walking_param_.l_pitch_offset = node["l_pitch_offset"].as<double>() ;
+    // walking_param_.l_yaw_offset = node["l_yaw_offset"].as<double>() ;
+
+}
+
+void QuinticWalk::saveParameter()
+{
+
+    YAML::Node node;
+    try
+    {
+        // load yaml
+        node = YAML::LoadFile(param_path_.c_str());
+    } catch (const std::exception& e)
+    {
+        ROS_ERROR("Fail to load yaml file.");
+        return;
+    }
+
+    node["freq"] = walking_param_.freq;
+    node["doubleSupportRatio"] = walking_param_.doubleSupportRatio;
+    node["footDistance"] = walking_param_.footDistance;
+    node["footRise"] = walking_param_.footRise;
+    node["footPutDownZOffset"] = walking_param_.footPutDownZOffset;
+    node["footPutDownPhase"] = walking_param_.footPutDownPhase;
+    node["footApexPhase"] = walking_param_.footApexPhase;
+    node["footOvershootRatio"] = walking_param_.footOvershootRatio;
+    node["footOvershootPhase"] = walking_param_.footOvershootPhase;
+    node["trunkHeight"] = walking_param_.trunkHeight;
+    node["trunkPitch"] = walking_param_.trunkPitch;
+    node["trunkPhase"] = walking_param_.trunkPhase;
+    node["trunkXOffset"] = walking_param_.trunkXOffset;
+    node["trunkYOffset"] = walking_param_.trunkYOffset;
+    node["trunkSwing"] = walking_param_.trunkSwing;
+    node["trunkPause"] = walking_param_.trunkPause;
+    node["trunkXOffsetPCoefForward"] = walking_param_.trunkXOffsetPCoefForward;
+    node["trunkXOffsetPCoefTurn"] = walking_param_.trunkXOffsetPCoefTurn;
+    node["trunkPitchPCoefForward"] = walking_param_.trunkPitchPCoefForward;
+    node["trunkPitchPCoefTurn"] = walking_param_.trunkPitchPCoefTurn;
+    
+    // node["r_x_offset"] = walking_param_.r_x_offset ;
+    // node["r_y_offset"] = walking_param_.r_y_offset;
+    // node["r_z_offset"] = walking_param_.r_z_offset;
+    // node["r_roll_offset"] = walking_param_.r_roll_offset;
+    // node["r_pitch_offset"] = walking_param_.r_pitch_offset;
+    // node["r_yaw_offset"] = walking_param_.r_yaw_offset;
+    // node["l_x_offset"] =  walking_param_.l_x_offset;
+    // node["l_y_offset"] = walking_param_.l_y_offset;
+    // node["l_z_offset"] = walking_param_.l_z_offset;
+    // node["l_roll_offset"] = walking_param_.l_roll_offset ;
+    // node["l_pitch_offset"] = walking_param_.l_pitch_offset;
+    // node["l_yaw_offset"] = walking_param_.l_yaw_offset;
+    // output to file
+    std::ofstream fout(param_path_.c_str());
+    fout << node;
+
+}
+
+bool QuinticWalk::getWalkigParameterCallback(quintic_walk_msgs::GetWalkingParam::Request &req,
+                                             quintic_walk_msgs::GetWalkingParam::Response &res)
+{
+    res.parameters = walking_param_;
+
+    return true;
+}
+
+void QuinticWalk::IMUCallback(const sensor_msgs::ImuConstPtr msg)
+{
+  Vector3d imu;
+  Quaterniond imu_orientation;
+
+  imu(0) = msg->angular_velocity.x;
+  imu(1) = msg->angular_velocity.y;
+  imu(2) = msg->angular_velocity.z;
+
+  imu_orientation.x() = msg->orientation.x;
+  imu_orientation.y() = msg->orientation.y;
+  imu_orientation.z() = msg->orientation.z;
+  imu_orientation.w() = msg->orientation.w;
+
+  m_imuGyr = imu;
+  m_imuOri = robotis_framework::convertQuaternionToRPY(imu_orientation);
+  //belum tau
+  //op3_kd_->op3_link_data_[29]->orientation_=robotis_framework::convertQuaternionToRotation(imu_orientation);
+}
+
+void QuinticWalk::walkingParameterCallback(const quintic_walk_msgs::WalkingParam::ConstPtr &msg)
+{
+//    if(walking_param_.footDistance != msg->footDistance)
+//    {
+        walking_param_ = *msg;
+        if(walking_param_.footDistance < 2*0.04)
+            walking_param_.footDistance = 2*0.04;
+        _footstep.setFootDistance(walking_param_.footDistance);
+//        _footstep.reset(true);
+//    }
+//    else
+//    {
+//       walking_param_ = *msg;
+//       _footstep.setFootDistance(walking_param_.footDistance);
+//       //        _footstep.reset(true);
+
+//    }
+
+}
+
+void QuinticWalk::walkingCommandCallback(const std_msgs::String::ConstPtr &msg)
+{
+    if (msg->data == "start")
+    {
+        _walkActive = true;
+        _stopRequest = false;
+    }
+    else if (msg->data == "stop")
+        stop();
+    else if (msg->data == "save")
+        saveParameter();
+}
+
+void QuinticWalk::publishStatusMsg(unsigned int type, std::string msg)
+{
+    robotis_controller_msgs::StatusMsg status_msg;
+    status_msg.header.stamp = ros::Time::now();
+    status_msg.type = type;
+    status_msg.module_name = "quintic_walk";
+    status_msg.status_msg = msg;
+
+    status_msg_pub_.publish(status_msg);
+}
+
+
+void QuinticWalk::process(std::map<std::string, robotis_framework::Dynamixel *> dxls, std::map<std::string, double> sensors)
+{
+    int joint_size = result_.size();
+    double balance_angle[joint_size];
+
+    if (enable_ == false)
+    {
+        return;
+    }
+
+    // present angle
+    for (std::map<std::string, robotis_framework::DynamixelState *>::iterator state_iter = result_.begin();
+         state_iter != result_.end(); state_iter++)
+    {
+        std::string _joint_name = state_iter->first;
+        int joint_index = joint_table_[_joint_name];
+
+        robotis_framework::Dynamixel *dxl = NULL;
+        std::map<std::string, robotis_framework::Dynamixel*>::iterator dxl_it = dxls.find(_joint_name);
+        if (dxl_it != dxls.end())
+            dxl = dxl_it->second;
+        else
+            continue;
+
+        current_position[_joint_name] = dxl->dxl_state_->present_position_;
+        uint data = dxl->dxl_state_->bulk_read_table_["hardware_error_status"];
+        if(data != 0)
+            ROS_ERROR("Device Error %s : %d", _joint_name.c_str(), data);
+
+    }
+
+        if(_walkActive)
+        {
+            setOrders(_orders, true, true);
+        }
+        else
+        {
+            _orders = {0.0, 0.0, 0.0};
+            setOrders(_orders, false, true);
+        }
+        calculateWalking();
+
+    fullStateFeedback(balance_angle);
+
+    for (int idx = 0; idx < 12; idx++)
+    {
+        double goal_position = 0.0;
+
+        goal_position = init_position_.coeff(0, idx) + (joint_goals.at(idx) * joint_axis_direction_(idx)) + balance_angle[idx] ;
+
+        target_position_.coeffRef(0, idx) = goal_position;
+    }
+
+    // set result
+    for (std::map<std::string, robotis_framework::DynamixelState *>::iterator state_it = result_.begin();
+         state_it != result_.end(); state_it++)
+    {
+        std::string joint_name = state_it->first;
+        int joint_index = joint_table_[joint_name];
+
+        result_[joint_name]->goal_position_ = target_position_.coeff(0, joint_index);
+
+    }
+
+}
+
+void QuinticWalk::calculateWalking()
+{
+    /*
+    This method computes the next motor goals as well as the odometry if the step was changed.
+    */
+
+    // save last step odometry if support foot changes
+    // from max at 0.1
+    _orders = {walking_param_.XMove, walking_param_.YMove, walking_param_.ZMove};
+    _orders /=10;
+    _stepOdom = getFootstep().getNext();
+
+    double dt = 0.01;
+    std::chrono::time_point<std::chrono::steady_clock> current_time = std::chrono::steady_clock::now();
+    // only take real time difference if walking was not stopped before
+    // using c++ time since it is more performant than ros time. We only need a local difference, so it doesnt matter
+    if(! _just_started){
+        auto time_diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - _last_update_time);
+        dt = time_diff_ms.count() / 1000.0;
+        if(dt == 0){
+            ROS_WARN("dt was 0");
+            dt = 0.001;
+        }
+    }
+    _just_started = false;
+    _last_update_time = current_time;
+//    ROS_INFO("calc1 dt %f", dt);
+    // compute new values from splines
+    update(dt); //0.005); //todo 1.0/_engineFrequency);
+    // read the positions and orientations for trunk and fly foot
+    computeCartesianPosition(_trunkPos, _trunkAxis, _footPos, _footAxis, _isLeftSupport);
+
+    // check if support foot has changed
+    if(_isLeftSupport != _wasLeftSupport){
+        _wasLeftSupport = _isLeftSupport;
+        // add odometry change of last step to trunk odom if step was completed
+        // make transform
+        tf::Transform step;
+        step.setOrigin(tf::Vector3{_stepOdom[0], _stepOdom[1], 0.0});
+        tf::Quaternion tf_quat = tf::Quaternion();
+        tf_quat.setRPY(0, 0, _stepOdom[2]);
+        step.setRotation(tf_quat);
+
+        // transform global odometry
+        _supportFootOdom = _supportFootOdom * step;
+
+        //check if the walking came to a complete stop
+        if(_stopRequest){
+            _walkActive = false;
+            _just_started = true;
+            return;
+        }
+    }
+
+    // change goals from support foot based coordinate system to trunk based coordinate system
+    tf::Vector3 tf_vec;
+    tf::vectorEigenToTF(_trunkPos, tf_vec);
+    tf::Quaternion tf_quat = tf::Quaternion();
+    tf_quat.setRPY(_trunkAxis[0], _trunkAxis[1], _trunkAxis[2]);
+    tf_quat.normalize();
+    tf::Transform support_foot_to_trunk(tf_quat, tf_vec);
+    tf::Transform trunk_to_support_foot_goal = support_foot_to_trunk.inverse();
+
+    tf::vectorEigenToTF(_footPos, tf_vec);
+    tf_quat.setRPY(_footAxis[0], _footAxis[1], _footAxis[2]);
+    tf_quat.normalize();
+    tf::Transform support_to_flying_foot(tf_quat, tf_vec);
+    tf::Transform trunk_to_flying_foot_goal = trunk_to_support_foot_goal * support_to_flying_foot;
+
+    // call ik solver
+    bool success = false;
+    std::vector<double> Leg_Pos;
+    std::vector<double> L_Leg;
+
+    success = ik_solver.solve(trunk_to_support_foot_goal, trunk_to_flying_foot_goal, Leg_Pos, getFootstep().isLeftSupport());
+
+
+    //     publish goals if sucessfull
+    if(success){
+        joint_goals = Leg_Pos;
+    }
+}
+
+void QuinticWalk::forwardKinematic()
+{
+    R_HIP.linear()   = Eigen::Matrix3d::Identity();
+    R_KNEE.linear()  = Eigen::Matrix3d::Identity();
+    R_ANKLE.linear() = Eigen::Matrix3d::Identity();
+    L_HIP.linear()   = Eigen::Matrix3d::Identity();
+    L_KNEE.linear()  = Eigen::Matrix3d::Identity();
+    L_ANKLE.linear() = Eigen::Matrix3d::Identity();
+
+    R_HIP.rotate(   AngleAxisd(current_joint_pos(0) , Vector3d( 0, 0, 1) * joint_axis_direction_(0)) *
+                    AngleAxisd(current_joint_pos(1) , Vector3d( 1, 0, 0) * joint_axis_direction_(1)) *
+                    AngleAxisd(current_joint_pos(2) , Vector3d( 0, 1, 0) * joint_axis_direction_(2)));
+    R_KNEE.rotate(  AngleAxisd(current_joint_pos(3) , Vector3d( 0, 1, 0) * joint_axis_direction_(3)));
+    R_ANKLE.rotate( AngleAxisd(current_joint_pos(4) , Vector3d( 0, 1, 0) * joint_axis_direction_(4)) *
+                    AngleAxisd(current_joint_pos(5) , Vector3d( 1, 0, 0) * joint_axis_direction_(5)));
+    L_HIP.rotate(   AngleAxisd(current_joint_pos(6) , Vector3d( 0, 0, 1) * joint_axis_direction_(6)) *
+                    AngleAxisd(current_joint_pos(7) , Vector3d( 1, 0, 0) * joint_axis_direction_(7)) *
+                    AngleAxisd(current_joint_pos(8) , Vector3d( 0, 1, 0) * joint_axis_direction_(8)));
+    L_KNEE.rotate(  AngleAxisd(current_joint_pos(9) , Vector3d( 0, 1, 0) * joint_axis_direction_(9)));
+    L_ANKLE.rotate( AngleAxisd(current_joint_pos(10), Vector3d( 0, 1, 0) * joint_axis_direction_(10)) *
+                    AngleAxisd(current_joint_pos(11), Vector3d( 1, 0, 0) * joint_axis_direction_(11)));
+
+    m_R_FOOT = BASE * R_HIP * R_KNEE * R_ANKLE * R_FOOT;
+    m_L_FOOT = BASE * L_HIP * L_KNEE * L_ANKLE * L_FOOT;
+
+    R_FOOT_WORLD = m_R_FOOT.translation();
+    L_FOOT_WORLD = m_L_FOOT.translation();
+
+    L_FOOT_WORLD(0) *= -1;
+
+    R_ROT_WORLD = robotis_framework::convertRotationToRPY(m_R_FOOT.linear());
+    L_ROT_WORLD = robotis_framework::convertRotationToRPY(m_L_FOOT.linear());
+
+    //std::cout<<"L_Z: "<<std::fixed << std::setprecision(4)<<L_FOOT_WORLD(2)<<"\tR_Z = "<<std::fixed << std::setprecision(4)<<R_FOOT_WORLD(2)<<std::endl;
+    if(L_FOOT_WORLD(2) > R_FOOT_WORLD(2) && fabs(L_FOOT_WORLD(2)-R_FOOT_WORLD(2))>0.01){
+        IndexSupport = 2;//1; //SSP Kanan
+    }else if(L_FOOT_WORLD(2) < R_FOOT_WORLD(2) && fabs(L_FOOT_WORLD(2)-R_FOOT_WORLD(2))>0.01){
+        IndexSupport = 1;//2; //SSP Kiri
+    }else if(fabs(L_FOOT_WORLD(2)-R_FOOT_WORLD(2))<=0.01){
+        IndexSupport = 0;
+    }
+}
+
+void QuinticWalk::fullStateFeedback(double *balance_angle)
+{
+//   Gain_Angle_Pitch = walking_param_.KP_P;
+//   Gain_Velocity_Pitch = walking_param_.KD_P;
+//   Gain_Integral_Angle_Pitch = walking_param_.KI_P;
+//   Gain_Hip_Pitch = walking_param_.D_HIP_P;
+//   Gain_Knee = walking_param_.D_KNEE;
+//   Gain_Ankle_Pitch = walking_param_.D_ANKLE_P;
+
+//   Gain_Angle_Roll = walking_param_.KP_R;
+//   Gain_Velocity_Roll = walking_param_.KD_R;
+//   Gain_Integral_Angle_Roll = walking_param_.KI_R;
+//   Gain_Hip_Roll = walking_param_.D_HIP_R;
+//   Gain_Angle_Roll = walking_param_.D_ANKLE_R;
+
+//   if(walking_param_.x_move_amplitude >= -0.015 && walking_param_.x_move_amplitude < 0) //Mundur
+//   {
+//     setPointPitch = normalizedSetPoint();
+//   }
+//   else if(walking_param_.x_move_amplitude >= 0 && walking_param_.x_move_amplitude <0.01) //Jalan di tempat
+//   {
+//     setPointPitch = normalizedSetPoint();
+//   }
+//   else if(walking_param_.x_move_amplitude > 0.01 && walking_param_.x_move_amplitude <= 0.02) //Jalan sedang
+//   {
+//     setPointPitch = normalizedSetPoint();
+//   }
+//   else if(walking_param_.x_move_amplitude >= 0.02) //Jalan cepat
+//   {
+//     setPointPitch = normalizedSetPoint();
+//   }
+//   else
+//     setPointPitch = normalizedSetPoint();
+
+   if(true /*walking_param_.balance_enable == true*/)
+   {
+     imu_x = -m_imuOri.x() ;
+    
+     if(imu_y == 0)
+     {
+       //default imu darimana??
+       imu_y = -default_imu_y;//30*PI/180;
+     }
+     else
+     {
+     imu_y = -m_imuOri.y() ;
+     }
+    
+     imu_vx=  m_imuGyr.x() ;
+     imu_vy=  m_imuGyr.y() ;
+     std::cout<<"FULL STATE FEEDBACK ACTIVE"<<std::endl;
+     pitchErr = setPointPitch - normalizedIMU();
+     std::cout << "PitchError(DEG): " << pitchErr*RADIAN2DEGREE << std::endl;
+     rollErr = 0 - imu_vx;
+    
+         if(true /*-0.005<=walking_param_.x_move_amplitude<=0.005 && -0.005<=walking_param_.y_move_amplitude<=0.005 && -5*DEGREE2RADIAN<=walking_param_.angle_move_amplitude<=8*DEGREE2RADIAN*/)
+         {
+           ipitchErr = 0;
+           irollErr = 0;
+           igyroX = 0;
+           igyroY = 0;
+         }
+         else
+         {
+           ipitchErr += pitchErr;
+           irollErr += rollErr;
+           igyroX += imu_vx;
+           igyroY += imu_vy;
+         }
+     //Full State Feedback
+         if(pitchErr>=ipitchborder)
+         {
+             Output_Integral_Angle_Pitch      = ipitchborder;
+             Output_Integral_Velocity_Pitch   = ipitchborder;
+         }
+         else if(pitchErr<=-ipitchborder)
+         {
+             Output_Integral_Angle_Pitch      = -ipitchborder;
+             Output_Integral_Velocity_Pitch   = -ipitchborder;
+         }
+         else
+         {
+             Output_Integral_Angle_Pitch      = Gain_Integral_Angle_Pitch    / 1000 * ipitchErr;
+             // Output_Integral_Velocity_Pitch   = Gain_Integral_Velocity_Pitch / 1000 * igyroY;
+         }
+
+         if(rollErr>=irollborder)
+         {
+             Output_Integral_Angle_Roll       = irollborder;
+             // Output_Integral_Velocity_Roll    = irollborder;
+         }
+         else if(rollErr<=-irollborder)
+         {
+             Output_Integral_Angle_Roll       = -irollborder;
+             // Output_Integral_Velocity_Roll    = -irollborder;
+         }
+         else
+         {
+             Output_Integral_Angle_Roll       = Gain_Integral_Angle_Roll    / 1000 * irollErr;
+             // Output_Integral_Velocity_Roll    = Gain_Integral_Velocity_Roll / 1000 * igyroX;
+         }
+
+         Angle_Pitch = Gain_Angle_Pitch * pitchErr + Gain_Velocity_Pitch * imu_vy + Output_Integral_Angle_Pitch;// + Output_Integral_Velocity_Pitch;
+         Angle_Roll  = Gain_Angle_Roll  * rollErr  + Gain_Velocity_Roll  * imu_vx + Output_Integral_Angle_Roll;  //+ Output_Integral_Velocity_Roll;
+            
+             //Hip roll balance
+             balance_angle[1] = (joint_axis_direction_(1)*Angle_Roll * Gain_Hip_Roll);              // R_HIP_ROLL
+             balance_angle[7] = (joint_axis_direction_(7)*Angle_Roll * Gain_Hip_Roll);              // L_HIP_ROLL
+
+             //Hip pitch balance
+             balance_angle[2] = (joint_axis_direction_(2)*Angle_Pitch * Gain_Hip_Pitch);            // R_HIP_PITCH
+             balance_angle[8] = (joint_axis_direction_(8)*Angle_Pitch * Gain_Hip_Pitch);            // L_HIP_PITCH
+
+             //Knee balance
+             balance_angle[3] = (joint_axis_direction_(3)*Angle_Pitch * Gain_Knee);                 // R_KNEE
+             balance_angle[9] = (joint_axis_direction_(9)*Angle_Pitch * Gain_Knee);                 // L_KNEE
+
+             //Ankle pitch balance
+             balance_angle[4]  = (joint_axis_direction_(4)* Angle_Pitch * Gain_Ankle_Pitch);        // R_ANKLE_PITCH
+             balance_angle[10] = (joint_axis_direction_(10)*Angle_Pitch * Gain_Ankle_Pitch);        // L_ANKLE_PITCH
+
+             //Ankle roll balance
+             balance_angle[5]  = (joint_axis_direction_(5)* Angle_Roll * Gain_Ankle_Roll);          // R_ANKLE_ROLL
+             balance_angle[11] = (joint_axis_direction_(11)*Angle_Roll * Gain_Ankle_Roll);          // L_ANKLE_ROLL
+    
+           //Shoulder pitch balance
+             balance_angle[12] = (joint_axis_direction_(12)*Angle_Pitch * Gain_Shoulder_Pitch);     // R_SHOULDER_PITCH
+             balance_angle[13] = (joint_axis_direction_(13)*Angle_Pitch * Gain_Shoulder_Pitch);     // L_SHOULDER_PITCH
+   }
+}
+
+
+double QuinticWalk::normalizedIMU()
+{
+       double R_Angle_Hip_Pitch   = current_joint_pos(2) ;
+       double R_Angle_Ankle_Pitch = current_joint_pos(4) ;
+       double R_Angle_Knee        = current_joint_pos(3) ;
+
+       double L_Angle_Hip_Pitch   = current_joint_pos(8) ;
+       double L_Angle_Ankle_Pitch = current_joint_pos(10) ;
+       double L_Angle_Knee        = current_joint_pos(9) ;
+       // imu_y = -m_imuOri.y() ;
+       if(IndexSupport == 1){
+         //SSP Kiri
+         C = sqrt(pow(k.THIGH_LENGTH,2)+pow(k.CALF_LENGTH,2) - 2*k.THIGH_LENGTH*k.CALF_LENGTH * cos((PI-L_Angle_Knee)));//Length Hip To Ankle
+         theta1 = asin (k.THIGH_LENGTH * sin(PI - L_Angle_Knee)/C);
+         thetaC = theta1 + L_Angle_Hip_Pitch + imu_y;
+         Xc = C*sin(thetaC); Zc = C*cos(thetaC);
+       }else if(IndexSupport == 2){
+         //SSP Kanan
+         C = sqrt(pow(k.THIGH_LENGTH,2)+pow(k.CALF_LENGTH,2) - 2*k.THIGH_LENGTH*k.CALF_LENGTH * cos((PI-R_Angle_Knee)));//Length Hip To Ankle
+         theta1 = asin (k.THIGH_LENGTH * sin(PI - R_Angle_Knee)/C);
+         thetaC = theta1 + R_Angle_Hip_Pitch + imu_y;
+         Xc = C*sin(thetaC); Zc = C*cos(thetaC);
+       }else{
+         //DSP
+         C = sqrt(pow(k.THIGH_LENGTH,2)+pow(k.CALF_LENGTH,2) - 2*k.THIGH_LENGTH*k.CALF_LENGTH * cos((PI-R_Angle_Knee)));//Length Hip To Ankle
+         theta1 = asin (k.THIGH_LENGTH * sin(PI - R_Angle_Knee)/C);
+         thetaC = theta1 + R_Angle_Hip_Pitch + imu_y;
+         Xc = C*sin(thetaC); Zc = C*cos(thetaC);
+       }
+       Xh = k.HIP_OFFSET_Z*sin(imu_y); Zh = k.HIP_OFFSET_Z*cos(imu_y);
+       // //std::cout<<"C:"<<C<<std::endl;
+       // //std::cout<<"Xc: "<<Xc<<"\tXh: "<<Xh<<"\tZc: "<<Zc<<"\tZh: "<<Zh<<std::endl;
+       // //std::cout<<"XCOM: "<<Xc+Xh<<"\tZCOM: "<<Zc+Zh<<std::endl;
+       std::cout<<"normPitchError(DEG): "<<normPitchError*180/M_PI<<std::endl;
+       return normPitchError = atan((Xc+Xh)/(Zc+Zh));
+}
+
+
+void QuinticWalk::walkingReset(){
+    /*
+    Resets the walking and stops it *imediatly*. This means that it can also stop during a step, thus in an
+    unstable position. Should be normally used when the robot is already falling.
+    */
+    std::cout<< "resetting" << std::endl;
+
+    _orders = {0.0, 0.0, 0.0};
+    setOrders(_orders, false, true);
+    _walkActive = false;
+    _just_started = true;
+    std::cout<< "finished" << std::endl;
+
+}
+
+}

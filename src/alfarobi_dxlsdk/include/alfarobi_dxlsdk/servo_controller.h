@@ -58,7 +58,7 @@ class ServoController
 {
 private:
     uint8_t dxl_id[20];
-    joint_value servo;
+    joint_value* servo;
 
     dynamixel::PortHandler *portHandler = dynamixel::PortHandler::getPortHandler(DEVICENAME);
 
@@ -107,6 +107,10 @@ public:
     void writeMovingThreeshold(uint8_t dxl_id);
     int deg2Bit(float goal_pos_degree);
     int vel2Bit(float goal_vel);
+
+    joint_value* getJointValue() {
+        return servo;
+    }
 };
 }
 #endif
