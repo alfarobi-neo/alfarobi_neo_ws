@@ -1,7 +1,8 @@
 #include "head_control/head_control.h"
 
 HeadControl::HeadControl() {
-    ball_pos_sub = nh_.subscribe("/v9_ball_detector_node/ball_pos", 1000, &HeadControl::ballPosCallback, this);
+    // ball_pos_sub = nh_.subscribe("/v9_ball_detector_node/ball_pos", 1000, &HeadControl::ballPosCallback, this);
+    ball_pos_sub = nh_.subscribe("/python_image_sub/ball_pos", 1000, &HeadControl::ballPosCallback, this);
 
     center_frame_.x = 320;
     center_frame_.y = 240;

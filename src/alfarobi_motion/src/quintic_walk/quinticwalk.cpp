@@ -22,11 +22,12 @@ QuinticWalk::QuinticWalk()
       _trajs(),
       _compensate_gravity(false),
       debug_print_(false),
-      mbc(ros::package::getPath("quintic_walk")),
-      so(ros::package::getPath("quintic_walk")),
-      densis(ros::package::getPath("quintic_walk")),
+      mbc(ros::package::getPath("alfarobi_motion")),
+      so(ros::package::getPath("alfarobi_motion")),
+      densis(ros::package::getPath("alfarobi_motion"))
       gainFuzzy(1, std::vector<double> (2))
 {
+    ROS_INFO("TEST 1");
     enable_ = false;
     // module_name_ = "quintic_walk";
     // control_mode_ = robotis_framework::PositionControl;
@@ -700,6 +701,37 @@ void QuinticWalk::publishStatusMsg(unsigned int type, std::string msg)
     status_msg_pub_.publish(status_msg);
 }
 
+void QuinticWalk::write() {
+    if(!is_moving) {
+        time_start = ros::Time::now().toSec();
+        is_moving = true;
+        for(uint8_t i=0; i<20; i++) {
+            result_->write(i+1, result_->deg2Bit(result_->getJointValue()->goal[i]) , 2000); //2 detik
+            
+            ROS_INFO("WRITING");
+        }
+        // write(tempSeq->getJoint());
+        // readAll();
+    }
+    // read(20);
+    // ROS_INFO("JOINT VALUE: %f", present_position[19]);
+    // temp_servo->write(20, temp_servo->deg2Bit(present_position[19]) , 3000); 
+    // ROS_INFO("AAAAAAAa");
+    time_now = ros::Time::now().toSec() - time_start;
+    ROS_INFO("Time now: %f", time_now);
+    if(time_now >= 2000/1000) {
+        is_moving = false;
+        // tempSeq = tempSeq->next;
+        // for(int i=0; i<20; i++) {
+        //     tempSeq->getJoint()->write[i] = false;
+        // }
+    }
+}
+
+// double QuinticWalk::read(int id) {
+//     return result->read(id);
+// }
+
 void QuinticWalk::process()
 {
     // auto t1 = boost::chrono::high_resolution_clock::now();
@@ -925,6 +957,8 @@ void QuinticWalk::process()
         // double target = target_position_.coeff(0, joint_index);
         result_->getJointValue()->goal[state_iter] = target_position_.coeff(0, joint_index);
         op3_kd_->setJointPos(joint_name, result_->getJointValue()->goal[state_iter]);
+
+        write();
     }
     densisPublish();
   //   auto t2 = boost::chrono::high_resolution_clock::now();

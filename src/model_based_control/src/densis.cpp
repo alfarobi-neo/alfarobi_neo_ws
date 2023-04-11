@@ -8,7 +8,7 @@ densis::densis(std::string densisParamPath_)
 {
 //    kickManip_path_ = ros::package::getPath("kicking") + "/config/kickManip.yaml";
 //    densis_path_ = ros::package::getPath("op3_kinematics_dynamics") + "/config/densisParam.yaml";
-   densis_path_ = densisParamPath_ + "/config/densisParam.yaml";
+   densis_path_ = densisParamPath_ + "/config/quintic_walk/densisParam.yaml";
    physicalParam_path_ = ros::package::getPath("op3_kinematics_dynamics") + "/config/physicalParam.yaml";
    reset = 0;
 //    loadPhysicalParam();

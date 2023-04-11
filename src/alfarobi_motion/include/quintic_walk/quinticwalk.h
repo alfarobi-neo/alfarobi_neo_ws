@@ -71,6 +71,8 @@ public:
     bool isRunning();
     void onModuleEnable();
     void onModuleDisable();
+    void write();
+    double read(int id);
 
     Footstep getFootstep();
     void walkingSpeedCallback(const std_msgs::String::ConstPtr &msg);
@@ -166,6 +168,8 @@ public:
 private:
     alfarobi::ServoController *result_;
     bool enable_;
+    bool is_moving;
+    double time_start, time_now;
     enum WalkingStatus
     {
         WalkingDisable = 0,

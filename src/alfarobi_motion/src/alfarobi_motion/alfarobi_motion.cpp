@@ -4,6 +4,7 @@
 #include "sequencer/sequencer.h"
 #include "initial_position/initial_position.h"
 #include "head_control/head_control.h"
+#include "quintic_walk/quinticwalk.h"
 #include "ros/ros.h"
 
 bool
@@ -64,11 +65,12 @@ int main(int argc, char** argv) {
     Sequencer *sequencer_temp = new Sequencer();
     InitialPosition *init_pose_temp = new InitialPosition();
     HeadControl *head_control_temp = new HeadControl();
+    robotis_op::QuinticWalk *quintic_walk_temp = new robotis_op::QuinticWalk();
 
     
-    servo_temp->initialize();
+    // servo_temp->initialize();
 
-    servo_temp->torqueEnable();
+    // servo_temp->torqueEnable();
 
     while(ros::ok()) {
         
@@ -83,7 +85,8 @@ int main(int argc, char** argv) {
             //belum ada
         }
         else if(walking) {
-            //belum ada
+            ROS_INFO("QUINTICCCC");
+            // quintic_walk_temp->process();
         }
         else if(head_control) {
             head_control_temp->process(&servo_temp);
@@ -116,9 +119,9 @@ int main(int argc, char** argv) {
 
     
 
-    delete sequencer_temp, init_pose_temp;
-    servo_temp->torqueDisable();
-    servo_temp->dispose();
+    delete sequencer_temp, init_pose_temp, head_control_temp, quintic_walk_temp;
+    // servo_temp->torqueDisable();
+    // servo_temp->dispose();
 
     return 0;
 }
