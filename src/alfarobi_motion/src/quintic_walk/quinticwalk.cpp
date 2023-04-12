@@ -147,7 +147,7 @@ QuinticWalk::~QuinticWalk()
     queue_thread_.join();
 }
 
-void QuinticWalk::initialize(const int control_cycle_msec)
+void QuinticWalk::initialize(const int control_cycle_msec) //8 di program lama
 {
     queue_thread_ = boost::thread(boost::bind(&QuinticWalk::queueThread, this));
     control_cycle_msec_ = control_cycle_msec;
@@ -244,12 +244,12 @@ void QuinticWalk::initialize(const int control_cycle_msec)
 
     ros::NodeHandle ros_node;
 
-    std::string default_param_path = ros::package::getPath("quintic_walk") + "/config/config.yaml";
+    std::string default_param_path = ros::package::getPath("alfarobi_motion") + "/config/quintic_walk/config.yaml";
     ros_node.param<std::string>("quintic_walk_param", param_path_, default_param_path);
-    offset_ = ros::package::getPath("op3_manager") + "/config/offset.yaml";
-    kickManip_path_ = ros::package::getPath("kicking") + "/config/kickManip.yaml";
+    offset_ = ros::package::getPath("alfarobi_motion") + "/config/initial_position.yaml";
+    // kickManip_path_ = ros::package::getPath("kicking") + "/config/kickManip.yaml";
     physicalParam_path_ = ros::package::getPath("op3_kinematics_dynamics") + "/config/physicalParam.yaml";
-    fuzzy_path_ = ros::package::getPath("quintic_walk") + "/config/fuzzy.yaml";
+    fuzzy_path_ = ros::package::getPath("alfarobi_motion") + "/config/quintic_walk/fuzzy.yaml";
 
     loadParameter();
     loadOffset();
@@ -261,6 +261,7 @@ void QuinticWalk::initialize(const int control_cycle_msec)
     //Trajectories initialization
     buildTrajectories();
 
+    firstExc = true;
 }
 
 void QuinticWalk::stop()
@@ -408,12 +409,30 @@ void QuinticWalk::loadOffset()
         ROS_ERROR("Fail to load Offset yaml file.");
         return;
     }
-    YAML::Node config_ = offset_node["offset"];
+    // YAML::Node config_ = offset_node["offset"];
 
-    for(int i=0; i<12; i++)
-    {
-        offset[i] = config_[joint[i]].as<double>();
+    // for(int i=0; i<12; i++)
+    // {
+    //     offset[i] = config_[joint[i]].as<double>();
+    // }
+    try{
+        offset[0] = offset_node["r_hip_y"].as<double>();
+        offset[1] = offset_node["r_hip_r"].as<double>();
+        offset[2] = offset_node["r_hip_p"].as<double>();
+        offset[3] = offset_node["r_knee"].as<double>();
+        offset[4] = offset_node["r_ank_p"].as<double>();
+        offset[5] = offset_node["r_ank_r"].as<double>();
+        offset[6] = offset_node["l_hip_y"].as<double>();
+        offset[7] = offset_node["l_hip_r"].as<double>();
+        offset[8] = offset_node["l_hip_p"].as<double>();
+        offset[9] = offset_node["l_knee"].as<double>();
+        offset[10] = offset_node["l_ank_p"].as<double>();
+        offset[11] = offset_node["l_ank_r"].as<double>();
+    }catch(const std::exception &e){
+        ROS_ERROR("[alfarobi_motion]: %s", e.what());
     }
+
+    ROS_INFO("Success to load Initial Position file.");
     ////std::cout<<"Done Loading Quintic Offset"<<std::endl;
 }
 
@@ -428,7 +447,7 @@ void QuinticWalk::loadFuzzy()
     }
     catch(const std::exception& e)
     {
-        ROS_ERROR("Fail to load yaml file.");
+        ROS_ERROR("Fail to load fuzzy.yaml file. '%s' are you sure that is the directory?", fuzzy_path_.c_str());
         return;
     }
 
@@ -441,6 +460,7 @@ void QuinticWalk::loadFuzzy()
         Angle.Upper2.push_back(0.0);
         Angle.Bottom2.push_back(0.0);
     }
+    ROS_INFO("Test Fuzzy");
     Angle.Bottom1[0] = i1["bottom1_1"].as<double>();
     Angle.Upper1[0] = i1["upper1_1"].as<double>();
     Angle.Upper2[0] = i1["upper2_1"].as<double>();
@@ -735,18 +755,24 @@ void QuinticWalk::write() {
 void QuinticWalk::process()
 {
     // auto t1 = boost::chrono::high_resolution_clock::now();
-    if (enable_ == false)
-        return;
+
+    // command dlu
+    // if (enable_ == false)
+    //     return;
 
     // std::cout<<"WALKING PARAM"<<walking_param_.XMove<<" "<<walking_param_.YMove<<" "<<walking_param_
     // .ZMove<<std::endl;
 
+    ROS_INFO("Processing Quintic Walk");
+
     loadFuzzy();
+
+    ROS_INFO("Test 2");
 
     int joint_size = 18 /*result_.size()*/;
 
     // present angle
-    for (int state_iter = 0; state_iter >= 17; state_iter++)
+    for (int state_iter = 0; state_iter < 18; state_iter++)
     {
         std::string _joint_name = result_->getJointValue()->name[state_iter];
         int joint_index = joint_table_[_joint_name];
@@ -758,16 +784,20 @@ void QuinticWalk::process()
         // else
         //     continue;
 
-        current_position[_joint_name] = result_->read(state_iter);
-        current_position_.coeffRef(0, joint_index) = result_->read(state_iter);
+        current_position[_joint_name] = offset[state_iter]; /*result_->read(state_iter);*/
+        current_position_.coeffRef(0, joint_index) = current_position[_joint_name];
         // uint data = dxl->dxl_state_->bulk_read_table_["hardware_error_status"];
     //     if(data != 0)
     //         ROS_ERROR("Device Error %s : %d", _joint_name.c_str(), data);
 
     }
 
+    ROS_INFO("Test 3");
+
     for(int idx = 0; idx < 12; idx++)
         current_joint_pos(idx) = joint_axis_direction_(idx)*(current_position_.coeffRef(0, idx)-offset[idx]);
+
+    ROS_INFO("Test 4");
 
     // tambahan Bagas, feedback + Kalman Filter dari densis
     if(mbc.tuneGain == true)
@@ -800,6 +830,8 @@ void QuinticWalk::process()
         }
     }
 
+    ROS_INFO("Test 5");
+
     if(firstExc)
         walking_state_ = WalkingInitPose;
 
@@ -809,8 +841,12 @@ void QuinticWalk::process()
     wholeBodyCOM_RSSP();
     forwardKinematic();
 
+    ROS_INFO("Test 6");
+    ROS_INFO("Test EIGEN");
+
     if(walking_state_ == WalkingInitPose)
     {
+        ROS_INFO("Test EIGEN");
         if(firstExc)
         {
             int max_=0;
@@ -833,14 +869,24 @@ void QuinticWalk::process()
             int all_time_steps = int(mov_time / smp_time) + 1;
             calc_joint_tra_.resize(all_time_steps, 12);
 
-            for (int idx = 0; idx < 12; idx++)
+            // for (int idx = 0; idx < 12; idx++)
+            //     calc_joint_tra_.block(0, idx, all_time_steps, 1) = robotis_framework::calcMinimumJerkTra(current_joint_pos(idx), 0.0, 0.0,
+            //                                                                                              joint_goals.at(idx), 0.0, 0.0,
+            //                                                                                              smp_time, mov_time);
+
+            for (int idx = 0; idx < 12; idx++){
+                // ROS_INFO_STREAM("Index: " << idx);s
                 calc_joint_tra_.block(0, idx, all_time_steps, 1) = robotis_framework::calcMinimumJerkTra(current_joint_pos(idx), 0.0, 0.0,
                                                                                                          joint_goals.at(idx), 0.0, 0.0,
                                                                                                          smp_time, mov_time);
+                ROS_INFO("Test EIGEN");
+            }
+            
+            
         }
         firstExc = false;
 
-        for (int idx = 1; idx < 12; idx++)
+        for (int idx = 0; idx < 12; idx++)
             joint_goals.at(idx) = calc_joint_tra_(init_pose_count_, idx);
 
         init_pose_count_ += 1;
@@ -852,6 +898,8 @@ void QuinticWalk::process()
             robot_state = RobotWalk;
         else
             robot_state = RobotStop;
+        
+        ROS_INFO("Test 7");
     }
     else if (walking_state_ == WalkingReady || walking_state_ == WalkingEnable)
     {
@@ -914,6 +962,8 @@ void QuinticWalk::process()
 
         calculateWalking();
         motion_arms();
+
+        ROS_INFO("Test 8");
     }
 
     // Servo Feedback Angle Limitter
@@ -934,6 +984,8 @@ void QuinticWalk::process()
     else if(feedback(11) > 30*DEGREE2RADIAN) //30
         feedback(11)=30*DEGREE2RADIAN; //Left Ankle Roll
 
+    ROS_INFO("Test 9");
+
     for (int idx = 0; idx < 18; idx++)
     {
         double goal_position = 0.0;
@@ -942,10 +994,14 @@ void QuinticWalk::process()
         target_position_.coeffRef(0, idx) = goal_position;
     }
 
+    ROS_INFO("Test 10");
+
     so.r_ank_pitch.positionIK = target_position_.coeffRef(0, 4);
     so.r_ank_pitch.positionNow = target_position_.coeffRef(0, 5);
     so.l_ank_pitch.positionIK = target_position_.coeffRef(0, 10);
     so.l_ank_pitch.positionNow = target_position_.coeffRef(0, 11);
+
+    ROS_INFO("Test 11");
 
     // set result
     for (int state_iter = 0; state_iter < 18; state_iter++)
@@ -953,13 +1009,17 @@ void QuinticWalk::process()
         std::string joint_name = result_->getJointValue()->name[state_iter];
         int joint_index = joint_table_[joint_name];
 
+        
+
         // result_[joint_name]->goal_position_ = target_position_.coeff(0, joint_index);
         // double target = target_position_.coeff(0, joint_index);
-        result_->getJointValue()->goal[state_iter] = target_position_.coeff(0, joint_index);
-        op3_kd_->setJointPos(joint_name, result_->getJointValue()->goal[state_iter]);
+        result_->getJointValue()->goal[joint_index] = target_position_.coeff(0, joint_index);
+        op3_kd_->setJointPos(joint_name, result_->getJointValue()->goal[joint_index]);
 
-        write();
+        // write();
+        ROS_INFO("%s: %f", joint_name.c_str(), result_->getJointValue()->goal[joint_index]);
     }
+    ROS_INFO("Test 12");
     densisPublish();
   //   auto t2 = boost::chrono::high_resolution_clock::now();
   // auto elapsed_time_2 = boost::chrono::duration_cast<boost::chrono::milliseconds>(t2-t1).count();
@@ -1137,6 +1197,8 @@ void QuinticWalk::forwardKinematic()
     }else if(fabs(L_FOOT_WORLD(2)-R_FOOT_WORLD(2))<=0.01){
         IndexSupport = 0;
     }
+
+    ROS_INFO("TEST EIGEN");
 }
 
 void QuinticWalk::feedbackDSPAnklePitchPos2Pos()
@@ -1251,6 +1313,8 @@ void QuinticWalk::wholeBodyCOM()
     op3_kd_->calcForwardKinematics(0);
     COM = op3_kd_->calcCOM(0);
     // std::cout<<"WholeBodyCOM x"<<COM(0)<<"\ty:"<<COM(1)<<"\tz"<<COM(2)<<std::endl;
+
+    ROS_INFO("TEST EIGEN");
 }
 
 

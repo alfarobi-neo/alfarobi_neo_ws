@@ -101,6 +101,7 @@ struct joint_value {
         // }
         return i;
     }
+    
 
     double getVal(int index) {
         return val[index];

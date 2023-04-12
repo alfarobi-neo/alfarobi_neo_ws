@@ -66,6 +66,7 @@ int main(int argc, char** argv) {
     InitialPosition *init_pose_temp = new InitialPosition();
     HeadControl *head_control_temp = new HeadControl();
     robotis_op::QuinticWalk *quintic_walk_temp = new robotis_op::QuinticWalk();
+    quintic_walk_temp->initialize(8);
 
     
     // servo_temp->initialize();
@@ -86,7 +87,7 @@ int main(int argc, char** argv) {
         }
         else if(walking) {
             ROS_INFO("QUINTICCCC");
-            // quintic_walk_temp->process();
+            quintic_walk_temp->process();
         }
         else if(head_control) {
             head_control_temp->process(&servo_temp);
