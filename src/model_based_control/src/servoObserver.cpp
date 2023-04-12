@@ -6,7 +6,7 @@ namespace robotis_op
 servoObserver::servoObserver(std::string servoObserverPath_)
 {
     // config_path_ = ros::package::getPath("op3_kinematics_dynamics")+"/config/physicalParam.yaml";
-    config_path_ = servoObserverPath_+"/config/physicalParam.yaml";
+    config_path_ = servoObserverPath_+"/config/quintic_walk/physicalParam.yaml";
     reset = 0;
     loadConfig();
     Eigen::VectorXd x_next(2), x_prev(2), y_ss(1), u_ss(1);

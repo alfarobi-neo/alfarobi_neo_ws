@@ -38,7 +38,7 @@ modelBasedControl::~modelBasedControl()
 void modelBasedControl::loadModelParam(std::string modelParamPath_)
 {
     YAML::Node mbc;
-    std::string mbc_yaml_path_ = modelParamPath_ + "/config/modelBasedControl.yaml";
+    std::string mbc_yaml_path_ = modelParamPath_ + "/config/quintic_walk/modelBasedControl.yaml";
     try
     {
         mbc = YAML::LoadFile(mbc_yaml_path_.c_str());
@@ -48,6 +48,8 @@ void modelBasedControl::loadModelParam(std::string modelParamPath_)
         ROS_ERROR("Fail to load Model Based Control Param yaml file.");
         return;
     }
+
+    ROS_INFO("Success to load Model Based Control Param yaml file.");
 
     YAML::Node ss = mbc["ss"];
     sys_c.Ts = ss["Ts"].as<double>();

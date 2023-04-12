@@ -24,7 +24,7 @@ QuinticWalk::QuinticWalk()
       debug_print_(false),
       mbc(ros::package::getPath("alfarobi_motion")),
       so(ros::package::getPath("alfarobi_motion")),
-      densis(ros::package::getPath("alfarobi_motion"))
+      densis(ros::package::getPath("alfarobi_motion")),
       gainFuzzy(1, std::vector<double> (2))
 {
     ROS_INFO("TEST 1");
