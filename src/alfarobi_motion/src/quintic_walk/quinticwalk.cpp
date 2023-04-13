@@ -434,6 +434,22 @@ void QuinticWalk::loadOffset()
 
     ROS_INFO("Success to load Initial Position file.");
     ////std::cout<<"Done Loading Quintic Offset"<<std::endl;
+    offset[0] = (offset[0] - 180.0) * DEGREE2RADIAN;
+    offset[1] = (offset[1] - 180.0) * DEGREE2RADIAN;
+    offset[2] = (offset[2] - 180.0) * DEGREE2RADIAN;
+    offset[3] = (offset[3] - 180.0) * DEGREE2RADIAN;
+    offset[4] = (offset[4] - 180.0) * DEGREE2RADIAN;
+    offset[5] = (offset[5] - 180.0) * DEGREE2RADIAN;
+    offset[6] = (offset[6] - 180.0) * DEGREE2RADIAN;
+    offset[7] = (offset[7] - 180.0) * DEGREE2RADIAN;
+    offset[8] = (offset[8] - 180.0) * DEGREE2RADIAN;
+    offset[9] = (offset[9] - 180.0) * DEGREE2RADIAN;
+    offset[10] = (offset[10] -180.0) * DEGREE2RADIAN;
+    offset[11] = (offset[11] -180.0) * DEGREE2RADIAN;
+
+    for(int i=0; i<12;i++) {
+        ROS_INFO("%d: %f", i, offset[i]);
+    }
 }
 
 void QuinticWalk::loadFuzzy()
@@ -726,7 +742,7 @@ void QuinticWalk::write() {
         time_start = ros::Time::now().toSec();
         is_moving = true;
         for(uint8_t i=0; i<20; i++) {
-            result_->write(i+1, result_->deg2Bit(result_->getJointValue()->goal[i]) , 2000); //2 detik
+            result_->write(i+1, result_->deg2Bit(180 + result_->getJointValue()->goal[i]/DEGREE2RADIAN) , 1000); //2 detik
             
             ROS_INFO("WRITING");
         }
@@ -784,7 +800,7 @@ void QuinticWalk::process()
         // else
         //     continue;
 
-        current_position[_joint_name] = offset[state_iter]; /*result_->read(state_iter);*/
+        current_position[_joint_name] = offset[joint_index]; /*result_->read(state_iter);*/
         current_position_.coeffRef(0, joint_index) = current_position[_joint_name];
         // uint data = dxl->dxl_state_->bulk_read_table_["hardware_error_status"];
     //     if(data != 0)
@@ -794,8 +810,10 @@ void QuinticWalk::process()
 
     ROS_INFO("Test 3");
 
-    for(int idx = 0; idx < 12; idx++)
+    for(int idx = 0; idx < 12; idx++) {
         current_joint_pos(idx) = joint_axis_direction_(idx)*(current_position_.coeffRef(0, idx)-offset[idx]);
+        ROS_INFO("current %d: %f", idx, current_joint_pos[idx]);
+    }
 
     ROS_INFO("Test 4");
 
@@ -842,11 +860,9 @@ void QuinticWalk::process()
     forwardKinematic();
 
     ROS_INFO("Test 6");
-    ROS_INFO("Test EIGEN");
 
     if(walking_state_ == WalkingInitPose)
     {
-        ROS_INFO("Test EIGEN");
         if(firstExc)
         {
             int max_=0;
@@ -866,8 +882,9 @@ void QuinticWalk::process()
 
             double mov_time = (max_ / 30) < 0.5 ? 0.5 : (max_/30);
             double smp_time = control_cycle_msec_ * 0.001;
-            int all_time_steps = int(mov_time / smp_time) + 1;
+            int all_time_steps = int(mov_time / smp_time) + 2; //+1
             calc_joint_tra_.resize(all_time_steps, 12);
+            ROS_INFO_STREAM("row: "<<calc_joint_tra_.rows() <<" col:"<< calc_joint_tra_.cols());
 
             // for (int idx = 0; idx < 12; idx++)
             //     calc_joint_tra_.block(0, idx, all_time_steps, 1) = robotis_framework::calcMinimumJerkTra(current_joint_pos(idx), 0.0, 0.0,
@@ -876,6 +893,7 @@ void QuinticWalk::process()
 
             for (int idx = 0; idx < 12; idx++){
                 // ROS_INFO_STREAM("Index: " << idx);s
+                ROS_INFO("A");
                 calc_joint_tra_.block(0, idx, all_time_steps, 1) = robotis_framework::calcMinimumJerkTra(current_joint_pos(idx), 0.0, 0.0,
                                                                                                          joint_goals.at(idx), 0.0, 0.0,
                                                                                                          smp_time, mov_time);
