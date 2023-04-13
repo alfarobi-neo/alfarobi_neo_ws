@@ -140,7 +140,7 @@ def parse_args(arguments=None):
 
     parser.add_argument(
         "--model_filepath",
-        default='weight/best_10april.onnx',
+        default='/home/alfarobi/alfarobi_neo_ws_/src/alfarobi_vision/src/custom_pkg/src/yolov5s/weight/best_10april.onnx',
         type=str,
         help=(
             "The full file path of the ONNX model file or SparseZoo stub to the  "
@@ -366,7 +366,6 @@ class AverageFPS:
 
 
 def annotate(args, loader):
-
     model, has_postprocessing = _load_model(args)
 
     postprocessor = (
@@ -420,6 +419,11 @@ def annotate(args, loader):
             images_per_sec=average_fps,
             program=loader,
         )
+        # buat garis tengah
+        # Menggambar garis horizontal pada frame
+        cv2.line(annotated_img, (0, int(480/2)), (640, int(480/2)), (0, 0, 255), thickness=1)
+        # Menggambar garis vertikal pada frame
+        cv2.line(annotated_img, (int(640/2), 0), (int(640/2), 480), (0, 0, 255), thickness=1)
 
         cv2.namedWindow("Monitor", cv2.WINDOW_NORMAL)
         cv2.imshow("Monitor", annotated_img)
@@ -427,6 +431,7 @@ def annotate(args, loader):
         if ch == 27 or ch == ord("q") or ch == ord("Q"):
             exit(0)
 
+        # loader.rate.sleep()
 
 
 def main():

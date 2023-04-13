@@ -15,6 +15,7 @@ private:
     ros::NodeHandle nh_;
     double present_position[20];
     double absolute_position[20];
+    double previous_position[20];
     geometry_msgs::Point ball_pos_;
     geometry_msgs::Point center_frame_;
 

@@ -18,6 +18,7 @@ class VisionLoader:
 		rospy.init_node('python_image_sub', anonymous=True)
 	
 		self.bridge = CvBridge()
+		# self.rate = rospy.Rate(30)
 
 		self.args = args
 
@@ -25,17 +26,18 @@ class VisionLoader:
 
 		self.img_sub = rospy.Subscriber('/img_source_node/image_src', Image, self.imageCallback)
 		
-		self.ball_pos_pub = rospy.Publisher('ball_pos', Point, queue_size=10)
+		self.ball_pos_pub = rospy.Publisher('/python_image_sub/ball_pos', Point, queue_size=100)
 
 	def __iter__(self) -> Iterator[Tuple[numpy.ndarray, numpy.ndarray]]:
 		while True:
-			if self.mat is not None:
-				frame = cv2.flip(self.mat, 1) 
+			if self.mat is not None: 
+				frame = self.mat
+				# frame = cv2.flip(self.mat, 1) 
 				img_resized = cv2.resize(frame, self.args.image_shape)
 				img_transposed = img_resized[:, :, ::-1].transpose(2, 0, 1)
 				yield img_transposed, frame
 
-	def publish(self, x:int, y:int, z=-1):
+	def publish_(self, x:int, y:int, z=-1):
 		coordinate = Point(x,y,z)
 		self.ball_pos_pub.publish(coordinate)
 

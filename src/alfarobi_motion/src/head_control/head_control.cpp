@@ -11,9 +11,9 @@ HeadControl::HeadControl() {
 
     ball_found = false;
 
-    p_gain = 0.7; //0.6
-    d_gain = 0.009; //0.050 /0.005
-    i_gain = 0.060; //0.040
+    p_gain = 0.08;//0.07 ;//0.7; //0.6
+    d_gain = 0.009;//0.009; //0.050 /0.005
+    i_gain = 0.060;//0.060; //0.040
 
     H_FOV = 61.25; //61.25
     V_FOV = 41.60; //41.60
@@ -32,7 +32,7 @@ void HeadControl::process(alfarobi::ServoController **serv) {
 
     //     in_action = true;
     // }
-    ros::Rate loop_rate(5);
+    ros::Rate loop_rate(30);
     while(ros::ok()) {
         if(!in_action){
         // enable();
@@ -67,6 +67,9 @@ void HeadControl::initialHead() {
 
         absolute_position[18] = init_pose_params["head_pan"].as<double>();
         absolute_position[19] = init_pose_params["head_tilt"].as<double>();
+
+        previous_position[18] = init_pose_params["head_pan"].as<double>();
+        previous_position[19] = init_pose_params["head_tilt"].as<double>();
     }catch(const std::exception &e){
         ROS_ERROR("[alfarobi_motion]: %s", e.what());
     }
@@ -82,10 +85,10 @@ void HeadControl::ballPosCallback(const geometry_msgs::Point::ConstPtr& msg) {
         ball_pos_.y = msg->y;
         ball_pos_.z = msg->z;
         ball_found = true;
-        ROS_INFO("NOT OK");
+        ROS_INFO_STREAM("X: "<<ball_pos_.x<<"\nY: "<<ball_pos_.y);
     }else{
         ball_found = false;
-        ROS_INFO("OK");
+        ROS_INFO("NOT OK");
     }
 }
 
@@ -94,7 +97,7 @@ void HeadControl::write() {
         time_start = ros::Time::now().toSec();
         is_moving = true;
         for(uint8_t i=18; i<20; i++) {
-            temp_servo->write(i+1, temp_servo->deg2Bit(present_position[i]) , 500); //5 detik
+            temp_servo->write(i+1, temp_servo->deg2Bit(present_position[i]) , 200); //5 detik
             
             ROS_INFO("WRITING");
         }
@@ -107,7 +110,7 @@ void HeadControl::write() {
     // ROS_INFO("AAAAAAAa");
     time_now = ros::Time::now().toSec() - time_start;
     ROS_INFO("Time now: %f", time_now);
-    if(time_now >= 500/1000) {
+    if(time_now >= 200/1000) {
         is_moving = false;
         // tempSeq = tempSeq->next;
         // for(int i=0; i<20; i++) {
@@ -152,9 +155,6 @@ void HeadControl::calculation() {
     double error_x = center_frame_.x - ball_pos_.x;
     double error_y = center_frame_.y - ball_pos_.y;
 
-    last_error_x = error_x;
-    last_error_y = error_y;
-
     //baru
     error_x_sum += error_x;
     error_y_sum += error_y;
@@ -167,20 +167,26 @@ void HeadControl::calculation() {
     // double offset_y = p_gain*error_y + d_gain*(error_y - last_error_y);
 
     //baru
-    double offset_x = p_gain*error_x + i_gain*(error_x + last_error_x)+ d_gain*(error_x - last_error_x);
-    double offset_y = p_gain*error_y + i_gain*(error_y + last_error_y)+ d_gain*(error_y - last_error_y);
+    double offset_x = p_gain*error_x + d_gain*(error_x - last_error_x);
+    double offset_y = p_gain*error_y + d_gain*(error_y - last_error_y);
     //
+
+    last_error_x = error_x;
+    last_error_y = error_y;
 
     // setHeadJoint(offset_x * (H_FOV)/(2*center_frame_.x),offset_y * (V_FOV)/(2*center_frame_.y));
         
-    present_position[18] = absolute_position[18] + (offset_x * (H_FOV)/(2*center_frame_.x));
-    present_position[19] = absolute_position[19] - (offset_y * (V_FOV)/(2*center_frame_.y));
+    present_position[18] = previous_position[18] + (offset_x * (H_FOV)/(2*center_frame_.x));
+    present_position[19] = previous_position[19] - (offset_y * (V_FOV)/(2*center_frame_.y));
 
     ROS_INFO("head_pan: %f", present_position[18]);
     ROS_INFO("head_tilt: %f",present_position[19]);
-    ball_found = false;
+    // ball_found = false;
 
     write();
+
+    previous_position[18] = present_position[18];
+    previous_position[19] = present_position[19];
 
 
     // static double last_error_x = 0,last_error_y = 0;
@@ -199,5 +205,5 @@ void HeadControl::calculation() {
     // present_position[19] = offset_y * (V_FOV)/(2*center_frame_.y);
     // ball_found = false;
 
-    write();
+   // write();
 }

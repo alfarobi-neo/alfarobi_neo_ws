@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
 
     ros::NodeHandle nh_m;
 
-    ros::Rate loop_rate(5);
+    ros::Rate loop_rate(30);
     ros::Subscriber motion_sub = nh_m.subscribe("/motion_state", 1000, motionCallback);
 
     alfarobi::ServoController *servo_temp = new alfarobi::ServoController();
@@ -65,12 +65,12 @@ int main(int argc, char** argv) {
     Sequencer *sequencer_temp = new Sequencer();
     InitialPosition *init_pose_temp = new InitialPosition();
     HeadControl *head_control_temp = new HeadControl();
-    robotis_op::QuinticWalk *quintic_walk_temp = new robotis_op::QuinticWalk();
+    // robotis_op::QuinticWalk *quintic_walk_temp = new robotis_op::QuinticWalk();
 
     
-    // servo_temp->initialize();
+    servo_temp->initialize();
 
-    // servo_temp->torqueEnable();
+    servo_temp->torqueEnable();
 
     while(ros::ok()) {
         
@@ -119,9 +119,9 @@ int main(int argc, char** argv) {
 
     
 
-    delete sequencer_temp, init_pose_temp, head_control_temp, quintic_walk_temp;
-    // servo_temp->torqueDisable();
-    // servo_temp->dispose();
+    delete sequencer_temp, init_pose_temp, head_control_temp;
+    servo_temp->torqueDisable();
+    servo_temp->dispose();
 
     return 0;
 }

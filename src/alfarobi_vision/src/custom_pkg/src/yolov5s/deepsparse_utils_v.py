@@ -349,7 +349,7 @@ def annotate_image(
 
     
     if(boxes.shape[0]<=0):
-        program.publish(-1,-1,-1)
+        program.publish_(-1,-1,-1)
     
     arr=[False for i in range(3)]
     for idx in range(boxes.shape[0]): #in this loop, change idx to 0 to make it only detect 1 object
@@ -413,15 +413,21 @@ def annotate_image(
             )
             centerx = int((left+right)/2)
             centery = int((top+bottom)/2)
-            # cv2.circle(img_res,(centerx,centery),3,(255,255,255),-1)
+            cv2.circle(img_res,(centerx,centery),2,(255,255,255),-1)
 
-            program.publish(centerx,centery,-1)
+            # print(img_res.shape)
+
+            program.publish_(centerx,centery,-1)
+            
+            
+            # program.publish_(320,240,-1)
+            # program.publish_(320,300,-1)
 
             # ball_distance = calculate_distance(topLeft, bottomRight)
             # program.ball_pub.publish(ball_distance)
     
     # img_res=np.zeros()
-    if program.sub.get_num_connections() == 0:
+    if program.img_sub.get_num_connections() == 0:
         img_res = numpy.zeros((418,418,3), dtype=numpy.uint8)
 
     
