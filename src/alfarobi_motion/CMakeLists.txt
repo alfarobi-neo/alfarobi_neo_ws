@@ -21,6 +21,7 @@ find_package(catkin REQUIRED COMPONENTS
   eigen_conversions
   tf
   tf_conversions
+  std_msgs
   # dynamic_reconfigure
 )
 find_package(yaml-cpp REQUIRED)
@@ -128,7 +129,7 @@ find_package(Boost REQUIRED COMPONENTS system)
 catkin_package(
  INCLUDE_DIRS include
  LIBRARIES alfarobi_motion
- CATKIN_DEPENDS roscpp rospy roslib alfarobi_dxlsdk alfarobi_web_gui geometry_msgs
+ CATKIN_DEPENDS roscpp rospy roslib alfarobi_dxlsdk alfarobi_web_gui geometry_msgs std_msgs
 #  DEPENDS system_lib
 )
 

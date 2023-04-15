@@ -34,8 +34,6 @@ import torch
 from sparseml.onnx.utils import get_tensor_dim_shape, set_tensor_dim_shape
 from sparsezoo import Zoo
 
-from .vision_distance import calculate_distance
-
 __all__ = [
     "YoloPostprocessor",
     "postprocess_nms",
