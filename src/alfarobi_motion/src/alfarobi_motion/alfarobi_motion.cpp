@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
 
     ros::NodeHandle nh_m;
 
-    ros::Rate loop_rate(5);
+    ros::Rate loop_rate(10);
     ros::Subscriber motion_sub = nh_m.subscribe("/motion_state", 1000, motionCallback);
 
     alfarobi::ServoController *servo_temp = new alfarobi::ServoController();

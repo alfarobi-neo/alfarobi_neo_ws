@@ -60,59 +60,59 @@ QuinticWalk::QuinticWalk()
     // result_["l_el"] = new robotis_framework::DynamixelState();
 
    // joint table
-    joint_table_["r_hip_yaw"] = 0;
-    joint_table_["r_hip_roll"] = 1;
-    joint_table_["r_hip_pitch"] = 2;
+    joint_table_["r_hip_y"] = 0;
+    joint_table_["r_hip_r"] = 1;
+    joint_table_["r_hip_p"] = 2;
     joint_table_["r_knee"] = 3;
-    joint_table_["r_ank_pitch"] = 4;
-    joint_table_["r_ank_roll"] = 5;
+    joint_table_["r_ank_p"] = 4;
+    joint_table_["r_ank_r"] = 5;
 
-    joint_table_["l_hip_yaw"] = 6;
-    joint_table_["l_hip_roll"] = 7;
-    joint_table_["l_hip_pitch"] = 8;
+    joint_table_["l_hip_y"] = 6;
+    joint_table_["l_hip_r"] = 7;
+    joint_table_["l_hip_p"] = 8;
     joint_table_["l_knee"] = 9;
-    joint_table_["l_ank_pitch"] = 10;
-    joint_table_["l_ank_roll"] = 11;
+    joint_table_["l_ank_p"] = 10;
+    joint_table_["l_ank_r"] = 11;
 
-    joint_table_["r_sho_pitch"] = 12;
-    joint_table_["r_sho_roll"] = 13;
+    joint_table_["r_sho_p"] = 12;
+    joint_table_["r_sho_r"] = 13;
     joint_table_["r_el"] = 14;
 
-    joint_table_["l_sho_pitch"] = 15;
-    joint_table_["l_sho_roll"] = 16;
+    joint_table_["l_sho_p"] = 15;
+    joint_table_["l_sho_r"] = 16;
     joint_table_["l_el"] = 17;
 
     //offset
-    joint[0]  = "r_hip_yaw";
-    joint[1]  = "r_hip_roll";
-    joint[2]  = "r_hip_pitch";
+    joint[0]  = "r_hip_y";
+    joint[1]  = "r_hip_r";
+    joint[2]  = "r_hip_p";
     joint[3]  = "r_knee";
-    joint[4]  = "r_ank_pitch";
-    joint[5]  = "r_ank_roll";
-    joint[6]  = "l_hip_yaw";
-    joint[7]  = "l_hip_roll";
-    joint[8]  = "l_hip_pitch";
+    joint[4]  = "r_ank_p";
+    joint[5]  = "r_ank_r";
+    joint[6]  = "l_hip_y";
+    joint[7]  = "l_hip_r";
+    joint[8]  = "l_hip_p";
     joint[9]  = "l_knee";
-    joint[10] = "l_ank_pitch";
-    joint[11] = "l_ank_roll";
+    joint[10] = "l_ank_p";
+    joint[11] = "l_ank_r";
 
     // current_position
-    current_position["r_hip_yaw"] = 0;
-    current_position["r_hip_roll"] = 0;
-    current_position["r_hip_pitch"] = 0;
+    current_position["r_hip_y"] = 0;
+    current_position["r_hip_r"] = 0;
+    current_position["r_hip_p"] = 0;
     current_position["r_knee"] = 0;
-    current_position["r_ank_pitch"] = 0;
-    current_position["r_ank_roll"] = 0;
+    current_position["r_ank_p"] = 0;
+    current_position["r_ank_r"] = 0;
 
-    current_position["l_hip_yaw"] = 0;
-    current_position["l_hip_roll"] = 0;
-    current_position["l_hip_pitch"] = 0;
+    current_position["l_hip_y"] = 0;
+    current_position["l_hip_r"] = 0;
+    current_position["l_hip_p"] = 0;
     current_position["l_knee"] = 0;
-    current_position["l_ank_pitch"] = 0;
-    current_position["l_ank_roll"] = 0;
+    current_position["l_ank_p"] = 0;
+    current_position["l_ank_r"] = 0;
 
-    current_position["r_sho_pitch"] = 0;
-    current_position["l_sho_pitch"] = 0;
+    current_position["r_sho_p"] = 0;
+    current_position["l_sho_p"] = 0;
 
     base     = Affine3d(Translation3d(Vector3d(0,0,0)));
     r_hip    = Affine3d(Translation3d(Vector3d(0,-k.LEG_SIDE_OFFSET,0)));
@@ -742,7 +742,7 @@ void QuinticWalk::write() {
         time_start = ros::Time::now().toSec();
         is_moving = true;
         for(uint8_t i=0; i<20; i++) {
-            result_->write(i+1, result_->deg2Bit(180 + result_->getJointValue()->goal[i]/DEGREE2RADIAN) , 1000); //2 detik
+            result_->write(i+1, result_->deg2Bit(180 + result_->getJointValue()->goal[i]/DEGREE2RADIAN) , 8); //2 detik
             
             ROS_INFO("WRITING");
         }
@@ -755,7 +755,7 @@ void QuinticWalk::write() {
     // ROS_INFO("AAAAAAAa");
     time_now = ros::Time::now().toSec() - time_start;
     ROS_INFO("Time now: %f", time_now);
-    if(time_now >= 2000/1000) {
+    if(time_now >= 8/1000) {
         is_moving = false;
         // tempSeq = tempSeq->next;
         // for(int i=0; i<20; i++) {
@@ -784,8 +784,25 @@ void QuinticWalk::process()
     loadFuzzy();
 
     ROS_INFO("Test 2");
+    static bool first = true;
 
     int joint_size = 18 /*result_.size()*/;
+
+    // buat ngetest doang, soalnya wfh gabisa akses servo
+    if (first) {
+        for (int state_iter = 0; state_iter < 18; state_iter++)
+        {
+            std::string _joint_name = result_->getJointValue()->name[state_iter];
+            int joint_index = joint_table_[_joint_name];
+
+            result_->getJointValue()->goal[joint_index] = offset[joint_index]; /*result_->read(state_iter);*/
+            ROS_INFO("OFFSET-[%s]: %d",_joint_name.c_str(), joint_index);
+
+        }
+        first = false;
+        ROS_INFO("KON");
+    }
+    
 
     // present angle
     for (int state_iter = 0; state_iter < 18; state_iter++)
@@ -800,7 +817,7 @@ void QuinticWalk::process()
         // else
         //     continue;
 
-        current_position[_joint_name] = offset[joint_index]; /*result_->read(state_iter);*/
+        current_position[_joint_name] = result_->getJointValue()->goal[joint_index]; /*result_->read(state_iter);*/
         current_position_.coeffRef(0, joint_index) = current_position[_joint_name];
         // uint data = dxl->dxl_state_->bulk_read_table_["hardware_error_status"];
     //     if(data != 0)
@@ -1035,7 +1052,7 @@ void QuinticWalk::process()
         op3_kd_->setJointPos(joint_name, result_->getJointValue()->goal[joint_index]);
 
         // write();
-        ROS_INFO("%s: %f", joint_name.c_str(), result_->getJointValue()->goal[joint_index]);
+        ROS_INFO("%s: %f", joint_name.c_str(), result_->getJointValue()->goal[joint_index]/DEGREE2RADIAN);
     }
     ROS_INFO("Test 12");
     densisPublish();
@@ -1090,12 +1107,13 @@ void QuinticWalk::calculateWalking()
     // save last step odometry if support foot changes
     // from max at 0.1
     // stepFeedback = 0;
+    ROS_INFO("CALC WALKING");
     _orders = {walkingParam(0), walkingParam(1), walkingParam(2)}; //{walking_param_.XMove, walking_param_.YMove, walking_param_.ZMove};
     // std::cout<<walkingParam(0)<<" "<<walkingParam(1)<<" "<<walkingParam(2)<<std::endl;
     _orders /=10;
     _stepOdom = getFootstep().getNext();
 
-    double dt = 0.01;
+    double dt = 0.01; //0.01
     std::chrono::time_point<std::chrono::steady_clock> current_time = std::chrono::steady_clock::now();
     // only take real time difference if walking was not stopped before
     // using c++ time since it is more performant than ros time. We only need a local difference, so it doesnt matter
@@ -1106,6 +1124,7 @@ void QuinticWalk::calculateWalking()
             ROS_WARN("dt was 0");
             dt = 0.001;
         }
+        
     }
     _just_started = false;
     _last_update_time = current_time;
@@ -1399,11 +1418,11 @@ void QuinticWalk::walkingReset(){
 void QuinticWalk::motion_arms()
 {
     joint_goals[12]=0;
-    joint_goals[13]=0*DEGREE2RADIAN;
-    joint_goals[14]=0*DEGREE2RADIAN;
+    joint_goals[13]=-15*DEGREE2RADIAN;
+    joint_goals[14]=30*DEGREE2RADIAN;
     joint_goals[15]=0;
-    joint_goals[16]=0*DEGREE2RADIAN;
-    joint_goals[17]=0*DEGREE2RADIAN;
+    joint_goals[16]=-15*DEGREE2RADIAN;
+    joint_goals[17]=30*DEGREE2RADIAN;
 }
 
 void QuinticWalk::walkingStatus(const std::string &command)
