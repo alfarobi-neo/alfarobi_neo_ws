@@ -8,13 +8,15 @@ add_compile_options(-std=c++11)
 find_package(catkin REQUIRED COMPONENTS
   # alfarobi_controller_node
   eigen_conversions
-  robotis_math
+  # robotis_math
   tf
   tf2
   rospy
   yaml-cpp REQUIRED
   roscpp
   roslib
+  sensor_msgs
+  geometry_msgs
 
 # set(CMAKE_AUTOMOC ON)
 # set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -34,10 +36,10 @@ find_package(catkin REQUIRED COMPONENTS
   # alfarobi_dxlsdk
 )
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_AUTOUIC ON)
+# set(CMAKE_AUTOMOC ON)
+# set(CMAKE_AUTORCC ON)
+# set(CMAKE_INCLUDE_CURRENT_DIR ON)
+# set(CMAKE_AUTOUIC ON)
 
 # set(Qt5_DIR "/qt59/lib/cmake/Qt5")
 # # set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/cmake/Qt5")
@@ -45,15 +47,15 @@ set(CMAKE_AUTOUIC ON)
 # find_package(Qt5 COMPONENTS Gui Widgets SerialPort Core REQUIRED)
 # # find_package(Qt5 COMPONENTS SerialPort REQUIRED)
 
-set(CMAKE_PREFIX_PATH "/home/putubuddhi/qt-everywhere-src-6.4.2/qtbase/lib/cmake/Qt6")
+# set(CMAKE_PREFIX_PATH "/home/putubuddhi/qt-everywhere-src-6.4.2/qtbase/lib/cmake/Qt6")
 
-set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/cmake/Qt5")
+# set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/cmake/Qt5")
 
-find_package(Qt6 REQUIRED COMPONENTS Gui)
-find_package(Qt6Widgets REQUIRED)
-find_package(Qt6Gui REQUIRED)
+# find_package(Qt6 REQUIRED COMPONENTS Gui)
+# find_package(Qt6Widgets REQUIRED)
+# find_package(Qt6Gui REQUIRED)
 
-find_package(Qt5SerialPort REQUIRED)
+# find_package(Qt5SerialPort REQUIRED)
 
 set(EIGEN3_INCLUDE_DIRS "/usr/include/eigen3/Eigen")
 find_package(Eigen3 REQUIRED)
@@ -184,10 +186,11 @@ include_directories(
 )
 
 ## Declare a C++ library
-add_library(${PROJECT_NAME}
-  arduino_controller_node.cpp
-  controller.cpp
-)
+# add_library(${PROJECT_NAME}
+#   # arduino_controller_node.cpp
+#   # controller.cpp
+#   # PyserialTest.py
+# )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -205,10 +208,10 @@ add_library(${PROJECT_NAME}
 ## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
 # set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
 
-add_executable(${PROJECT_NAME}_node
-    arduino_controller_node.cpp
-    controller.cpp
-    )
+# add_executable(${PROJECT_NAME}_node
+#     # arduino_controller_node.cpp
+#     # controller.cpp
+#     )
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
@@ -216,15 +219,15 @@ add_executable(${PROJECT_NAME}_node
 
 ## Specify libraries to link a library or executable target against
 
-add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-target_link_libraries(${PROJECT_NAME}_node
-  ${PROJECT_NAME} yaml-cpp
-  ${catkin_LIBRARIES}
-  ${Eigen3_LIBRARIES}
-  ${YAML_CPP_LIBRARIES}
-  Qt5::Gui Qt5::Core Qt5::SerialPort Qt5::Widgets
-)
+# target_link_libraries(${PROJECT_NAME}_node
+#   ${PROJECT_NAME} yaml-cpp
+#   ${catkin_LIBRARIES}
+#   ${Eigen3_LIBRARIES}
+#   ${YAML_CPP_LIBRARIES}
+#   Qt5::Gui Qt5::Core Qt5::SerialPort Qt5::Widgets
+# )
 #############
 ## Install ##
 #############
@@ -234,10 +237,10 @@ target_link_libraries(${PROJECT_NAME}_node
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
-# catkin_install_python(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+catkin_install_python(PROGRAMS
+  PyserialTest.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
