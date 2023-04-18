@@ -65,7 +65,7 @@ public:
     QuinticWalk();
     virtual ~QuinticWalk();
 
-    void initialize(const int control_cycle_msec);
+    void initialize(const int control_cycle_msec, alfarobi::ServoController* serv);
     void process();
     void stop();
     bool isRunning();

@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<launch>
+
+<!--    <include file="$(find alfarobi_vision)/launch/v9_localization/v9_localization_from_video.launch" />-->
+
+    <node pkg="alfarobi_monitor" name="localization_monitor_node" type="localization_monitor_node" output="screen" >
+        <!--<remap from="/localization_monitor_node/robot_state" to="/v9_localization_node/robot_state" />
+        <remap from="/localization_monitor_node/particles_state" to="/v9_localization_node/particles_state" />
+        <remap from="/localization_monitor_node/field_features" to="/v9_localization_node/field_features" />
+        <remap from="/localization_monitor_node/stamped_projected_ball" to="/v9_localization_node/stamped_projected_ball" />-->
+    </node>
+</launch>

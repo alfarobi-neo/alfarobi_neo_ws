@@ -38,7 +38,7 @@ modelBasedControl::~modelBasedControl()
 void modelBasedControl::loadModelParam(std::string modelParamPath_)
 {
     YAML::Node mbc;
-    std::string mbc_yaml_path_ = modelParamPath_ + "/config/modelBasedControl.yaml";
+    std::string mbc_yaml_path_ = modelParamPath_ + "/config/quintic_walk/modelBasedControl.yaml";
     try
     {
         mbc = YAML::LoadFile(mbc_yaml_path_.c_str());
@@ -69,18 +69,18 @@ void modelBasedControl::loadModelParam(std::string modelParamPath_)
     // ROS_WARN("INI BENERRRRRRRRRR");
 
     // read CSV supaya bisa baca array langsung
-    sys_c.A = csv.getMatrix(modelParamPath_ + "/config/stateSpace/A.csv");
-    sys_c.B = csv.getMatrix(modelParamPath_ + "/config/stateSpace/B.csv");
-    sys_c.C = csv.getMatrix(modelParamPath_ + "/config/stateSpace/C.csv");
-    sys_c.D = csv.getMatrix(modelParamPath_ + "/config/stateSpace/D.csv");
+    sys_c.A = csv.getMatrix(modelParamPath_ + "/config/quintic_walk/stateSpace/A.csv");
+    sys_c.B = csv.getMatrix(modelParamPath_ + "/config/quintic_walk/stateSpace/B.csv");
+    sys_c.C = csv.getMatrix(modelParamPath_ + "/config/quintic_walk/stateSpace/C.csv");
+    sys_c.D = csv.getMatrix(modelParamPath_ + "/config/quintic_walk/stateSpace/D.csv");
     sys_d.A = sys_c.A;
     sys_d.B = sys_c.B;
     sys_d.C = sys_c.C;
     sys_d.D = sys_c.D;
-    dlqr.Q = csv.getMatrix(modelParamPath_ + "/config/dlqr/Q.csv");
-    dlqr.R = csv.getMatrix(modelParamPath_ + "/config/dlqr/R.csv");
-    kalman.Q = csv.getMatrix(modelParamPath_ + "/config/kalman/Q.csv");
-    kalman.R = csv.getMatrix(modelParamPath_ + "/config/kalman/R.csv");
+    dlqr.Q = csv.getMatrix(modelParamPath_ + "/config/quintic_walk/dlqr/Q.csv");
+    dlqr.R = csv.getMatrix(modelParamPath_ + "/config/quintic_walk/dlqr/R.csv");
+    kalman.Q = csv.getMatrix(modelParamPath_ + "/config/quintic_walk/kalman/Q.csv");
+    kalman.R = csv.getMatrix(modelParamPath_ + "/config/quintic_walk/kalman/R.csv");
     c2d(&sys_c);
     // dlqr.K = dlqrGain(&sys_d,&dlqr);
     // kalman.K = kalmanGain(&sys_d,&kalman);

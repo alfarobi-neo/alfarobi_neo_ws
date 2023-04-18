@@ -1,0 +1,38 @@
+<?xml version="1.0" ?>
+<launch>
+    <!-- http://wiki.ros.org/video_stream_opencv -->
+    <include file="$(find video_stream_opencv)/launch/camera.launch" >
+        <!-- node name and ros graph name -->
+        <arg name="camera_name" value="vso" />
+        <!-- means video device 0, /dev/video0 -->
+<!--        <arg name="video_stream_provider" value="/media/koseng/New Volume/alfarobi/ada garis 2.avi" />-->
+        <arg name="video_stream_provider" value="/media/koseng/New Volume/alfarobi/recorded/video15.avi" />
+        <!-- set camera fps to (if the device allows) -->
+        <arg name="set_camera_fps" value="30"/>
+        <!-- set buffer queue size of frame capturing to -->
+        <arg name="buffer_queue_size" value="100" />
+        <!-- throttling the querying of frames to -->
+        <arg name="fps" value="30" />
+        <!-- setting frame_id -->
+        <arg name="frame_id" value="vso" />
+        <!-- camera info loading, take care as it needs the "file:///" at the start , e.g.:
+        "file:///$(find your_camera_package)/config/your_camera.yaml" -->
+        <arg name="camera_info_url" value="" />
+        <!-- flip the image horizontally (mirror it) -->
+        <arg name="flip_horizontal" value="false" />
+        <!-- flip the image vertically -->
+        <arg name="flip_vertical" value="false" />
+        <!-- visualize on an image_view window the stream generated -->
+        <arg name="visualize" value="false" />
+   </include>
+
+    <node pkg="alfarobi_vision" name="v9_ball_detector_node" type="v9_ball_detector_node" output="screen">
+        <remap from="/v9_ball_detector_node/image_in" to="/vso/image_raw" />
+        <remap from="/v9_ball_detector_node/camera_info_in" to="/vso/camera_info" />
+        <remap from="/v9_ball_detector_node/frame_mode" to="/vision_monitor_node/frame_mode" />
+        <remap from="/v9_ball_detector_node/LUT_data" to="/vision_monitor_node/LUT_data" />
+        <remap from="/v9_ball_detector_node/save_param" to="/vision_monitor_node/save_param" />
+        <remap from="/v9_ball_detector_node/ball_ref" to="/vision_monitor_node/ball_ref" />
+        <remap from="/v9_ball_detector_node/line_tip" to="/v9_localization_node/line_tip" />
+    </node>
+</launch>

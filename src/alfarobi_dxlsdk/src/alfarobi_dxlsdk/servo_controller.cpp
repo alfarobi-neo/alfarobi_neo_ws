@@ -41,6 +41,8 @@ alfarobi::ServoController::ServoController()
     dxl_is_moving = false;
 
     dxl_error = 0;
+
+    servo = new alfarobi::joint_value();
 }
 
 alfarobi::ServoController::~ServoController()

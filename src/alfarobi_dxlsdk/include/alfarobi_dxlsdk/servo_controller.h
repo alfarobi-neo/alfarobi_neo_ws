@@ -26,6 +26,7 @@
 #define ADDR_PRESENT_VELOCITY       128
 #define ADDR_MOVING                 122
 #define ADDR_MOVINNG_THRESHOLD      24
+#define ADDR_HARDWARE_ERROR_STATUS  70
 
 // Data Byte Length
 #define LEN_GOAL_POSITION           4
@@ -33,6 +34,7 @@
 #define LEN_GOAL_VELOCITY           4
 #define LEN_MOVING_THRESHOLD        4
 #define LEN_MOVING                  1
+#define LEN_HARDWARE_ERROR_STATUS   1
 
 // Protocol version
 #define PROTOCOL_VERSION                2.0                 // See which protocol version is used in the Dynamixel
@@ -107,6 +109,8 @@ public:
     void writeMovingThreeshold(uint8_t dxl_id);
     int deg2Bit(float goal_pos_degree);
     int vel2Bit(float goal_vel);
+
+    void getHardwareErrorStatus();
 
     joint_value* getJointValue() {
         return servo;

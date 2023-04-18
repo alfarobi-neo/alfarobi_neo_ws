@@ -36,26 +36,28 @@ private:
     const double LEFT = 40.0;
     const double RIGHT = -40.0;
     const double MIDDLE = 0.0;
-    const double UP = -30.0;
-    const double DOWN = 40.0;
+    const double UP = -20.0;
+    const double DOWN = 30.0;
 
     enum {
         NOD = 0,
         SWEEP = 1,
         SQUARE = 2,
-        NO_SCAN = 3
+        TWO = 3,
+        NO_SCAN = 4
     };
 
     int nod_steps;
     int sweep_steps;
     int square_steps;
+    int two_steps;
 
 public:
     HeadControl();
     ~HeadControl();
 
     void goInitPose();
-    void process(alfarobi::ServoController **serv);
+    void process(alfarobi::ServoController *serv);
 
 
     void calculation();

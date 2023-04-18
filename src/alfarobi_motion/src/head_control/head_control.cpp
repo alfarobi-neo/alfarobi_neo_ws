@@ -14,16 +14,17 @@ HeadControl::HeadControl() {
 
     p_gain = 0.07;//0.08; //0.07; //0.075;//0.07 ;//0.7; //0.6
     i_gain = 0.02;//0.0225; //0.02; //0.07;//0.060; //0.040
-    d_gain = 0.02;//0.01; //0.02; //0.009;//0.009; //0.050 /0.005
+    d_gain = 0.02;//0.01; //0.02; //0.009;//0.009absolute_position[19] + UP; ; //0.050 /0.005
 
     H_FOV = 61.25; //61.25
     V_FOV = 41.60; //41.60
 
-    HOLD_THRESHOLD = 5; //10
+    HOLD_THRESHOLD = 10; //10
     scan_state = NO_SCAN;
     nod_steps = 0;
     sweep_steps = 0;
     square_steps = 0;
+    two_steps = 0;
     temp_servo->initialize();
 }
 
@@ -32,7 +33,7 @@ HeadControl::~HeadControl() {
     temp_servo->dispose();
 }
 
-void HeadControl::process(alfarobi::ServoController **serv) {
+void HeadControl::process(alfarobi::ServoController *serv) {
     // if(state_now == "head_control") {
 
     //     in_action = true;
@@ -139,7 +140,7 @@ void HeadControl::calculation() {
             // std_msgs::String scan_msg;
             // scan_msg.data = "scan";
             // head_scan_pub_.publish(scan_msg);
-            scan_state = SQUARE; //ngetest satu2
+            scan_state = TWO; //ngetest satu2
             searching();
         }
         return;
@@ -355,30 +356,158 @@ void HeadControl::searching(){
         case SQUARE:
             if(square_steps == 0){
                 present_position[18] = absolute_position[18] + LEFT;
-                present_position[19] = absolute_position[19] + UP;    
+                present_position[19] = absolute_position[19] + DOWN;
             }
             else if(square_steps == 1) {
-                present_position[18] = absolute_position[18] + RIGHT;
-                present_position[19] = absolute_position[19] + UP;
-            }
-            else if(square_steps == 2) {
-                present_position[18] = absolute_position[18] + RIGHT;
-                present_position[19] = absolute_position[19] + DOWN;
-            }
-            else if(square_steps == 3) {
-                present_position[18] = absolute_position[18] + LEFT;
-                present_position[19] = absolute_position[19] + DOWN;
-            }
-            else if(square_steps == 4) {
                 present_position[18] = absolute_position[18] + MIDDLE;
                 present_position[19] = absolute_position[19] + MIDDLE;
             }
+            else if(square_steps == 2) {
+                present_position[18] = absolute_position[18] + LEFT;
+                present_position[19] = absolute_position[19] + UP;
+            }
+            else if(square_steps == 3) {
+                present_position[18] = absolute_position[18] + MIDDLE;
+                present_position[19] = absolute_position[19] + MIDDLE;
+            }                        
+            else if(square_steps == 4) {
+                present_position[18] = absolute_position[18] + RIGHT;
+                present_position[19] = absolute_position[19] + UP;
+            }
+            else if(square_steps == 5) {
+                present_position[18] = absolute_position[18] + MIDDLE;
+                present_position[19] = absolute_position[19] + MIDDLE;
+            }
+            else if(square_steps == 6) {
+                present_position[18] = absolute_position[18] + RIGHT;
+                present_position[19] = absolute_position[19] + DOWN;
+            }  
+            else if(square_steps == 7) {
+                present_position[18] = absolute_position[18] + MIDDLE;
+                present_position[19] = absolute_position[19] + MIDDLE;
+            }                      
             
-            if(square_steps == 4)
+            if(square_steps == 7)
                 square_steps = 0;
             else
                 square_steps++;
             break;
+        case TWO:
+            if(two_steps == 0){
+                present_position[18] = absolute_position[18] + LEFT;
+                present_position[19] = absolute_position[19] + UP;
+                // present_position[19];
+            }
+            else if(two_steps == 1) {
+                present_position[18] = absolute_position[18] + MIDDLE;
+                //present_position[19] = absolute_position[19] + UP;
+                present_position[19];
+            }            
+            else if(two_steps == 2) {
+                present_position[18] = absolute_position[18] + RIGHT;
+                // present_position[19] = absolute_position[19] + UP;
+                present_position[19];
+            }
+            else if(two_steps == 3) {
+                present_position[18] = absolute_position[18] + RIGHT;
+                present_position[19] = absolute_position[19] + MIDDLE;
+            }
+            else if(two_steps == 4) {
+                present_position[18] = absolute_position[18] + MIDDLE;
+                // present_position[19] = absolute_position[19] + MIDDLE;
+                present_position[19];
+            }
+            else if(two_steps == 5) {
+                present_position[18] = absolute_position[18] + LEFT;
+                // present_position[19] = absolute_position[19] + MIDDLE;
+                present_position[19];
+            }
+            else if(two_steps == 6) {
+                present_position[18] = absolute_position[18] + LEFT;
+                present_position[19] = absolute_position[19] + DOWN;
+            }
+            else if(two_steps == 7) {
+                present_position[18] = absolute_position[18] + MIDDLE;
+                // present_position[19] = absolute_position[19] + DOWN;
+                present_position[19];
+            }            
+            else if(two_steps == 8) {
+                present_position[18] = absolute_position[18] + RIGHT;
+                // present_position[19] = absolute_position[19] + DOWN;
+                present_position[19];
+            }                                    
+            
+            if(two_steps == 8)
+                two_steps = 0;
+            else
+                two_steps++;
+            break;            
+
+        // case SQUARE:
+        //     if(square_steps == 0){
+        //         present_position[18] = absolute_position[18] + LEFT;
+        //         present_position[19] = absolute_position[19] + UP;    
+        //     }
+        //     else if(square_steps == 1) {
+        //         present_position[18] = absolute_position[18] + RIGHT;
+        //         present_position[19] = absolute_position[19] + UP;
+        //     }
+        //     else if(square_steps == 2) {
+        //         present_position[18] = absolute_position[18] + RIGHT;
+        //         present_position[19] = absolute_position[19] + DOWN;
+        //     }
+        //     else if(square_steps == 3) {
+        //         present_position[18] = absolute_position[18] + LEFT;
+        //         present_position[19] = absolute_position[19] + DOWN;
+        //     }
+        //     else if(square_steps == 4) {
+        //         present_position[18] = absolute_position[18] + MIDDLE;
+        //         present_position[19] = absolute_position[19] + MIDDLE;
+        //     }
+           
+        // case SQUARE:
+        //     if(square_steps == 0){ //kiri atas
+                
+        //         present_position[18] = absolute_position[18] + 40.0;
+        //         present_position[19] = absolute_position[19];
+
+        //         ROS_INFO("START");
+        //     }
+        //     else if(square_steps == 1) { //kiri bawah
+        //         present_position[18];
+        //         present_position[19] = absolute_position[19] + DOWN; 
+                
+        //         ROS_INFO("KIRI BAWAH");
+        //     }
+        //     else if(square_steps == 2) { //kanan bawah
+        //         present_position[18] = absolute_position[19] + (2*RIGHT); 
+        //         present_position[19];
+            
+        //         ROS_INFO("KANAN BAWAH");
+        //     }
+        //     else if(square_steps == 3) { //kanan atas
+        //         present_position[18];
+        //         present_position[19] = absolute_position[19] + UP;
+            
+        //           ROS_INFO("KANAN ATAS");
+        //     }
+        //     if(square_steps == 4){ //kiri atas
+                
+        //         present_position[18] = absolute_position[18] + (2*LEFT);
+        //         present_position[19];
+
+        //         ROS_INFO("KIRI ATAS");
+        //     }
+            // else if(square_steps == 4) {
+            //     present_position[18] = absolute_position[18];
+            //     present_position[19] = absolute_position[19];
+            // }
+                        
+            // if(square_steps == 4)
+            //     square_steps = 1;
+            // else
+            //     square_steps++;
+            // break;
         case NO_SCAN:
             break;
     }

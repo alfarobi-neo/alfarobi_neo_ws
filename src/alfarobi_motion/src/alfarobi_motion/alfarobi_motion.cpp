@@ -1,4 +1,5 @@
-// ----------UNCOMMAND KALO UDAH TESTING---------//
+/*----------UNCOMMAND KALO UDAH TESTING---------
+    File ini untuk testing alfarobi motion          */ 
 
 // #include "alfarobi_motion/alfarobi_motion.h"
 #include "sequencer/sequencer.h"
@@ -57,7 +58,7 @@ int main(int argc, char** argv) {
 
     ros::NodeHandle nh_m;
 
-    ros::Rate loop_rate(30);
+    ros::Rate loop_rate(8);
     ros::Subscriber motion_sub = nh_m.subscribe("/motion_state", 1000, motionCallback);
 
     alfarobi::ServoController *servo_temp = new alfarobi::ServoController();
@@ -65,12 +66,18 @@ int main(int argc, char** argv) {
     Sequencer *sequencer_temp = new Sequencer();
     InitialPosition *init_pose_temp = new InitialPosition();
     HeadControl *head_control_temp = new HeadControl();
-    // robotis_op::QuinticWalk *quintic_walk_temp = new robotis_op::QuinticWalk();
+    robotis_op::QuinticWalk *quintic_walk_temp = new robotis_op::QuinticWalk();
 
     
     servo_temp->initialize();
 
     servo_temp->torqueEnable();
+
+    quintic_walk_temp->initialize(8, servo_temp);
+
+    // buat testing doang
+    int count = 0;
+    bool init = true;
 
     while(ros::ok()) {
         
@@ -79,17 +86,27 @@ int main(int argc, char** argv) {
             // in_action = true;
         }
         else if(initial_position) {
-            init_pose_temp->process(&servo_temp);
+            init_pose_temp->process(servo_temp);
         }
         else if(kicking) {
             //belum ada
         }
         else if(walking) {
             ROS_INFO("QUINTICCCC");
-            // quintic_walk_temp->process();
+            if(init) {
+                init_pose_temp->process(servo_temp);
+                init_pose_temp->goInitPose();
+                init = false;
+            }
+            else if(count > 50) {
+                quintic_walk_temp->process();
+            }
+            else {
+                count++;
+            }
         }
         else if(head_control) {
-            head_control_temp->process(&servo_temp);
+            head_control_temp->process(servo_temp);
         }
 
         loop_rate.sleep();
@@ -119,7 +136,7 @@ int main(int argc, char** argv) {
 
     
 
-    delete sequencer_temp, init_pose_temp, head_control_temp;
+    delete sequencer_temp, init_pose_temp, head_control_temp, quintic_walk_temp;
     servo_temp->torqueDisable();
     servo_temp->dispose();
 

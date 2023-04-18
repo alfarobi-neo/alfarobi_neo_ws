@@ -8,8 +8,6 @@ project(alfarobi_msgs_srvs_actions)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  rospy
   geometry_msgs
   std_msgs
   message_generation
@@ -52,11 +50,21 @@ find_package(catkin REQUIRED COMPONENTS
 
 add_message_files(
   FILES
+  # motion
   quintic_walk_msgs/WalkingParam.msg
   analyze_msgs/Fuzzy.msg
   analyze_msgs/movAvg.msg
   densis_msgs/densis.msg
   robotis_controller_msgs/StatusMsg.msg
+  # vision
+  # alfarobi_vision_msgs/Feature.msg
+  Feature.msg
+  alfarobi_vision_msgs/Features.msg
+  alfarobi_vision_msgs/FieldBoundary.msg
+  alfarobi_vision_msgs/LineTip.msg
+  alfarobi_vision_msgs/LUT.msg
+  alfarobi_vision_msgs/MonitorUtils.msg
+  alfarobi_vision_msgs/Particles.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -76,8 +84,8 @@ add_message_files(
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
-  geometry_msgs
   std_msgs
+  geometry_msgs 
 )
 
 ################################################
@@ -112,8 +120,8 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES alfarobi_msgs_srvs_actions
-#  CATKIN_DEPENDS geometry_msgs std_msgs
-#  DEPENDS system_lib
+ CATKIN_DEPENDS geometry_msgs std_msgs message_runtime
+ #  DEPENDS system_lib
 )
 
 ###########
@@ -123,7 +131,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -131,6 +139,7 @@ include_directories(
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/alfarobi_msgs_srvs_actions.cpp
 # )
+
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -150,7 +159,7 @@ include_directories(
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(${PROJECT_NAME}_node  ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node
@@ -198,6 +207,7 @@ include_directories(
 #   # myfile2
 #   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 # )
+
 
 #############
 ## Testing ##
