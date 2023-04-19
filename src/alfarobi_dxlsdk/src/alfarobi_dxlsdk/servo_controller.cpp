@@ -357,37 +357,62 @@ double alfarobi::ServoController::read(uint8_t dxl_id)
     return dxl_pres_pos;
 }
 
-uint32_t alfarobi::ServoController::bulkRead(uint8_t dxl_id)
+double alfarobi::ServoController::bulkRead(uint8_t dxl_id)
 {
     dynamixel::GroupBulkRead groupBulkRead(portHandler, packetHandler);
-
-    dxl_comm_result = groupBulkRead.txRxPacket();
-    if (dxl_comm_result != COMM_SUCCESS)
+    dxl_addparam_result = groupBulkRead.addParam(dxl_id, ADDR_HES, LEN_HES);
+    if (dxl_addparam_result != true)
     {
-    printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
-    }
-    else if (groupBulkRead.getError(dxl_id, &dxl_error))
-    {
-    printf("[ID:%03d] %s\n", dxl_id, packetHandler->getRxPacketError(dxl_error));
-    }
-    else if (groupBulkRead.getError(dxl_id, &dxl_error))
-    {
-    printf("[ID:%03d] %s\n", dxl_id, packetHandler->getRxPacketError(dxl_error));
-    }
-
-    // Check if groupbulkread data of Dynamixel#1 is available
-    dxl_getdata_result = groupBulkRead.isAvailable(dxl_id, ADDR_MOVING, LEN_MOVING);
-    if (dxl_getdata_result != true)
-    {
-        fprintf(stderr, "[ID:%03d] groupBulkRead getdata failed", dxl_id);
+        fprintf(stderr, "[ID:%03d] grouBulkRead addparam failed", dxl_id);
         return 0;
     }
 
-    dxl_is_moving = groupBulkRead.getData(dxl_id, ADDR_MOVING, LEN_MOVING);
+    dxl_addparam_result = groupBulkRead.addParam(dxl_id, ADDR_PRESENT_POSITION, LEN_PRESENT_POSITION);
+    if (dxl_addparam_result != true)
+    {
+        fprintf(stderr, "[ID:%03d] grouBulkRead addparam failed", dxl_id);
+        return 0;
+    }
+    dxl_comm_result = groupBulkRead.txRxPacket();
 
+    if (dxl_comm_result == COMM_SUCCESS) {
+        dxl_pres_pos = groupBulkRead.getData(dxl_id, ADDR_PRESENT_POSITION, LEN_PRESENT_POSITION);
+        dxl_pres_pos = (dxl_pres_pos * 360)/4095;
 
-    return dxl_is_moving;
+        printf("[ID:%03d] PresPos:%03f\n", dxl_id, dxl_pres_pos);
 
+        hardware_error_status = groupBulkRead.getData(dxl_id, ADDR_HES, LEN_HES);
+
+        switch(hardware_error_status){
+            case 0:
+                break;
+            case 1:
+                printf("[ID:%03d] Input Voltage Error", dxl_id);
+                break;
+            case 4:
+                printf("[ID:%03d] Overheating Error", dxl_id);
+                break;
+            case 8:
+                printf("[ID:%03d] Motor Encoder Error", dxl_id);
+                break;
+            case 16:
+                printf("[ID:%03d] Electrical Shock Error", dxl_id);
+                break;
+            case 32:
+                printf("[ID:%03d] Overload Error", dxl_id);
+                break;
+            default:
+                printf("[ID:%03d] More than one error occurs!", dxl_id);
+                break;
+        }
+        groupBulkRead.clearParam();
+    }
+    else {
+        ROS_ERROR("Failed to get position! Result: %d", dxl_comm_result);
+        groupBulkRead.clearParam();
+    }
+
+    return dxl_pres_pos;
 }
 
 int alfarobi::ServoController::deg2Bit(float goal_pos_degree)
