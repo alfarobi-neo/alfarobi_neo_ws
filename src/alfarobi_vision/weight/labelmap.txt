@@ -1,0 +1,3 @@
+L_goalpost
+R_goalpost
+ball
