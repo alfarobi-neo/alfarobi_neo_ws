@@ -1,0 +1,15 @@
+item {
+    name: "L_goalpost",
+    id: 1,
+    display_name: "L_goalpost"
+}
+item {
+    name: "R_goalpost",
+    id: 2,
+    display_name: "R_goalpost"
+}
+item {
+    name: "ball",
+    id: 3,
+    display_name: "ball"
+}
