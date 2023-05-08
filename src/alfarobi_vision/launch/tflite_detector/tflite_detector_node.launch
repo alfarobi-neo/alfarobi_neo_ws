@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+    <include file="$(find alfarobi_vision)/launch/img_source/img_source.launch" />
+
+    <node pkg="alfarobi_vision" type="tflite_detector_node.py" name="tflite_detector_node" output="screen" >
+    </node>
+</launch>
